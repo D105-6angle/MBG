@@ -58,7 +58,7 @@
 
 ## 2. 기능 소개
 ### 요구사항 명세서
-<img src="./images/요구사항_명세서서.png" width="700" height="350">  
+<img src="./images/요구사항_명세서.png" width="700" height="350">  
 
 
 
