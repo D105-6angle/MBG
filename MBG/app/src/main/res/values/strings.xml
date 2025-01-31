@@ -6,6 +6,7 @@
     <string name="app_logo_name">문방구</string>
     <string name="sign_up">Sign Up</string>
     <string name="input_nickname">닉네임 입력</string>
+    <string name="splash_text">start</string>
     <string name="hint_text">김봉년</string>
     <string name="submit_sign_up_btn">문방구와 함께하기</string>
 </resources>
