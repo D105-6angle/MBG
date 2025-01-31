@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: androidx.datastore:datastore-preferences-core-jvm:1.1.1" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="androidx.datastore" artifactId="datastore-preferences-core-jvm" version="1.1.1" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/androidx.datastore/datastore-preferences-core-jvm/1.1.1/e562d4a944240c0e67317f0b862da24aca3aabc/datastore-preferences-core-jvm-1.1.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/androidx.datastore/datastore-preferences-core-jvm/1.1.1/de6b9f8517eb0c5e51eef38231e1e658367a82f3/datastore-preferences-core-jvm-1.1.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
