@@ -13,4 +13,8 @@
     <string name="card_section">일화</string>
     <string name="cultural_property_section">문화재</string>
     <string name="card_image">카드 이미지</string>
+    <string name="task_main">일정 관리</string>
+    <string name="my_team">나의 팀</string>
+    <string name="today_task">오늘의 일정</string>
+
 </resources>
