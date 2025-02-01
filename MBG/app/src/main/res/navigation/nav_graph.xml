@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <!-- 홈 탭 -->
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.ssafy.mbg.ui.home.HomeFragment"
+        android:label="Home" />
+
+    <!-- 테스크 탭 -->
+    <fragment
+        android:id="@+id/taskFragment"
+        android:name="com.ssafy.mbg.ui.task.TaskFragment"
+        android:label="Task" />
+
+    <!-- 맵 탭 -->
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.ssafy.mbg.ui.map.MapFragment"
+        android:label="Map" />
+
+    <!-- 북 탭 -->
+    <fragment
+        android:id="@+id/bookFragment"
+        android:name="com.ssafy.mbg.ui.book.BookFragment"
+        android:label="Book" />
+
+    <!-- 페이지 탭 -->
+    <fragment
+        android:id="@+id/pageFragment"
+        android:name="com.ssafy.mbg.ui.page.PageFragment"
+        android:label="Page" />
+</navigation>
