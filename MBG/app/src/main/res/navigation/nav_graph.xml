@@ -26,7 +26,7 @@
     <fragment
         android:id="@+id/bookFragment"
         android:name="com.ssafy.mbg.ui.book.BookFragment"
-        android:label="Book" />
+        android:label="BookFragment" />
 
     <!-- 페이지 탭 -->
     <fragment
