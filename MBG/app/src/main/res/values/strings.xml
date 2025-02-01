@@ -15,5 +15,6 @@
     <string name="task_main">일정 관리</string>
     <string name="my_team">나의 팀</string>
     <string name="today_task">오늘의 일정</string>
-
+    <string name="profile_name">귀여운 꾸미</string>
+    <string name="problem_history">풀이기록</string>
 </resources>

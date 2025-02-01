@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-02-01T14:02:47.936765900Z">
+        <DropdownSelection timestamp="2025-02-01T14:19:58.711596700Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\SSAFY\.android\avd\tiramisu.avd" />
