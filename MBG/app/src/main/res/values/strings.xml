@@ -9,4 +9,7 @@
     <string name="splash_text">start</string>
     <string name="hint_text">김봉년</string>
     <string name="submit_sign_up_btn">문방구와 함께하기</string>
+    <string name="book_title">도감</string>
+    <string name="card_section">카드</string>
+    <string name="cultural_property_section">문화재</string>
 </resources>
