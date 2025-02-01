@@ -51,18 +51,35 @@
             android:textColorHint="#999999"
             app:layout_constraintTop_toBottomOf="@id/tvNicknameLabel" />
 
+        <TextView
+            android:id="@+id/tvNewUserQuestion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="선생님 이신가요?"
+            android:textColor="#666666"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etNickname" />
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            app:layout_constraintBottom_toBottomOf="@id/tvNewUserQuestion"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvNewUserQuestion" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnSignUp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
             android:background="@drawable/button_confirm"
             android:padding="16dp"
             android:text="문방구와 함께하기!"
             android:textColor="#ffffff"
             android:textSize="16sp"
-            tools:layout_editor_absoluteX="32dp"
-            tools:layout_editor_absoluteY="286dp" />
+            app:layout_constraintTop_toBottomOf="@id/tvNewUserQuestion" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
