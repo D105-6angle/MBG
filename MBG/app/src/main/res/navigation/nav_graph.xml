@@ -32,5 +32,38 @@
     <fragment
         android:id="@+id/pageFragment"
         android:name="com.ssafy.mbg.ui.page.PageFragment"
-        android:label="Page" />
+        android:label="Page" >
+        <action
+            android:id="@+id/action_pageFragment_to_historyDetailFragment"
+            app:destination="@id/historyDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+
+    <!-- 문제 풀이 기록 상세 보기 -->
+    <fragment
+        android:id="@+id/historyDetailFragment"
+        android:name="com.ssafy.mbg.ui.page.HistoryDetailFragment"
+        android:label="HistoryDetailFragment">
+        <argument
+            android:name="title"
+            app:argType="string"/>
+        <argument
+            android:name="image"
+            app:argType="integer"/>
+        <argument
+            android:name="description"
+            app:argType="string"/>
+        <argument
+            android:name="lastSolvedAt"
+            app:argType="string"/>
+        <!-- 뒤로가기 action 추가 -->
+        <action
+            android:id="@+id/action_historyDetailFragment_to_pageFragment"
+            app:destination="@id/pageFragment"
+            app:popUpTo="@id/pageFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
 </navigation>

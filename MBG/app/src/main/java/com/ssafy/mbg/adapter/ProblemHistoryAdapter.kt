@@ -8,14 +8,14 @@ import com.ssafy.mbg.databinding.ItemProblemHistoryBinding
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class ProblemHistoryAdapter : RecyclerView.Adapter<ProblemHistoryAdapter.ProblemHistoryHolder>() {
+class ProblemHistoryAdapter(
+    private val onItemClick : (ProblemHistory) -> Unit
+) : RecyclerView.Adapter<ProblemHistoryAdapter.ProblemHistoryHolder>() {
 
     private var problemHistories = listOf<ProblemHistory>()
 
-    class ProblemHistoryHolder(private val binding: ItemProblemHistoryBinding) :
+    inner class ProblemHistoryHolder(private val binding: ItemProblemHistoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
-
-        private val dateFormat = SimpleDateFormat("yyyy.MM.dd", Locale.getDefault())
 
         fun bind(history: ProblemHistory) {
             binding.apply {
@@ -26,8 +26,12 @@ class ProblemHistoryAdapter : RecyclerView.Adapter<ProblemHistoryAdapter.Problem
                 itemTitle.text = history.title
 
                 // 날짜 포맷팅 및 설정
-                itemDate.text = history.lastSolvedAt.substring(0, 10)
-                    .replace("-", ".")
+                itemDate.text = history.lastSolvedAt
+
+                // 클릭 리스너 설정
+                root.setOnClickListener {
+                    onItemClick(history)
+                }
             }
         }
     }
