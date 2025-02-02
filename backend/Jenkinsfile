@@ -51,8 +51,9 @@ pipeline {
                     // 새로운 컨테이너 실행
                     // -d: 백그라운드 실행
                     // --name myapp: 컨테이너 이름을 myapp으로 설정
-                    // -p 8080:8080: 호스트의 8080 포트와 컨테이너의 8080 포트를 연결
-                    sh 'docker run -d --name myapp -p 8080:8080 myapp:latest'
+                    // -p 8081:8080: 호스트의 8080 포트와 컨테이너의 8080 포트를 연결
+                    sh 'docker run -d --name myapp -p 8081:8080 myapp:latest'
+
                 }
             }
         }
