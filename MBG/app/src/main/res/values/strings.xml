@@ -28,4 +28,6 @@
     <string name="confirm">확인</string>
     <string name="setting">세팅</string>
     <string name="change">변경하기</string>
+    <!--메인 페이지 닉네임 일시적으로 하드코딩-->
+    <string name="user_nickname">꾸미</string>
 </resources>
