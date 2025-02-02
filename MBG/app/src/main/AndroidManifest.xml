@@ -18,14 +18,18 @@
         android:theme="@style/Theme.MBG"
         tools:targetApi="31">
         <activity
-            android:name="com.ssafy.mbg.ui.main.MainActivity"
+            android:name="com.ssafy.mbg.ui.splash.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- MainActivity는 launcher intent filter 제거 -->
+        <activity
+            android:name="com.ssafy.mbg.ui.main.MainActivity"
+            android:exported="true" />
     </application>
 
 </manifest>

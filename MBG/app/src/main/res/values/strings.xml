@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">MBG</string>
+    <string name="kakao_login_btn">카카오 로그인</string>
+    <string name="naver_login_btn">네이버 로그인</string>
+    <string name="google_login_btn">구글 로그인</string>
+    <string name="app_logo_name">문방구</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="input_nickname">닉네임 입력</string>
+    <string name="splash_text">start</string>
+    <string name="hint_text">김봉년</string>
+    <string name="submit_sign_up_btn">문방구와 함께하기</string>
+    <string name="book_title">도감</string>
+    <string name="card_section">일화</string>
+    <string name="cultural_property_section">문화재</string>
+    <string name="card_image">카드 이미지</string>
+    <string name="task_main">일정 관리</string>
+    <string name="my_team">나의 팀</string>
+    <string name="today_task">오늘의 일정</string>
+    <string name="profile_name">귀여운 꾸미</string>
+    <string name="problem_history">풀이기록</string>
 </resources>
