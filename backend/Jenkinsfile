@@ -87,6 +87,7 @@ pipeline {
                             --network app-network \
                             -p ${DOCKER_PORT}:${DOCKER_PORT} \
                             -e SPRING_PROFILES_ACTIVE=prod \
+                            -e MYSQL_CONTAINER=${MYSQL_CONTAINER} \
                             -e DOCKER_PORT=${DOCKER_PORT} \
                             -e EC2_PUBLIC_IP=${EC2_PUBLIC_IP} \
                             -e MYSQL_PORT=${MYSQL_PORT} \
