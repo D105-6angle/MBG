@@ -58,21 +58,20 @@ pipeline {
 //             }
 //         }
 
-   stage('Docker Build and Deploy') {
+        stage('Docker Build and Deploy') {
             steps {
                 dir('backend') {
-                    // 기존 컨테이너/네트워크 정리
-                    sh 'docker-compose -f docker-compose-infra.yml down || true'
-                    sh 'docker-compose -f docker-compose-backend.yml down || true'
+                    // 기존 컨테이너/네트워크 정리 (하이픈 제거)
+                    sh 'docker compose -f docker-compose-infra.yml down || true'
+                    sh 'docker compose -f docker-compose-backend.yml down || true'
                     sh 'docker network create app-network || true'
 
-                    // 인프라 서비스 실행
-                    sh 'docker-compose -f docker-compose-infra.yml up -d'
+                    // 인프라 서비스 실행 (하이픈 제거)
+                    sh 'docker compose -f docker-compose-infra.yml up -d'
 
-                    // 백엔드 서비스 빌드 및 실행
-                    sh 'docker-compose -f docker-compose-backend.yml up -d --build'
+                    // 백엔드 서비스 빌드 및 실행 (하이픈 제거)
+                    sh 'docker compose -f docker-compose-backend.yml up -d --build'
                 }
             }
         }
-    }
 }
