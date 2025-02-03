@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.ssafy.tmbg.R
 import com.ssafy.tmbg.databinding.FragmentAdminMainBinding
+import com.ssafy.tmbg.ui.team.TeamCreateDialog
 
 class AdminMainFragment : Fragment() {
     private var _binding: FragmentAdminMainBinding? = null
@@ -30,7 +31,7 @@ class AdminMainFragment : Fragment() {
     private fun setupClickListeners() {
         binding.apply {
             btnTeam.setOnClickListener {
-                findNavController().navigate(R.id.action_adminMain_to_team)
+                TeamCreateDialog().show(childFragmentManager, "TeamCreateDialog")
             }
             btnNotice.setOnClickListener {
                 findNavController().navigate(R.id.action_adminMain_to_notice)
@@ -45,6 +46,10 @@ class AdminMainFragment : Fragment() {
                 findNavController().navigate(R.id.action_adminMain_to_report)
             }
         }
+    }
+
+    fun navigateToTeam() {
+        findNavController().navigate(R.id.action_adminMain_to_team)
     }
 
     override fun onDestroyView() {

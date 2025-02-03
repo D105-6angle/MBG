@@ -53,10 +53,29 @@
     </fragment>
 
     <fragment
+        android:id="@+id/teamDetailFragment"
+        android:name="com.ssafy.tmbg.ui.team.TeamDetailFragment"
+        android:label="팀 상세"
+        tools:layout="@layout/fragment_team_detail">
+        <argument
+            android:name="teamId"
+            app:argType="string"/>
+    </fragment>
+
+    <fragment
         android:id="@+id/teamFragment"
         android:name="com.ssafy.tmbg.ui.team.TeamFragment"
         android:label="팀 관리"
-        tools:layout="@layout/fragment_team" />
+        tools:layout="@layout/fragment_team">
+
+        <action
+            android:id="@+id/action_team_to_teamDetail"
+            app:destination="@id/teamDetailFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
+    </fragment>
 
     <fragment
         android:id="@+id/noticeFragment"
