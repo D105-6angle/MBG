@@ -70,8 +70,8 @@ pipeline {
                     sh '''
                         echo "Stopping existing Spring Boot container..."
                         if [ ! -z "$(docker ps -q -f name=${DOCKER_CONTAINER})" ]; then
-                            docker stop ${DOCKER_CONTAINER}
-                            docker rm ${DOCKER_CONTAINER}
+                            docker stop ${DOCKER_CONTAINER} || true
+                            docker rm ${DOCKER_CONTAINER} || true
                         fi
 
                         echo "Building new Docker image..."
