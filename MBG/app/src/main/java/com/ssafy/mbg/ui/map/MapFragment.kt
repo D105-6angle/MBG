@@ -32,12 +32,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
 
-    private var userMarker: Marker? = null       // 사용자 위치 마커
-    private var targetMarker: Marker? = null     // 타겟(피커) 위치 마커
-    private var targetCircle: Circle? = null     // 타겟 위치의 반경 원
-    private val radiusInMeters = 100.0           // 타겟 반경 (100m)
-    private var isPickMode = false               // 위치 선택 모드 상태
-    private var isQuizFragmentShown = false      // QuizFragment 표시 여부
+    private var userMarker: Marker? = null          // 사용자 위치 마커
+    private var targetMarker: Marker? = null        // 타겟(피커) 위치 마커
+    private var targetCircle: Circle? = null        // 타겟 위치의 반경 원
+    private val radiusInMeters = 100.0              // 타겟 반경 (100m)
+    private var isPickMode = false                  // 위치 선택 모드 상태
+    private var isQuizFragmentShown = false         // QuizFragment 표시 여부
 
     private val LOCATION_PERMISSION_REQUEST_CODE = 100
 
@@ -52,6 +52,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     // Bottom Sheet 내 거리 표시 TextView
     private lateinit var bottomSheetTextView: TextView
+
+    // 초기 피커(타겟) 위치
+    private val initialPickerLocation = LatLng(36.103866, 128.418393)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -77,7 +80,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val pickLocationButton: Button = view.findViewById(R.id.btn_pick_location)
         pickLocationButton.setOnClickListener {
             isPickMode = true
-            Toast.makeText(requireContext(), "Tap on the map to pick a location.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "Tap on the map to pick a location.",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -86,11 +93,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         setupMap()
         drawPolygon()
 
+        // 초기 카메라 위치를 피커 위치로 바로 이동 (moveCamera 제거, setTargetLocation 내부에서 카메라 이동)
+        setTargetLocation(initialPickerLocation, immediate = true)
+
         // 지도 클릭 시 위치 선택 (피커 모드)
         googleMap.setOnMapClickListener { latLng ->
             if (isPickMode) {
                 isPickMode = false // 선택 모드 해제
-                setTargetLocation(latLng)
+                setTargetLocation(latLng, immediate = false)
                 Toast.makeText(requireContext(), "Target location set!", Toast.LENGTH_SHORT).show()
             }
         }
@@ -117,11 +127,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         googleMap.isMyLocationEnabled = true
         googleMap.uiSettings.isMyLocationButtonEnabled = true
 
-        // 초기 타겟 위치 설정 (이미 설정되어 있지 않은 경우)
-        if (targetMarker == null) {
-            setTargetLocation(LatLng(36.103866, 128.418393))
-        }
-
         startLocationUpdates()
     }
 
@@ -135,7 +140,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         )
     }
 
-    private fun setTargetLocation(latLng: LatLng) {
+    /**
+     * 타겟 위치를 설정하고 카메라를 이동한다.
+     * @param latLng 설정할 위치
+     * @param immediate true이면 즉시, false이면 애니메이션으로 카메라 이동
+     */
+    private fun setTargetLocation(latLng: LatLng, immediate: Boolean = false) {
         // 기존 타겟 마커와 원 제거
         targetMarker?.remove()
         targetCircle?.remove()
@@ -158,16 +168,19 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 .fillColor(0x22F5F5F5)
         )
 
-        // 카메라 이동
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+        // 카메라 이동: immediate가 true이면 즉시, 아니면 애니메이션 효과로 이동
+        if (immediate) {
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+        } else {
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+        }
 
-        // 변경된 타겟 위치로 거리 업데이트
         updateDistanceDisplay()
     }
 
     private fun startLocationUpdates() {
         locationRequest = LocationRequest.create().apply {
-            interval = 10000       // 10초 간격
+            interval = 10000         // 10초 간격
             fastestInterval = 5000   // 최소 5초 간격
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
@@ -197,12 +210,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             return
         }
 
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, requireActivity().mainLooper)
+        fusedLocationClient.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            requireActivity().mainLooper
+        )
     }
 
     private fun updateUserLocation(userLatLng: LatLng) {
         if (userMarker == null) {
-            // 커스텀 벡터 드로어블을 Bitmap으로 변환하여 마커 사용
+            // 커스텀 벡터(drawable)를 Bitmap으로 변환하여 마커로 사용
             val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.target_marker)
             if (drawable != null) {
                 drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
@@ -249,6 +266,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private var isInsidePolygonToastShown = false
     private fun checkIfInsidePolygon(userLatLng: LatLng) {
+        // 주어진 polygonCoordinates 내에 들어왔을 때 한 번만 Toast 표시
         if (PolyUtil.containsLocation(userLatLng, polygonCoordinates, true) && !isInsidePolygonToastShown) {
             Toast.makeText(requireContext(), "You are in Gumi", Toast.LENGTH_SHORT).show()
             isInsidePolygonToastShown = true
@@ -265,7 +283,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
      * 사용자 위치와 타겟 위치 간의 거리를 계산하여 bottom sheet의 TextView에 표시
      */
     private fun updateDistanceDisplay(userLatLng: LatLng? = null) {
-        // 현재 위치: 인자로 전달받은 값 또는 userMarker의 위치 사용
         val currentLocation = userLatLng ?: userMarker?.position
         val targetLocation = targetMarker?.position
         if (currentLocation != null && targetLocation != null) {
@@ -296,7 +313,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 setupMap()
             } else {
-                Toast.makeText(requireContext(), "Location permission is required.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Location permission is required.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
