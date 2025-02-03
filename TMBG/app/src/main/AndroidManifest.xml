@@ -20,7 +20,7 @@
         android:theme="@style/Theme.TMBG"
         tools:targetApi="31">
         <activity
-            android:name=".ui.main.MainActivity"
+            android:name=".ui.splash.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,6 +28,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.ssafy.tmbg.ui.main.MainActivity"
+            android:exported="true" />
     </application>
 
 </manifest>
