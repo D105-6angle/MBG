@@ -140,6 +140,9 @@ dependencies {
     // 메인페이지 gif를 위한 의존성
     implementation ("pl.droidsonroids.gif:android-gif-drawable:1.2.25")
 
+    // 구글맵 폴리곤
+    implementation ("com.google.maps.android:android-maps-utils:2.4.0")
+
 }
 
 kapt {

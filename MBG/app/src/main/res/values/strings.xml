@@ -30,4 +30,6 @@
     <string name="change">변경하기</string>
     <!--메인 페이지 닉네임 일시적으로 하드코딩-->
     <string name="user_nickname">꾸미</string>
+    <!-- Google Map   -->
+    <string name="api_key">AIzaSyCnaS2BwLjhQ5mWZU0U8z4ppydasbHF_Sk</string>
 </resources>
