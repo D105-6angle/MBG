@@ -22,6 +22,7 @@ pipeline {
                 dir('backend') {
                     sh 'chmod +x ./gradlew'
                     sh './gradlew clean build'
+                    ls -la backend/build/libs/
                 }
             }
         }
@@ -82,6 +83,7 @@ pipeline {
                             --network app-network \
                             -p ${DOCKER_PORT}:${DOCKER_PORT} \
                             -e SPRING_PROFILES_ACTIVE=prod \
+                            -e SERVER_PORT=${DOCKER_PORT} \
                             -e DB_URL=${DB_URL} \
                             -e DB_USERNAME=${DB_USERNAME} \
                             -e DB_PASSWORD=${DB_PASSWORD} \
