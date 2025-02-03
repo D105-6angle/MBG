@@ -5,9 +5,9 @@ pipeline {
         DOCKER_IMAGE = credentials('DOCKER_IMAGE')
         DOCKER_CONTAINER = credentials('DOCKER_CONTAINER')
         DOCKER_PORT = credentials('DOCKER_PORT')
-        DB_URL = credentials('DB_URL')
         DB_USERNAME = credentials('DB_USERNAME')
         DB_PASSWORD = credentials('DB_PASSWORD')
+        DB_NAME = credentials('DB_NAME')
     }
 
     stages {
@@ -40,7 +40,8 @@ pipeline {
                                 --network app-network \
                                 -p 3306:3306 \
                                 -e MYSQL_ROOT_PASSWORD=${DB_PASSWORD} \
-                                -e MYSQL_DATABASE=your_db_name \
+                                -e MYSQL_DATABASE=${DB_NAME} \
+                                -v mysql_data:/var/lib/mysql \
                                 mysql:8.0.41
                         else
                             echo "MySQL is already running."
