@@ -136,6 +136,10 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation ("io.noties.markwon:core:4.6.2")
+
+    // 메인페이지 gif를 위한 의존성
+    implementation ("pl.droidsonroids.gif:android-gif-drawable:1.2.25")
+
 }
 
 kapt {
