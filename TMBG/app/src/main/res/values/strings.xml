@@ -1,0 +1,15 @@
+<resources>
+    <!-- 스플래시 페이지 -->
+    <string name="app_name">TMBG</string>
+    <string name="app_logo_name">T문방구</string>
+
+    <!-- 회원 관리 페이지  -->
+    <string name="kakao_login_btn">카카오 로그인</string>
+    <string name="naver_login_btn">네이버 로그인</string>
+    <string name="sign_up">Sign up</string>
+    <string name="input_nickname">닉네임 입력</string>
+    <string name="splash_text">start</string>
+    <string name="hint_text">김봉년</string>
+    <string name="submit_sign_up_btn">애들 관리하러 가기</string>
+
+</resources>
