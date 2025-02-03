@@ -22,7 +22,6 @@ pipeline {
                 dir('backend') {
                     sh 'chmod +x ./gradlew'
                     sh './gradlew clean build'
-                    ls -la backend/build/libs/
                 }
             }
         }
