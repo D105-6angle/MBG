@@ -26,43 +26,58 @@ pipeline {
             }
         }
 
-        stage('Docker Build') {
+        stage('Initial Infrastructure Setup') {
             steps {
-                dir('backend') {
-                    sh 'docker build -t ${DOCKER_IMAGE}:latest .'
+                script {
+                    // 네트워크 생성 (없는 경우에만)
+                    sh 'docker network create app-network || true'
+
+                    // MySQL이 실행 중이 아닐 때만 실행
+                    sh '''
+                        if [ -z "$(docker ps -q -f name=mysql)" ]; then
+                            echo "Starting MySQL container..."
+                            docker run -d --name mysql \
+                                --network app-network \
+                                -p 3306:3306 \
+                                -e MYSQL_ROOT_PASSWORD=${DB_PASSWORD} \
+                                -e MYSQL_DATABASE=your_db_name \
+                                mysql:8.0.41
+                        else
+                            echo "MySQL is already running."
+                        fi
+                    '''
+
+                    // Nginx가 실행 중이 아닐 때만 실행
+                    sh '''
+                        if [ -z "$(docker ps -q -f name=nginx)" ]; then
+                            echo "Starting Nginx container..."
+                            docker run -d --name nginx \
+                                --network app-network \
+                                -p 80:80 \
+                                -v $PWD/docker/nginx/conf.d:/etc/nginx/conf.d \
+                                nginx:latest
+                        else
+                            echo "Nginx is already running."
+                        fi
+                    '''
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy Application') {
             steps {
                 dir('backend') {
-                    sh 'docker network create app-network || true'
-
                     sh '''
-                        docker stop mysql || true
-                        docker rm mysql || true
-                        docker run -d --name mysql \
-                            --network app-network \
-                            -p 3306:3306 \
-                            -e MYSQL_ROOT_PASSWORD=${DB_PASSWORD} \
-                            -e MYSQL_DATABASE=your_db_name \
-                            mysql:8.0
-                    '''
+                        echo "Stopping existing Spring Boot container..."
+                        if [ ! -z "$(docker ps -q -f name=${DOCKER_CONTAINER})" ]; then
+                            docker stop ${DOCKER_CONTAINER}
+                            docker rm ${DOCKER_CONTAINER}
+                        fi
 
-                    sh '''
-                        docker stop nginx || true
-                        docker rm nginx || true
-                        docker run -d --name nginx \
-                            --network app-network \
-                            -p 80:80 \
-                            -v $PWD/docker/nginx/conf.d:/etc/nginx/conf.d \
-                            nginx:latest
-                    '''
+                        echo "Building new Docker image..."
+                        docker build -t ${DOCKER_IMAGE}:latest .
 
-                    sh '''
-                        docker stop ${DOCKER_CONTAINER} || true
-                        docker rm ${DOCKER_CONTAINER} || true
+                        echo "Starting new Spring Boot container..."
                         docker run -d --name ${DOCKER_CONTAINER} \
                             --network app-network \
                             -p ${DOCKER_PORT}:${DOCKER_PORT} \
@@ -78,14 +93,20 @@ pipeline {
     }
 
     post {
-        always {
-            cleanWs()
-        }
         success {
             echo 'Deployment successful!'
+            echo 'MySQL status:'
+            sh 'docker ps -f name=mysql'
+            echo 'Nginx status:'
+            sh 'docker ps -f name=nginx'
+            echo 'Spring Boot status:'
+            sh 'docker ps -f name=${DOCKER_CONTAINER}'
         }
         failure {
             echo 'Deployment failed!'
+        }
+        always {
+            cleanWs()
         }
     }
 }
