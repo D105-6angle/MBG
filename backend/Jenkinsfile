@@ -20,13 +20,13 @@ pipeline {
         stage('Docker Build and Deploy') {
             steps {
                 dir('backend') {
-                    sh 'docker compose -f docker-compose-infra.yml down || true'
-                    sh 'docker compose -f docker-compose-backend.yml down || true'
+                    sh 'docker-compose -f docker-compose-infra.yml down || true'
+                    sh 'docker-compose -f docker-compose-backend.yml down || true'
                     sh 'docker network create app-network || true'
 
-                    sh 'docker compose -f docker-compose-infra.yml up -d'
+                    sh 'docker-compose -f docker-compose-infra.yml up -d'
 
-                    sh 'docker compose -f docker-compose-backend.yml up -d --build'
+                    sh 'docker-compose -f docker-compose-backend.yml up -d --build'
                 }
             }
         }
