@@ -32,12 +32,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
 
-    private var userMarker: Marker? = null          // 사용자 위치 마커
-    private var targetMarker: Marker? = null        // 타겟(피커) 위치 마커
-    private var targetCircle: Circle? = null        // 타겟 위치의 반경 원
-    private val radiusInMeters = 100.0              // 타겟 반경 (100m)
-    private var isPickMode = false                  // 위치 선택 모드 상태
-    private var isQuizFragmentShown = false         // QuizFragment 표시 여부
+    // 사용자 위치 마커
+    private var userMarker: Marker? = null
+    // QuizFragment를 한 번만 보여주기 위한 플래그
+    private var isQuizFragmentShown = false
+    // 내 위치가 파악되어 카메라 이동한 여부
+    private var isUserLocationUpdated = false
 
     private val LOCATION_PERMISSION_REQUEST_CODE = 100
 
@@ -50,18 +50,28 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     )
     private lateinit var polygon: Polygon
 
-    // Bottom Sheet 내 거리 표시 TextView
+    // Bottom Sheet 내 텍스트뷰 (피커 리스트와 거리 표시)
     private lateinit var bottomSheetTextView: TextView
 
-    // 초기 피커(타겟) 위치
-    private val initialPickerLocation = LatLng(36.103866, 128.418393)
+    // 피커 반경 (100m)
+    private val radiusInMeters = 100.0
+
+    // 데이터 클래스: Picker (이름과 좌표)
+    data class Picker(val name: String, val location: LatLng)
+
+    // 피커 리스트 – 첫 번째가 초기 피커(“시작점”), 이후 추가 피커
+    private val pickerList = listOf(
+        Picker("시작점", LatLng(36.103866, 128.418393)),
+        Picker("A구역", LatLng(36.1072940, 128.4180058)),
+        Picker("B구역", LatLng(36.1119887, 128.4147123))
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // fragment_map.xml에는 지도, pick 버튼, bottom sheet가 포함됨
+        // fragment_map.xml에는 지도, pick 버튼, Bottom Sheet가 포함됨
         return inflater.inflate(R.layout.fragment_map, container, false)
     }
 
@@ -69,20 +79,19 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
-        // bottom sheet 내 TextView 초기화
+        // Bottom Sheet 내 텍스트뷰 초기화
         bottomSheetTextView = view.findViewById(R.id.bottomSheetTitleTextView)
 
         // 지도 Fragment 초기화
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
 
-        // 위치 선택 버튼 설정
+        // 위치 선택 버튼 – 이제는 피커 마커를 직접 누르도록 유도
         val pickLocationButton: Button = view.findViewById(R.id.btn_pick_location)
         pickLocationButton.setOnClickListener {
-            isPickMode = true
             Toast.makeText(
                 requireContext(),
-                "Tap on the map to pick a location.",
+                "피커 마커를 눌러 이름을 확인하세요.",
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -92,17 +101,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         googleMap = map
         setupMap()
         drawPolygon()
+        addPickerMarkers()
 
-        // 초기 카메라 위치를 피커 위치로 바로 이동 (moveCamera 제거, setTargetLocation 내부에서 카메라 이동)
-        setTargetLocation(initialPickerLocation, immediate = true)
+        // 내 위치가 아직 파악되지 않았다면 초기 피커(“시작점”) 위치로 카메라 이동
+        if (userMarker == null) {
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pickerList[0].location, 15f))
+        }
 
-        // 지도 클릭 시 위치 선택 (피커 모드)
-        googleMap.setOnMapClickListener { latLng ->
-            if (isPickMode) {
-                isPickMode = false // 선택 모드 해제
-                setTargetLocation(latLng, immediate = false)
-                Toast.makeText(requireContext(), "Target location set!", Toast.LENGTH_SHORT).show()
-            }
+        // 마커 클릭 시 기본 인포윈도우가 표시됨 (필요 시 추가 로직 구현 가능)
+        googleMap.setOnMarkerClickListener { marker ->
+            false // false 반환 시 기본 동작(인포윈도우 표시)
         }
     }
 
@@ -140,48 +148,22 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         )
     }
 
-    /**
-     * 타겟 위치를 설정하고 카메라를 이동한다.
-     * @param latLng 설정할 위치
-     * @param immediate true이면 즉시, false이면 애니메이션으로 카메라 이동
-     */
-    private fun setTargetLocation(latLng: LatLng, immediate: Boolean = false) {
-        // 기존 타겟 마커와 원 제거
-        targetMarker?.remove()
-        targetCircle?.remove()
-
-        // 타겟 마커 추가 (노란색)
-        targetMarker = googleMap.addMarker(
-            MarkerOptions()
-                .position(latLng)
-                .title("Target Location")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
-        )
-
-        // 타겟 반경 원 추가
-        targetCircle = googleMap.addCircle(
-            CircleOptions()
-                .center(latLng)
-                .radius(radiusInMeters)
-                .strokeWidth(2f)
-                .strokeColor(Color.YELLOW)
-                .fillColor(0x22F5F5F5)
-        )
-
-        // 카메라 이동: immediate가 true이면 즉시, 아니면 애니메이션 효과로 이동
-        if (immediate) {
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
-        } else {
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+    // 모든 피커에 대한 마커 추가 (각 마커에는 피커 이름이 title로 표시됨)
+    private fun addPickerMarkers() {
+        for (picker in pickerList) {
+            googleMap.addMarker(
+                MarkerOptions()
+                    .position(picker.location)
+                    .title(picker.name)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+            )
         }
-
-        updateDistanceDisplay()
     }
 
     private fun startLocationUpdates() {
         locationRequest = LocationRequest.create().apply {
             interval = 10000         // 10초 간격
-            fastestInterval = 5000   // 최소 5초 간격
+            fastestInterval = 5000     // 최소 5초 간격
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
 
@@ -192,7 +174,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     updateUserLocation(userLatLng)
                     checkIfWithinRadius(userLatLng)
                     checkIfInsidePolygon(userLatLng)
-                    // 사용자 위치 업데이트 시마다 거리 표시 업데이트
                     updateDistanceDisplay(userLatLng)
                 }
             }
@@ -217,9 +198,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         )
     }
 
+    // 사용자 위치 마커 생성 및 업데이트
+    // 최초 위치 파악 시 카메라를 사용자 위치로 이동
     private fun updateUserLocation(userLatLng: LatLng) {
         if (userMarker == null) {
-            // 커스텀 벡터(drawable)를 Bitmap으로 변환하여 마커로 사용
             val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.target_marker)
             if (drawable != null) {
                 drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
@@ -238,35 +220,40 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         .icon(customMarker)
                 )
             } else {
-                // drawable 로드 실패 시 기본 마커 사용
                 userMarker = googleMap.addMarker(
                     MarkerOptions()
                         .position(userLatLng)
                         .title("My Location")
                 )
             }
+            // 최초 위치 파악 시 카메라 이동
+            if (!isUserLocationUpdated) {
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15f))
+                isUserLocationUpdated = true
+            }
         } else {
             userMarker?.position = userLatLng
         }
     }
 
+    // 각 피커와의 거리가 100m 이내인지 확인하여 QuizFragment를 띄움 (한 번만 실행)
     private fun checkIfWithinRadius(userLatLng: LatLng) {
-        targetCircle?.center?.let { center ->
+        for (picker in pickerList) {
             val distance = FloatArray(1)
             Location.distanceBetween(
                 userLatLng.latitude, userLatLng.longitude,
-                center.latitude, center.longitude,
+                picker.location.latitude, picker.location.longitude,
                 distance
             )
             if (distance[0] <= radiusInMeters && !isQuizFragmentShown) {
                 showQuizFragment()
+                break
             }
         }
     }
 
     private var isInsidePolygonToastShown = false
     private fun checkIfInsidePolygon(userLatLng: LatLng) {
-        // 주어진 polygonCoordinates 내에 들어왔을 때 한 번만 Toast 표시
         if (PolyUtil.containsLocation(userLatLng, polygonCoordinates, true) && !isInsidePolygonToastShown) {
             Toast.makeText(requireContext(), "You are in Gumi", Toast.LENGTH_SHORT).show()
             isInsidePolygonToastShown = true
@@ -280,28 +267,43 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     /**
-     * 사용자 위치와 타겟 위치 간의 거리를 계산하여 bottom sheet의 TextView에 표시
+     * Bottom Sheet에 사용자 위치와 각 피커 간의 거리 리스트를 업데이트한다.
+     * - 사용자 위치가 파악되지 않으면 "위치 조회중..."을 표시.
+     * - 사용자 위치가 파악되면 피커들을 거리(가까운 순)로 정렬하여 표시하며,
+     *   거리가 동일할 경우 이름 순으로 정렬한다.
      */
     private fun updateDistanceDisplay(userLatLng: LatLng? = null) {
         val currentLocation = userLatLng ?: userMarker?.position
-        val targetLocation = targetMarker?.position
-        if (currentLocation != null && targetLocation != null) {
+        if (currentLocation == null) {
+            bottomSheetTextView.text = "위치 조회중..."
+            return
+        }
+
+        // 각 피커와의 거리를 계산
+        val pickerDistances = pickerList.map { picker ->
             val results = FloatArray(1)
             Location.distanceBetween(
                 currentLocation.latitude, currentLocation.longitude,
-                targetLocation.latitude, targetLocation.longitude,
+                picker.location.latitude, picker.location.longitude,
                 results
             )
-            val distanceMeters = results[0]
-            val distanceText = if (distanceMeters < 1000) {
-                String.format("Distance: %.0f m", distanceMeters)
-            } else {
-                String.format("Distance: %.2f km", distanceMeters / 1000)
-            }
-            bottomSheetTextView.text = distanceText
-        } else {
-            bottomSheetTextView.text = "Distance: N/A"
+            Triple(picker.name, results[0], picker.location)
         }
+
+        // 정렬: 거리(오름차순, 즉 가까운 순) → 거리가 같으면 이름 순 (알파벳 순)
+        val sortedPickers = pickerDistances.sortedWith(compareBy({ it.second }, { it.first }))
+
+        // 각 피커에 대해 "이름: 거리" 형태의 문자열 구성
+        val sb = StringBuilder()
+        for ((name, distance, _) in sortedPickers) {
+            val distanceText = if (distance < 1000) {
+                String.format("%.0f m", distance)
+            } else {
+                String.format("%.2f km", distance / 1000)
+            }
+            sb.append("$name: $distanceText\n")
+        }
+        bottomSheetTextView.text = sb.toString().trim()
     }
 
     override fun onRequestPermissionsResult(

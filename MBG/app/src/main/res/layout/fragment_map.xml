@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- 위치 선택 버튼 -->
+    <!-- 위치 선택 버튼 (현재는 피커 마커를 직접 눌러 확인하도록 유도) -->
     <Button
         android:id="@+id/btn_pick_location"
         android:layout_width="wrap_content"
@@ -21,10 +21,9 @@
         android:text="Pick Location"
         android:backgroundTint="@android:color/black"
         android:textColor="@android:color/white"
-        android:layout_gravity="top|start"
-    />
+        android:layout_gravity="top|start" />
 
-    <!-- Bottom Sheet: 현재 위치와 타겟 위치 간 거리 표시 -->
+    <!-- Bottom Sheet: 피커 리스트와 사용자 위치 간의 거리 표시 -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
