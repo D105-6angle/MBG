@@ -10,6 +10,7 @@ pipeline {
         DB_NAME = credentials('DB_NAME')
         EC2_PUBLIC_IP = credentials('EC2_PUBLIC_IP')
         MYSQL_PORT = credentials('MYSQL_PORT')
+        MYSQL_CONTAINER = credentials('MYSQL_CONTAINER')
     }
 
     stages {
@@ -39,9 +40,9 @@ pipeline {
                     sh '''
                         if [ -z "$(docker ps -q -f name=mysql)" ]; then
                             echo "Starting MySQL container..."
-                            docker run -d --name mysql \
+                            docker run -d --name ${MYSQL_CONTAINER} \
                                 --network app-network \
-                                -p 3306:3306 \
+                                -p ${MYSQL_PORT}:3306 \
                                 -e MYSQL_ROOT_PASSWORD=${DB_PASSWORD} \
                                 -e MYSQL_DATABASE=${DB_NAME} \
                                 -v mysql_data:/var/lib/mysql \
