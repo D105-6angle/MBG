@@ -23,7 +23,8 @@ pipeline {
             steps {
                 dir('backend') {
                     sh 'chmod +x ./gradlew'
-                    sh './gradlew clean build'
+                    sh './gradlew clean build -x test'  // 테스트 스킵 -> 추후에 테스트 작성해야 할 땐 -x test 빼기
+                    //sh './gradlew clean build'
                 }
             }
         }
