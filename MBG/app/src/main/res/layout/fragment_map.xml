@@ -21,7 +21,8 @@
         android:text="Pick Location"
         android:backgroundTint="@android:color/black"
         android:textColor="@android:color/white"
-        android:layout_gravity="top|end" />
+        android:layout_gravity="top|start"
+    />
 
     <!-- Bottom Sheet: 현재 위치와 타겟 위치 간 거리 표시 -->
     <androidx.constraintlayout.widget.ConstraintLayout
