@@ -1,6 +1,15 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_IMAGE = credentials('DOCKER_IMAGE')
+        DOCKER_CONTAINER = credentials('DOCKER_CONTAINER')
+        DOCKER_PORT = credentials('DOCKER_PORT')
+        DB_URL = credentials('DB_URL')
+        DB_USERNAME = credentials('DB_USERNAME')
+        DB_PASSWORD = credentials('DB_PASSWORD')
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -17,18 +26,66 @@ pipeline {
             }
         }
 
-        stage('Docker Build and Deploy') {
+        stage('Docker Build') {
             steps {
                 dir('backend') {
-                    sh 'docker-compose -f docker-compose-infra.yml down || true'
-                    sh 'docker-compose -f docker-compose-backend.yml down || true'
-                    sh 'docker network create app-network || true'
-
-                    sh 'docker-compose -f docker-compose-infra.yml up -d'
-
-                    sh 'docker-compose -f docker-compose-backend.yml up -d --build'
+                    sh 'docker build -t ${DOCKER_IMAGE}:latest .'
                 }
             }
+        }
+
+        stage('Deploy') {
+            steps {
+                dir('backend') {
+                    sh 'docker network create app-network || true'
+
+                    sh '''
+                        docker stop mysql || true
+                        docker rm mysql || true
+                        docker run -d --name mysql \
+                            --network app-network \
+                            -p 3306:3306 \
+                            -e MYSQL_ROOT_PASSWORD=${DB_PASSWORD} \
+                            -e MYSQL_DATABASE=your_db_name \
+                            mysql:8.0
+                    '''
+
+                    sh '''
+                        docker stop nginx || true
+                        docker rm nginx || true
+                        docker run -d --name nginx \
+                            --network app-network \
+                            -p 80:80 \
+                            -v $PWD/docker/nginx/conf.d:/etc/nginx/conf.d \
+                            nginx:latest
+                    '''
+
+                    sh '''
+                        docker stop ${DOCKER_CONTAINER} || true
+                        docker rm ${DOCKER_CONTAINER} || true
+                        docker run -d --name ${DOCKER_CONTAINER} \
+                            --network app-network \
+                            -p ${DOCKER_PORT}:${DOCKER_PORT} \
+                            -e SPRING_PROFILES_ACTIVE=prod \
+                            -e DB_URL=${DB_URL} \
+                            -e DB_USERNAME=${DB_USERNAME} \
+                            -e DB_PASSWORD=${DB_PASSWORD} \
+                            ${DOCKER_IMAGE}:latest
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            echo 'Deployment successful!'
+        }
+        failure {
+            echo 'Deployment failed!'
         }
     }
 }
