@@ -2,20 +2,37 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#FFE8D9"
+    >
 
-    <ImageView
-        android:id="@+id/ivNotification"
+    <ImageButton
+        android:id="@+id/notification_icon"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_margin="16dp"
+        android:background="#FFE8D9"
         android:src="@drawable/ic_notification"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         />
 
+
+    <ImageButton
+        android:id="@+id/team_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="16dp"
+        android:background="#FFE8D9"
+        android:src="@drawable/team"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+
     <ImageView
         android:id="@+id/characterGif"
+        android:background="#FFE8D9"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:scaleType="fitCenter"
