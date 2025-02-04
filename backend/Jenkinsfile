@@ -34,7 +34,7 @@
             stage('Setup Configuration') {
                 steps {
                     sh '''
-                        sudo cp -f docker/nginx-conf/default.conf /etc/docker-config/nginx/
+                        cp -f docker/nginx-conf/default.conf /etc/docker-config/nginx/
                     '''
                 }
             }
