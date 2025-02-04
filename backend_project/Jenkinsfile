@@ -114,8 +114,8 @@
             failure {
                 echo 'Deployment failed!'
             }
-            always {
-                cleanWs()
-            }
+//             always {
+//                 cleanWs()
+//             }
         }
     }
