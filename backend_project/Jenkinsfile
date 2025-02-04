@@ -22,7 +22,7 @@
 
             stage('Build') {
                 steps {
-                    dir('backend') {
+                    dir('backend_project') {
                         sh 'chmod +x ./gradlew'
                         sh './gradlew clean build -x test'  // 테스트 스킵 -> 추후에 테스트 작성해야 할 땐 -x test 빼기
                         //sh './gradlew clean build'
@@ -33,9 +33,11 @@
             // nginx 설정 파일을 별도의 폴더에 복사 (workspace는 삭제하도록 구성했기 때문)
             stage('Setup Configuration') {
                 steps {
-                    sh '''
-                        cp -f docker/nginx-conf/default.conf /etc/docker-config/nginx/
-                    '''
+                    dir('backend') {
+                        sh '''
+                            cp -f docker/nginx-conf/default.conf /etc/docker-config/nginx/
+                        '''
+                    }
                 }
             }
 
@@ -80,7 +82,7 @@
 
             stage('Deploy Application') {
                 steps {
-                    dir('backend') {
+                    dir('backend_project') {
                         sh '''
                             echo "Stopping existing Spring Boot container..."
                             if [ ! -z "$(docker ps -q -f name=${DOCKER_CONTAINER})" ]; then
