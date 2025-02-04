@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
 
         // NavController 설정
         val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+            .findFragmentById(R.id.main_nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
     }
 }

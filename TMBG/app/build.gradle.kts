@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -9,6 +12,8 @@ plugins {
     id("androidx.navigation.safeargs.kotlin")
     kotlin("plugin.serialization") version "1.5.0"
 }
+// 앱 키를 가져오기 위해 properties 변수 선언
+
 
 android {
     namespace = "com.ssafy.tmbg"
@@ -20,6 +25,11 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+        val properties = Properties().apply {
+            load(FileInputStream(rootProject.file("local.properties")))
+        }
+        buildConfigField("String", "KAKAO_APP_KEY", "\"${properties.getProperty("kakao.native.app.key")}\"")
+        manifestPlaceholders["kakao_app_key"] = properties.getProperty("kakao.native.app.key")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -45,6 +55,7 @@ android {
         viewBinding = true
         buildConfig = true
     }
+
 
 }
 
@@ -140,6 +151,11 @@ dependencies {
     // 메인페이지 gif를 위한 의존성
     implementation ("pl.droidsonroids.gif:android-gif-drawable:1.2.25")
 
+    // 카카오 로그인
+    implementation(libs.kakao.user)
+
+    // 네이버 로그인
+    implementation(libs.naver.oauth)
 }
 
 kapt {
