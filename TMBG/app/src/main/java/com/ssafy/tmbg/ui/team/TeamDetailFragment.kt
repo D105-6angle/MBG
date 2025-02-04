@@ -37,11 +37,12 @@ class TeamDetailFragment : Fragment() {
         _binding = FragmentTeamDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
-
+    // 프래먼트가 렌더링 됐을 때 실행 될 코드
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         team = findTeamById(args.teamId)
+        // 리사이클러 뷰 세팅
         setupMemberRecyclerView()
         setupPhotoRecyclerView()
         setupPlaceRecyclerView()

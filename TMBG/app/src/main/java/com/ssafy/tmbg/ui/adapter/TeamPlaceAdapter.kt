@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ssafy.tmbg.data.team.TeamPlace
 import com.ssafy.tmbg.databinding.ItemTeamPlaceBinding
 
+
+// Team이 다녀간 장소에 대한 어뎁터
 class TeamPlaceAdapter(
     private val places: List<TeamPlace>
 ) : RecyclerView.Adapter<TeamPlaceAdapter.PlaceViewHolder>() {
@@ -29,10 +31,10 @@ class TeamPlaceAdapter(
         )
         return PlaceViewHolder(binding)
     }
-
+    // 장소 리스트의 인덱스 순서로 바인딩
     override fun onBindViewHolder(holder: PlaceViewHolder, position: Int) {
         holder.bind(places[position])
     }
-
+    // 아이템의 개수는 장소 리스트의 사이즈
     override fun getItemCount() = places.size
 }

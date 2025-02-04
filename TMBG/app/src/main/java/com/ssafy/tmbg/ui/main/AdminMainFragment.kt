@@ -27,21 +27,26 @@ class AdminMainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupClickListeners()
     }
-
+    // 네비게이션 설정을 통해, 각 버튼 클릭 시 네비게이션 액션 호출
     private fun setupClickListeners() {
         binding.apply {
+            // Team의 경우 먼저 팀 생성 모달창이 보여줘야 함
             btnTeam.setOnClickListener {
                 TeamCreateDialog().show(childFragmentManager, "TeamCreateDialog")
             }
+            // 공지사항 클릭 시 실행될 액션
             btnNotice.setOnClickListener {
                 findNavController().navigate(R.id.action_adminMain_to_notice)
             }
+            // 미션 클릭 시 실행될 액션
             btnMission.setOnClickListener {
                 findNavController().navigate(R.id.action_adminMain_to_mission)
             }
+            // 스케쥴 클릭 시 실행될 액션
             btnSchedule.setOnClickListener {
                 findNavController().navigate(R.id.action_adminMain_to_schedule)
             }
+            // 보고서 클릭 시 실행될 액션
             btnReport.setOnClickListener {
                 findNavController().navigate(R.id.action_adminMain_to_report)
             }
@@ -49,6 +54,7 @@ class AdminMainFragment : Fragment() {
     }
 
     fun navigateToTeam() {
+        // 모달창에서 쓸 액션 이 곳에서 정의(메인 화면이 가장 최상단이기 때문)
         findNavController().navigate(R.id.action_adminMain_to_team)
     }
 

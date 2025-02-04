@@ -1,5 +1,6 @@
 package com.ssafy.tmbg.data.team
 
+// Team 데이터
 data class Team(
     val id: String,
     val name : String,

@@ -2,6 +2,7 @@ package com.ssafy.tmbg.data.team
 
 import com.ssafy.tmbg.R
 
+// Team 데이터 객체(더미 데이터)
 object TeamDataSource {
     val dummyTeams = listOf(
         Team(
