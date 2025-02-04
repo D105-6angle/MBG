@@ -30,17 +30,6 @@
                 }
             }
 
-            // nginx 설정 파일을 별도의 폴더에 복사 (workspace는 삭제하도록 구성했기 때문)
-            stage('Setup Configuration') {
-                steps {
-                    dir('backend_project') {
-                        sh '''
-                            cp -f docker/nginx-conf/default.conf /etc/docker-config/nginx/
-                        '''
-                    }
-                }
-            }
-
             stage('Initial Infrastructure Setup') {
                 steps {
                     script {
@@ -70,7 +59,7 @@
                                 docker run -d --name nginx \
                                     --network app-network \
                                     -p 80:80 \
-                                    -v /etc/docker-config/nginx:/etc/nginx/conf.d \
+                                    -v ${WORKSPACE}/backend_project/docker/nginx-conf:/etc/nginx/conf.d \
                                     nginx:latest
                             else
                                 echo "Nginx is already running."
