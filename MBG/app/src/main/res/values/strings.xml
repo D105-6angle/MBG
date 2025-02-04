@@ -30,4 +30,10 @@
     <string name="change">변경하기</string>
     <!--메인 페이지 닉네임 일시적으로 하드코딩-->
     <string name="user_nickname">꾸미</string>
+
+    <string name="notification_title">알림</string>
+    <!--초대창-->
+    <string name="invite_code">초대 코드</string>
+    <string name="invite_hint">초대코드를 입력하세요</string>
+    <string name="submit_invite_code">입력</string>
 </resources>

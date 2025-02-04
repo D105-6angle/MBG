@@ -5,13 +5,45 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.ssafy.mbg.R
+import com.ssafy.mbg.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
+
+    private var _binding : FragmentHomeBinding? = null
+    private val binding get() = _binding!!
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // fragment_home.xml 레이아웃 파일이 있어야 합니다.
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
+
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Glide.with(this)
+            .asGif()
+            .load(R.drawable.character_gif_origin)
+            .into(binding.characterGif)
+        setupClickListeners()
+    }
+
+    private fun setupClickListeners() {
+        binding.notificationIcon.setOnClickListener {
+            NotificationFragment().show(parentFragmentManager, "NotificationFragment")
+        }
+        binding.teamIcon.setOnClickListener {
+            InviteCodeFragment().show(parentFragmentManager, "InviteCodeFragment")
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

@@ -74,7 +74,6 @@ dependencies {
 
     // RecyclerView
     implementation ("androidx.recyclerview:recyclerview:1.3.2")
-
     // indicator
     implementation ("me.relex:circleindicator:2.1.6")
 
