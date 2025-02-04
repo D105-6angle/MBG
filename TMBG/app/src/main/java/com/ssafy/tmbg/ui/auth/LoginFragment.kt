@@ -27,19 +27,21 @@ class LoginFragment : Fragment() {
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
         return binding.root
     }
-
+    // View 생성 완료 후 호출
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupClickListeners()
         observeAuthState()
     }
 
+    // 버튼 클릭 리스너 설정
     private fun setupClickListeners() {
         binding.btnKakaoLogin.setOnClickListener {
             viewModel.handleKakaoLogin()
         }
     }
 
+    // state 상태 변화 관찰 및 처리
     private fun observeAuthState() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.authState.collect { state ->
@@ -64,6 +66,7 @@ class LoginFragment : Fragment() {
         }
     }
 
+    // view 죽여~~
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

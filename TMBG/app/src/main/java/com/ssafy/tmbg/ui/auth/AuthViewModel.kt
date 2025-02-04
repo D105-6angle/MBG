@@ -10,13 +10,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+// AuthViewModel.kt - 인증 관련 ViewModel
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val kakaoLoginRepositoryImpl: KakaoLoginRepositoryImpl
 ) : ViewModel() {
+    // 인증 상태를 관리하는 StateFlow
     private val _authState = MutableStateFlow<AuthState>(AuthState.Initial)
     val authState : StateFlow<AuthState> = _authState.asStateFlow()
 
+    // 카카오 로그인 처리 함수
     fun handleKakaoLogin() {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
