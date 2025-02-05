@@ -53,13 +53,15 @@
                         '''
 
                         // Nginx가 실행 중이 아닐 때만 실행
+                        // HTTPS 포트(443) 세팅 및 인증서 파일 위치 볼륨 마운트 설정 버전
                         sh '''
                             if [ -z "$(docker ps -q -f name=nginx)" ]; then
                                 echo "Starting Nginx container..."
                                 docker run -d --name nginx \
-                                    --network app-network \
-                                    -p 80:80 \
-                                    nginx:latest
+                                  --network app-network \
+                                  -p 80:80 -p 443:443 \
+                                  -v /etc/letsencrypt:/etc/letsencrypt:ro \
+                                  nginx:latest
                             else
                                 echo "Nginx is already running."
                             fi
@@ -93,7 +95,7 @@
                                 -e DB_NAME=${DB_NAME} \
                                 -e DB_USERNAME=${DB_USERNAME} \
                                 -e DB_PASSWORD=${DB_PASSWORD} \
-                                ${DOCKER_IMAGE}:latest
+                                ${DOCKER_IMAGE}:3.4.2
                         '''
                     }
                 }
