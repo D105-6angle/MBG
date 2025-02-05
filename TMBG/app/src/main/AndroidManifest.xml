@@ -28,6 +28,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- 카카오 SDK에서 제공하는 로그인용 액티비티  -->
+        <activity
+            android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="oauth"
+                    android:scheme="kakao${kakao_app_key}" />
+                    />
+            </intent-filter>
+        </activity>
         <activity
             android:name="com.ssafy.tmbg.ui.main.MainActivity"
             android:exported="true" />
