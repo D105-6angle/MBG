@@ -17,6 +17,9 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
+# Spring Boot - 로컬 환경에서 사용하는 환경 설정 파일은 제외
+src/main/resources/application-dev.properties
+
 ### IntelliJ IDEA ###
 .idea
 *.iws

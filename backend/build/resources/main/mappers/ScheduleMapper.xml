@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.schedules.mapper.ScheduleMapper">
+
+    <select id="findByRoomId" parameterType="Long" resultType="Schedule">
+        SELECT schedules_id, room_id, start_time, end_time, content
+        FROM schedules
+        WHERE room_id = #{roomId}
+    </select>
+
+    <select id="findByRoomIdAndScheduleId" resultType="Schedule">
+        SELECT schedules_id, room_id, start_time, end_time, content
+        FROM schedules
+        WHERE room_id = #{roomId} AND schedules_id = #{scheduleId}
+    </select>
+
+    <insert id="insert" parameterType="Schedule">
+        INSERT INTO schedules (room_id, start_time, end_time, content)
+        VALUES (#{roomId}, #{startTime}, #{endTime}, #{content})
+    </insert>
+
+    <update id="update" parameterType="Schedule">
+        UPDATE schedules
+        SET start_time = #{startTime},
+            end_time = #{endTime},
+            content = #{content}
+        WHERE schedules_id = #{schedulesId} AND room_id = #{roomId}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM schedules
+        WHERE schedules_id = #{scheduleId}
+    </delete>
+
+</mapper>

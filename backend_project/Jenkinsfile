@@ -1,0 +1,121 @@
+    pipeline {
+        agent any
+
+        environment {
+            DOCKER_IMAGE = credentials('DOCKER_IMAGE')
+            DOCKER_CONTAINER = credentials('DOCKER_CONTAINER')
+            DOCKER_PORT = credentials('DOCKER_PORT')
+            DB_USERNAME = credentials('DB_USERNAME')
+            DB_PASSWORD = credentials('DB_PASSWORD')
+            DB_NAME = credentials('DB_NAME')
+            EC2_PUBLIC_IP = credentials('EC2_PUBLIC_IP')
+            MYSQL_PORT = credentials('MYSQL_PORT')
+            MYSQL_CONTAINER = credentials('MYSQL_CONTAINER')
+        }
+
+        stages {
+            stage('Checkout') {
+                steps {
+                    checkout scm
+                }
+            }
+
+            stage('Build') {
+                steps {
+                    dir('backend_project') {
+                        sh 'chmod +x ./gradlew'
+                        sh './gradlew clean build -x test'  // 테스트 스킵 -> 추후에 테스트 작성해야 할 땐 -x test 빼기
+                        //sh './gradlew clean build'
+                    }
+                }
+            }
+
+            stage('Initial Infrastructure Setup') {
+                steps {
+                    script {
+                        // 네트워크 생성 (없는 경우에만)
+                        sh 'docker network create app-network || true'
+
+                        // MySQL이 실행 중이 아닐 때만 실행
+                        sh '''
+                            if [ -z "$(docker ps -q -f name=mysql)" ]; then
+                                echo "Starting MySQL container..."
+                                docker run -d --name ${MYSQL_CONTAINER} \
+                                    --network app-network \
+                                    -p ${MYSQL_PORT}:3306 \
+                                    -e MYSQL_ROOT_PASSWORD=${DB_PASSWORD} \
+                                    -e MYSQL_DATABASE=${DB_NAME} \
+                                    -v mysql_data:/var/lib/mysql \
+                                    mysql:8.0.41
+                            else
+                                echo "MySQL is already running."
+                            fi
+                        '''
+
+                        // Nginx가 실행 중이 아닐 때만 실행
+                        sh '''
+                            if [ -z "$(docker ps -q -f name=nginx)" ]; then
+                                echo "Starting Nginx container..."
+                                docker run -d --name nginx \
+                                    --network app-network \
+                                    -p 80:80 \
+                                    -v ${WORKSPACE}/backend_project/docker/nginx-conf:/etc/nginx/conf.d \
+                                    nginx:latest
+                            else
+                                echo "Nginx is already running."
+                            fi
+                        '''
+                    }
+                }
+            }
+
+            stage('Deploy Application') {
+                steps {
+                    dir('backend_project') {
+                        sh '''
+                            echo "Stopping existing Spring Boot container..."
+                            if [ ! -z "$(docker ps -q -f name=${DOCKER_CONTAINER})" ]; then
+                                docker stop ${DOCKER_CONTAINER} || true
+                                docker rm ${DOCKER_CONTAINER} || true
+                            fi
+
+                            echo "Building new Docker image..."
+                            docker build -t ${DOCKER_IMAGE}:latest .
+
+                            echo "Starting new Spring Boot container..."
+                            docker run -d --name ${DOCKER_CONTAINER} \
+                                --network app-network \
+                                -p ${DOCKER_PORT}:${DOCKER_PORT} \
+                                -e SPRING_PROFILES_ACTIVE=prod \
+                                -e MYSQL_CONTAINER=${MYSQL_CONTAINER} \
+                                -e DOCKER_PORT=${DOCKER_PORT} \
+                                -e EC2_PUBLIC_IP=${EC2_PUBLIC_IP} \
+                                -e MYSQL_PORT=${MYSQL_PORT} \
+                                -e DB_NAME=${DB_NAME} \
+                                -e DB_USERNAME=${DB_USERNAME} \
+                                -e DB_PASSWORD=${DB_PASSWORD} \
+                                ${DOCKER_IMAGE}:latest
+                        '''
+                    }
+                }
+            }
+        }
+
+        post {
+            success {
+                echo 'Deployment successful!'
+                echo 'MySQL status:'
+                sh 'docker ps -f name=mysql'
+                echo 'Nginx status:'
+                sh 'docker ps -f name=nginx'
+                echo 'Spring Boot status:'
+                sh 'docker ps -f name=${DOCKER_CONTAINER}'
+            }
+            failure {
+                echo 'Deployment failed!'
+            }
+//             always {
+//                 cleanWs()
+//             }
+        }
+    }
