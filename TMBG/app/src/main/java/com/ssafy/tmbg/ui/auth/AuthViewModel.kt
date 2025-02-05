@@ -56,7 +56,7 @@ class AuthViewModel @Inject constructor(
                                 _authState.value = AuthState.NeedSignUp(
                                     email = userInfo.email,
                                     name = userInfo.name,
-                                    socialId = userInfo.providerId
+                                    socialId = "Naver" + userInfo.providerId
                                 )
                             }.onFailure { exception ->
                                 _authState.value = AuthState.Error(exception.message ?: "알 수 없는 오류가 발생했습니다")
