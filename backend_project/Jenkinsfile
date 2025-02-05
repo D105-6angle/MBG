@@ -95,7 +95,7 @@
                                 -e DB_NAME=${DB_NAME} \
                                 -e DB_USERNAME=${DB_USERNAME} \
                                 -e DB_PASSWORD=${DB_PASSWORD} \
-                                ${DOCKER_IMAGE}:3.4.2
+                                ${DOCKER_IMAGE}:latest
                         '''
                     }
                 }
