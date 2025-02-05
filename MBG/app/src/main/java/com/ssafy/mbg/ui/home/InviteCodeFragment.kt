@@ -1,11 +1,14 @@
 package com.ssafy.mbg.ui.home
 
 import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import com.ssafy.mbg.R
 import com.ssafy.mbg.databinding.FragmentInviteCodeBinding
@@ -42,7 +45,12 @@ class InviteCodeFragment : DialogFragment() {
         binding.submitButton.setOnClickListener {
             val code = binding.inviteCodeInput.text.toString()
             if (code.isNotEmpty()) {
-                // TODO: 초대 코드 처리 로직 구현
+                // activity의 container에 직접 replace
+                activity?.supportFragmentManager?.beginTransaction()
+                    ?.replace(R.id.container, RoomListFragment())
+                    ?.addToBackStack(null)
+                    ?.commit()
+                dismiss()
             }
         }
     }
@@ -61,6 +69,17 @@ class InviteCodeFragment : DialogFragment() {
                 params.height = ViewGroup.LayoutParams.WRAP_CONTENT
                 attributes = params
             }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.apply {
+            setLayout(
+                (resources.displayMetrics.widthPixels * 0.9).toInt(),  // 화면 너비의 90%
+                WindowManager.LayoutParams.WRAP_CONTENT
+            )
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         }
     }
 
