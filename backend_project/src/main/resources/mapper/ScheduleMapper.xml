@@ -4,7 +4,7 @@
 
     <select id="findByRoomId" resultType="com.ssafy.schedules.model.Schedule">
         SELECT
-            schedule_id as scheduleId,
+            schedules_id as scheduleId,
             room_id as roomId,
             start_time as startTime,
             end_time as endTime,
@@ -14,7 +14,7 @@
     </select>
 
     <select id="findByRoomIdAndScheduleId" resultType="com.ssafy.schedules.model.Schedule">
-        SELECT schedule_id, room_id, start_time, end_time, content
+        SELECT schedules_id, room_id, start_time, end_time, content
         FROM schedules
         WHERE room_id = #{roomId} AND schedule_id = #{scheduleId}
     </select>
@@ -29,10 +29,10 @@
         SET start_time = #{startTime},
             end_time = #{endTime},
             content = #{content}
-        WHERE schedule_id = #{scheduleId} AND room_id = #{roomId}
+        WHERE schedules_id = #{scheduleId} AND room_id = #{roomId}
     </update>
 
     <delete id="delete">
-        DELETE FROM schedules WHERE schedule_id = #{scheduleId}
+        DELETE FROM schedules WHERE schedules_id = #{scheduleId}
     </delete>
 </mapper>
