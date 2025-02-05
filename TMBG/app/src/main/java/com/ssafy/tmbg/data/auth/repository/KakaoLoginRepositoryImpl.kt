@@ -12,7 +12,7 @@ import kotlin.coroutines.suspendCoroutine
 
 class KakaoLoginRepositoryImpl @Inject constructor(
     private val context: Context
-) : KakaoLoginRepository {
+) : SocialLoginRepository {
     /**
      * 카카오 로그인 수행
      * 카카오톡 앱이 있으면 앱으로, 없으면 계정으로 로그인 시도
@@ -67,7 +67,6 @@ class KakaoLoginRepositoryImpl @Inject constructor(
                 error != null -> continuation.resume(Result.failure(error))
                 user != null -> {
                     val userInfo = SocialUserInfo(
-                        //"Kakao"
                         providerId = user.id.toString(),
                         email = user.kakaoAccount?.email ?: "",
                         name = user.kakaoAccount?.profile?.nickname ?: ""

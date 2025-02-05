@@ -28,8 +28,17 @@ android {
         val properties = Properties().apply {
             load(FileInputStream(rootProject.file("local.properties")))
         }
+        // 카카오 앱 키
         buildConfigField("String", "KAKAO_APP_KEY", "\"${properties.getProperty("kakao.native.app.key")}\"")
         manifestPlaceholders["kakao_app_key"] = properties.getProperty("kakao.native.app.key")
+
+        // 네이버 클라이언트 아이디
+        buildConfigField("String", "NAVER_CLIENT_ID", "\"${properties.getProperty("naver.client.id")}\"")
+        manifestPlaceholders["naver_client_id"] = properties.getProperty("naver.client.id")
+
+        // 네이버 클라이언트 시크릿
+        buildConfigField("String", "NAVER_CLIENT_SECRET", "\"${properties.getProperty("naver.client.secret")}\"")
+        manifestPlaceholders["naver_client_secret"] = properties.getProperty("naver.client.secret")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

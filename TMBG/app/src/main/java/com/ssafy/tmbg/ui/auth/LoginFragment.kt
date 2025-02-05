@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.navercorp.nid.NaverIdLoginSDK
+import com.navercorp.nid.oauth.OAuthLoginCallback
 import com.ssafy.tmbg.R
 import com.ssafy.tmbg.databinding.FragmentLoginBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,8 +38,15 @@ class LoginFragment : Fragment() {
 
     // 버튼 클릭 리스너 설정
     private fun setupClickListeners() {
+        // 카카오 로그인 버튼 클릭
         binding.btnKakaoLogin.setOnClickListener {
+            // 뷰모델 에서 카카오 로그인 함수 호출
             viewModel.handleKakaoLogin()
+        }
+        // 네이버 로그인 버튼 클릭
+        binding.btnNaverLogin.setOnClickListener {
+            // 뷰모델 에서 네이버 로그인 함수 호출
+            viewModel.handleNaverLogin(requireContext())
         }
     }
 

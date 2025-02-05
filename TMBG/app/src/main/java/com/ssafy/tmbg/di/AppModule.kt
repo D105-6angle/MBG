@@ -1,8 +1,9 @@
 package com.ssafy.tmbg.di
 
 import android.content.Context
-import com.ssafy.tmbg.data.auth.repository.KakaoLoginRepository
 import com.ssafy.tmbg.data.auth.repository.KakaoLoginRepositoryImpl
+import com.ssafy.tmbg.data.auth.repository.NaverLoginRepositoryImpl
+import com.ssafy.tmbg.data.auth.repository.SocialLoginRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,6 +23,10 @@ object AppModule {
     // 카카오 로그인 리포지토리 구현체를 싱글톤으로 제공
     @Provides
     @Singleton
-    fun provideKakaoLoginRepository(context: Context): KakaoLoginRepository =
+    fun provideKakaoLoginRepository(context: Context): SocialLoginRepository =
         KakaoLoginRepositoryImpl(context)
+    // 네이버 로그인 리포지토리 구현체를 싱글톤으로 제공 context가 필요없기 때문에 굳이 필요 없어용 나중에 지울게요.
+//    @Provides
+//    @Singleton
+//    fun provideNaverLoginRepository(): SocialLoginRepository = NaverLoginRepositoryImpl()
 }
