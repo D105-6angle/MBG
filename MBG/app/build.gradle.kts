@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -20,6 +23,20 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+        val properties = Properties().apply {
+            load(FileInputStream(rootProject.file("local.properties")))
+        }
+        // 카카오 앱 키
+        buildConfigField("String", "KAKAO_APP_KEY", "\"${properties.getProperty("kakao.native.app.key")}\"")
+        manifestPlaceholders["kakao_app_key"] = properties.getProperty("kakao.native.app.key")
+
+        // 네이버 클라이언트 아이디
+        buildConfigField("String", "NAVER_CLIENT_ID", "\"${properties.getProperty("naver.client.id")}\"")
+        manifestPlaceholders["naver_client_id"] = properties.getProperty("naver.client.id")
+
+        // 네이버 클라이언트 시크릿
+        buildConfigField("String", "NAVER_CLIENT_SECRET", "\"${properties.getProperty("naver.client.secret")}\"")
+        manifestPlaceholders["naver_client_secret"] = properties.getProperty("naver.client.secret")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -139,6 +156,11 @@ dependencies {
     // 메인페이지 gif를 위한 의존성
     implementation ("pl.droidsonroids.gif:android-gif-drawable:1.2.25")
 
+    // 카카오 로그인
+    implementation(libs.kakao.user)
+
+    // 네이버 로그인
+    implementation(libs.naver.oauth)
 }
 
 kapt {

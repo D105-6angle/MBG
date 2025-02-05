@@ -38,4 +38,6 @@
     <string name="submit_invite_code">입력</string>
     <!--방 리스트-->
     <string name="selet_room">방 입장</string>
+    <!-- 이스터에그 텍스트 -->
+    <string name="easter_egg_txt">구글 로그인은 나중에..🤪</string>
 </resources>
