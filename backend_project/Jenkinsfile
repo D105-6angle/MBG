@@ -59,7 +59,6 @@
                                 docker run -d --name nginx \
                                     --network app-network \
                                     -p 80:80 \
-                                    -v ${WORKSPACE}/backend_project/docker/nginx-conf:/etc/nginx/conf.d \
                                     nginx:latest
                             else
                                 echo "Nginx is already running."
@@ -114,8 +113,8 @@
             failure {
                 echo 'Deployment failed!'
             }
-//             always {
-//                 cleanWs()
-//             }
+            always {
+                cleanWs()
+            }
         }
     }
