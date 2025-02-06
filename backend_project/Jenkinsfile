@@ -61,6 +61,7 @@
                                   --network app-network \
                                   -p 80:80 -p 443:443 \
                                   -v /etc/letsencrypt:/etc/letsencrypt:ro \
+                                  -v /etc/nginx/conf.d:/etc/nginx/conf.d \
                                   nginx:latest
                             else
                                 echo "Nginx is already running."
