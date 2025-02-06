@@ -9,5 +9,5 @@ sealed class AuthState {
         val name : String,
         val socialId : String
     ) : AuthState()
-    data class Success(val accessToken : String) : AuthState()
+    data object NavigateToMain : AuthState()
 }

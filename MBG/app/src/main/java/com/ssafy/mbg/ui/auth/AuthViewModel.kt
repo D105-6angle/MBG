@@ -7,6 +7,8 @@ import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import com.ssafy.mbg.data.auth.repository.KakaoLoginRepositoryImpl
 import com.ssafy.mbg.data.auth.repository.NaverLoginRepositoryImpl
+import com.ssafy.mbg.data.auth.repository.PastKakaoLoginRepositoryImpl
+import com.ssafy.mbg.data.auth.repository.PastNaverLoginRepositoryImpl
 import dagger.hilt.android.HiltAndroidApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,8 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val kakaoLoginRepositoryImpl: KakaoLoginRepositoryImpl,
-    private val naverLoginRepositoryImpl: NaverLoginRepositoryImpl
+    private val pastKakaoLoginRepositoryImpl: PastKakaoLoginRepositoryImpl,
+    private val pastNaverLoginRepositoryImpl: PastNaverLoginRepositoryImpl
 ) : ViewModel() {
     private val _authState = MutableStateFlow<AuthState>(AuthState.Initial)
     val authState : StateFlow<AuthState> = _authState.asStateFlow()
@@ -26,7 +28,7 @@ class AuthViewModel @Inject constructor(
     fun handleKakaoLogin() {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
-            kakaoLoginRepositoryImpl.login()
+            pastKakaoLoginRepositoryImpl.login()
                 .onSuccess { userInfo ->
                     _authState.value = AuthState.NeedSignUp(
                         email = userInfo.email,
@@ -48,7 +50,7 @@ class AuthViewModel @Inject constructor(
                 override fun onSuccess() {
                     viewModelScope.launch {
                         try {
-                            val result = naverLoginRepositoryImpl.login()
+                            val result = pastNaverLoginRepositoryImpl.login()
                             result.onSuccess { userInfo ->
                                 _authState.value = AuthState.NeedSignUp(
                                     email = userInfo.email,

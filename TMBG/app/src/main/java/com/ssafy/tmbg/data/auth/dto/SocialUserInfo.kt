@@ -1,4 +1,4 @@
-package com.ssafy.tmbg.data.auth.dao
+package com.ssafy.tmbg.data.auth.dto
 
 data class SocialUserInfo(
     val providerId: String,

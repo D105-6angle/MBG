@@ -1,6 +1,6 @@
-package com.ssafy.tmbg.data.auth.dao
+package com.ssafy.tmbg.data.auth.dto
 
-data class TokenResponse(
+data class SocialToken(
     val accessToken: String,
     val refreshToken : String,
     val tokenExpiresAt: String

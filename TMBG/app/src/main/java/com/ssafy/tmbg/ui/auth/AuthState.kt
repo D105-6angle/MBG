@@ -10,5 +10,5 @@ sealed class AuthState {
         val name : String,
         val socialId : String
     ) : AuthState()
-    data class Success(val accessToken : String) : AuthState()  // 로그인 성공
+    data object NavigateToMain : AuthState()  // 로그인 성공
 }
