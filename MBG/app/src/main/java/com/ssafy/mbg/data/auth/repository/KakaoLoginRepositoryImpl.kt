@@ -82,12 +82,14 @@ class KakaoLoginRepositoryImpl @Inject constructor(
                                     tokenExpiresAt = tokenInfo.expiresIn.toString()
                                 )
 
+                                val socialUserInfo = SocialUserInfo(
+                                    providerId = user.id.toString(),
+                                    email = user.kakaoAccount?.email ?: "",
+                                    name = user.kakaoAccount?.profile?.nickname ?: ""
+                                )
+
                                 val socialLoginResult = SocialLoginResult(
-                                    socialUserInfo = SocialUserInfo(
-                                        providerId = user.id.toString(),
-                                        email = user.kakaoAccount?.email ?: "",
-                                        name = user.kakaoAccount?.profile?.nickname ?: ""
-                                    ),
+                                    socialUserInfo = socialUserInfo,
                                     token = socialToken
                                 )
                                 continuation.resume(Result.success(socialLoginResult))
