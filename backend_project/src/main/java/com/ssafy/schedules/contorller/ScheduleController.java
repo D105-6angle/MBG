@@ -18,7 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/rooms/{roomId}/schedules")
+@RequestMapping("api/rooms/{roomId}/schedules")
 @RequiredArgsConstructor
 @Tag(name = "일정", description = "일정관리 API")
 public class ScheduleController {
