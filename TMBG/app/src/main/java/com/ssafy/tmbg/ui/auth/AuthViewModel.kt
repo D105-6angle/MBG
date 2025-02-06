@@ -7,6 +7,7 @@ import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import com.ssafy.tmbg.data.auth.repository.KakaoLoginRepositoryImpl
 import com.ssafy.tmbg.data.auth.repository.NaverLoginRepositoryImpl
+import com.ssafy.tmbg.data.auth.dao.SocialUserInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
