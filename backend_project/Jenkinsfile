@@ -42,7 +42,6 @@
                                 echo "Starting MySQL container..."
                                 docker run -d --name ${MYSQL_CONTAINER} \
                                     --network app-network \
-                                    -p ${MYSQL_PORT}:3306 \
                                     -e MYSQL_ROOT_PASSWORD=${DB_PASSWORD} \
                                     -e MYSQL_DATABASE=${DB_NAME} \
                                     -v mysql_data:/var/lib/mysql \
@@ -86,7 +85,6 @@
                             echo "Starting new Spring Boot container..."
                             docker run -d --name ${DOCKER_CONTAINER} \
                                 --network app-network \
-                                -p ${DOCKER_PORT}:${DOCKER_PORT} \
                                 -e SPRING_PROFILES_ACTIVE=prod \
                                 -e MYSQL_CONTAINER=${MYSQL_CONTAINER} \
                                 -e DOCKER_PORT=${DOCKER_PORT} \
