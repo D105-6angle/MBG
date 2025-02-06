@@ -24,7 +24,7 @@
     <!-- 팀 관리 페이지 -->
     <string name="manage_team">팀 관리 페이지</string>
     <string name="team_num">1조</string>
-    <string name="invite_code">초대코드</string>
+    <string name="invite_code">초대 코드</string>
     <string name="end_experience">채점 종료 및 만족도 조사하기</string>
 
     <!-- 팀 상세 페이지 -->
@@ -32,5 +32,22 @@
     <string name="progress">진행률</string>
     <string name="team_picture">인증 사진</string>
     <string name="never_visit_again">다녀간 장소</string>
+
+
+    <!--  일정 페이지  -->
+    <string name="schedule_title">일정 관리</string>
+    <string name="schedule_create_title">일정 생성하기</string>
+    <string name="schedule_time">시간</string>
+    <string name="schedule_time_hint">00</string>
+    <string name="schedule_time_string">시</string>
+    <string name="schedule_minute_string">분</string>
+    <string name="schedule_content_string">일정 내용</string>
+    <string name="schedule_content_hint">일정 내용을 입력하세요.</string>
+    <string name="schedule_create">생성하기</string>
+    <string name="schedule_content">일정 내용</string>
+    <string name="schedule_from">시작</string>
+    <string name="schedule_to">종료</string>
+    <string name="schedule_edit_title">일정 수정하기</string>
+    <string name="schedule_update">수정하기</string>
 
 </resources>
