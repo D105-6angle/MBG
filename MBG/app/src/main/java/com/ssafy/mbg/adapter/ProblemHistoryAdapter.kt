@@ -3,10 +3,8 @@ package com.ssafy.mbg.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.ssafy.mbg.data.ProblemHistory
+import com.ssafy.mbg.data.mypage.dto.ProblemHistory
 import com.ssafy.mbg.databinding.ItemProblemHistoryBinding
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class ProblemHistoryAdapter(
     private val onItemClick : (ProblemHistory) -> Unit
@@ -20,10 +18,10 @@ class ProblemHistoryAdapter(
         fun bind(history: ProblemHistory) {
             binding.apply {
                 // 아이콘 설정
-                itemIcon.setImageResource(history.iconResId)
+                itemIcon.setImageResource(history.imageUrl)
 
                 // 제목 설정
-                itemTitle.text = history.title
+                itemTitle.text = history.name
 
                 // 날짜 포맷팅 및 설정
                 itemDate.text = history.lastSolvedAt
