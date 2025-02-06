@@ -3,7 +3,7 @@ package com.ssafy.mbg.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.ssafy.mbg.data.Schedule
+import com.ssafy.mbg.data.mypage.dto.Schedule
 import com.ssafy.mbg.databinding.ItemScheduleBinding
 
 class ScheduleAdapter : RecyclerView.Adapter<ScheduleAdapter.ScheduleViewHolder>() {
