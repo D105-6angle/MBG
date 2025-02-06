@@ -45,6 +45,7 @@
                                     -e MYSQL_ROOT_PASSWORD=${DB_PASSWORD} \
                                     -e MYSQL_DATABASE=${DB_NAME} \
                                     -v mysql_data:/var/lib/mysql \
+                                    -p ${MYSQL_PORT}:${MYSQL_PORT} \
                                     mysql:8.0.41
                             else
                                 echo "MySQL is already running."
