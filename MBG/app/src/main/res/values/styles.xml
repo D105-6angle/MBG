@@ -32,4 +32,18 @@
         <item name="android:windowEnterAnimation">@anim/slide_in_right</item>
         <item name="android:windowExitAnimation">@anim/slide_out_left</item>
     </style>
-</resources> 
+</resources>
+
+    <!-- 새로 추가한 둥근 모서리 팝업 스타일 -->
+    <style name="RoundedCornerDialog" parent="Theme.AppCompat.Dialog">
+        <!-- 다이얼로그가 화면에 떠 있는 형태 -->
+        <item name="android:windowIsFloating">true</item>
+        <!-- 다이얼로그 배경 (둥근 모서리) -->
+        <item name="android:windowBackground">@drawable/rounded_dialog_bg</item>
+        <!-- 바깥 영역 반투명 처리 -->
+        <item name="android:backgroundDimEnabled">true</item>
+        <!-- 다이얼로그가 너무 크게 차지하지 않도록 기본 마진/패딩 적용 -->
+        <item name="android:windowMinWidthMajor">@android:attr/dialogPreferredPadding</item>
+        <item name="android:windowMinWidthMinor">@android:attr/dialogPreferredPadding</item>
+    </style>
+</resources>

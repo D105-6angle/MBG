@@ -1,22 +1,24 @@
 package com.ssafy.mbg.ui.main
 
 import android.os.Bundle
-import androidx.activity.viewModels
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.ssafy.mbg.R
 import com.ssafy.mbg.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    // ViewBinding로 activity_main.xml inflate
     private lateinit var binding: ActivityMainBinding
 
-    // MVVM: MainViewModel 관리 (Hilt를 통한 주입)
-    private val viewModel: MainViewModel by viewModels()
+    // 뒤로가기 두 번 클릭 시 종료를 위한 변수
+    private var backPressedTime = 0L
+    private val backPressInterval = 2000L  // 2초
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,21 +33,52 @@ class MainActivity : AppCompatActivity() {
         // BottomNavigationView와 NavController 연동
         binding.bottomNavigation.setupWithNavController(navController)
 
-        // (옵션) MVVM 방식으로 탭 선택 이벤트 관리
-        // 예를 들어, ViewModel의 LiveData를 관찰하여 외부에서 탭 전환을 제어할 수 있음.
-        viewModel.selectedTab.observe(this) { selectedItemId ->
-            if (binding.bottomNavigation.selectedItemId != selectedItemId) {
-                binding.bottomNavigation.selectedItemId = selectedItemId
-            }
-        }
+        // 뒤로가기로 앱 종료를 제어할 탑 레벨(=탭) 목적지들
+        val topLevelDestinations = setOf(
+            R.id.homeFragment,
+            R.id.taskFragment,
+            R.id.mapFragment,
+            R.id.bookFragment,
+            R.id.pageFragment
+        )
 
-        // BottomNavigationView의 아이템 선택 리스너를 통해 ViewModel에 이벤트 전달
-        binding.bottomNavigation.setOnItemSelectedListener { menuItem ->
-            viewModel.selectTab(menuItem.itemId)
-            // 기본적인 NavigationUI의 기능으로 목적지 이동
-            navController.navigate(menuItem.itemId)
-            true
-        }
+        // OnBackPressedDispatcher + OnBackPressedCallback 등록
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // 현재 최상단(가장 최근) Destination 확인
+                val currentDestinationId = navController.currentDestination?.id
+
+                // 탭 화면(Top-level Destination)인지 여부
+                if (currentDestinationId != null && currentDestinationId in topLevelDestinations) {
+                    // 탭 화면이면 -> "두 번 누르면 종료" 로직
+                    if (System.currentTimeMillis() - backPressedTime < backPressInterval) {
+                        finish() // Activity 종료
+                    } else {
+                        Toast.makeText(
+                            this@MainActivity,
+                            "한번 더 누르면 종료됩니다.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        backPressedTime = System.currentTimeMillis()
+                    }
+                } else {
+                    // 탭 화면이 아니라면(popBackStack()이 가능하다면) -> 뒤로가기
+                    if (!navController.popBackStack()) {
+                        // popBackStack() 실패할 일은 거의 없지만, 혹시 모르니 동일 로직
+                        if (System.currentTimeMillis() - backPressedTime < backPressInterval) {
+                            finish()
+                        } else {
+                            Toast.makeText(
+                                this@MainActivity,
+                                "한번 더 누르면 종료됩니다.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            backPressedTime = System.currentTimeMillis()
+                        }
+                    }
+                }
+            }
+        })
     }
 
     // 툴바 업 버튼 동작 시 NavController에 위임
