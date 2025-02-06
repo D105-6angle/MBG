@@ -331,7 +331,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun showQuizFragment() {
         isQuizFragmentShown = true
-        val quizFragment = QuizFragment()
+        val quizFragment = RandomQuizFragment()
         quizFragment.show(parentFragmentManager, "QuizFragment")
     }
 

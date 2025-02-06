@@ -49,7 +49,7 @@
             android:id="@+id/bottomSheetTitleTextView"
             android:layout_width="0dp"
             android:layout_height="100dp"
-            android:text="Distance: N/A"
+            android:text="찾는 중 입니다"
             android:textSize="15sp"
             android:textStyle="bold"
             android:textColor="@color/black"
