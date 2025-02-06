@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button">
+        <item name="materialThemeOverlay">@null</item>
+        <item name="android:background">@drawable/bg_button</item>
+        <item name="backgroundTint">@null</item>
+    </style>
+</resources> 
