@@ -20,6 +20,7 @@
                 }
             }
 
+
             stage('Build') {
                 steps {
                     dir('backend_project') {
@@ -45,6 +46,7 @@
                                     -e MYSQL_ROOT_PASSWORD=${DB_PASSWORD} \
                                     -e MYSQL_DATABASE=${DB_NAME} \
                                     -v mysql_data:/var/lib/mysql \
+                                    -p ${MYSQL_PORT}:${MYSQL_PORT} \
                                     mysql:8.0.41
                             else
                                 echo "MySQL is already running."
@@ -60,6 +62,7 @@
                                   --network app-network \
                                   -p 80:80 -p 443:443 \
                                   -v /etc/letsencrypt:/etc/letsencrypt:ro \
+                                  -v /etc/nginx/conf.d:/etc/nginx/conf.d \
                                   nginx:latest
                             else
                                 echo "Nginx is already running."
@@ -68,6 +71,7 @@
                     }
                 }
             }
+
 
             stage('Deploy Application') {
                 steps {

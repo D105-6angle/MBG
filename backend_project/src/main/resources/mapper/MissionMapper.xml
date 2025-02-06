@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.model.mapper.mission.MissionMapper">
+    <select id="getMissionsByRoomId" parameterType="Long" resultMap="missionMap">
+        SELECT DISTINCT
+        mp.mission_id,
+        cc.category AS type,
+        mp.latitude,
+        mp.longitude,
+        reg.region_name,
+        CASE
+        WHEN cc.category = 'story' THEN sp.content
+        ELSE NULL
+        END AS story_content,
+        CASE
+        WHEN cc.category = 'heritage' THEN hp.content  <!-- heritage_problems의 content 컬럼 사용 -->
+        ELSE NULL
+        END AS heritage_content,
+        CASE
+        WHEN cc.category = 'heritage' THEN hp.answer
+        ELSE NULL
+        END AS heritage_answer
+        FROM
+        rooms r
+        CROSS JOIN regions reg
+        JOIN mission_positions mp ON mp.region_id = reg.region_id
+        JOIN common_codes cc ON cc.code_id = mp.code_id
+        LEFT JOIN today_cards tc ON tc.mission_id = mp.mission_id
+        LEFT JOIN cards c ON c.card_id = tc.card_id
+        LEFT JOIN story_problems sp ON sp.card_id = c.card_id AND cc.category = 'story'
+        LEFT JOIN heritage_problems hp ON hp.card_id = c.card_id AND cc.category = 'heritage'
+        WHERE
+        r.room_id = #{roomId}
+        AND r.status = TRUE
+        ORDER BY
+        mp.mission_id
+    </select>
+
+    <resultMap id="missionMap" type="com.ssafy.controller.mission.MissionResponse">
+        <id property="missionId" column="mission_id"/>
+        <result property="type" column="type"/>
+        <result property="latitude" column="latitude"/>
+        <result property="longitude" column="longitude"/>
+        <result property="regionName" column="region_name"/>
+        <result property="storyContent" column="story_content"/>
+        <result property="heritageContent" column="heritage_content"/>
+        <result property="heritageAnswer" column="heritage_answer"/>
+    </resultMap>
+
+
+
+
+
+
+
+</mapper>
