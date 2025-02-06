@@ -4,7 +4,7 @@
         environment {
             DOCKER_IMAGE = credentials('DOCKER_IMAGE')
             DOCKER_CONTAINER = credentials('DOCKER_CONTAINER')
-            //DOCKER_PORT = credentials('DOCKER_PORT')
+            DOCKER_PORT = credentials('DOCKER_PORT')
             DB_USERNAME = credentials('DB_USERNAME')
             DB_PASSWORD = credentials('DB_PASSWORD')
             DB_NAME = credentials('DB_NAME')
