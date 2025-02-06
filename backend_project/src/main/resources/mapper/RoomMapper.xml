@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.model.mapper.room.RoomMapper">
+
+    <insert id="insertRoom" parameterType="com.ssafy.model.entity.Room" useGeneratedKeys="true" keyProperty="roomId">
+        INSERT INTO rooms (teacher_id, room_name, location, num_of_groups, invite_code, created_at, status
+        ) VALUES ( #{teacherId}, #{roomName}, #{location}, #{numOfGroups}, #{inviteCode}, #{createdAt}, #{status}
+                 )
+    </insert>
+
+</mapper>
