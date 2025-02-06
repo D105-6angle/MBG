@@ -11,26 +11,33 @@ import android.view.Window
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.ssafy.tmbg.R
-import com.ssafy.tmbg.data.schedule.Schedule
+import com.ssafy.tmbg.data.schedule.dao.Schedule
 import com.ssafy.tmbg.databinding.DialogAddScheduleBinding
 import java.text.SimpleDateFormat
 import java.util.*
 
 /**
- * 일정 추가를 위한 다이얼로그를 구현한 DialogFragment
- * 시간과 내용을 입력받아 일정을 생성합니다.
+ * 일정 추가/수정을 위한 다이얼로그 Fragment
+ * 시간과 내용을 입력받아 일정을 생성하거나 수정합니다.
  */
 class AddScheduleDialogFragment : DialogFragment() {
 
     private var _binding: DialogAddScheduleBinding? = null
     private val binding get() = _binding!!
 
-    // 일정 생성 완료 시 호출될 콜백
-    // (시작시간, 종료시간, 내용) 형태로 데이터 전달
+    /**
+     * 일정 생성/수정 완료 시 호출될 콜백
+     * @param onScheduleCreated (시작시간, 종료시간, 내용) -> Unit
+     */
     private var onScheduleCreated: ((String, String, String) -> Unit)? = null
 
     private var editingSchedule: Schedule? = null
 
+    /**
+     * 다이얼로그의 크기와 스타일을 설정합니다.
+     * - 투명 배경
+     * - 화면 너비의 80%
+     */
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return super.onCreateDialog(savedInstanceState).apply {
             window?.apply {
@@ -49,6 +56,7 @@ class AddScheduleDialogFragment : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        // ViewBinding 초기화 및 루트 뷰 반환
         _binding = DialogAddScheduleBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -58,14 +66,17 @@ class AddScheduleDialogFragment : DialogFragment() {
         setupClickListeners()
         setupCurrentTime()
         
-        // 수정 모드일 경우 기존 데이터 표시
+        // 수정 모드일 경우 기존 데이터를 UI에 표시
         editingSchedule?.let { schedule ->
+            // 시간 포맷터 설정 (시간, 분 각각)
             val timeFormat = SimpleDateFormat("HH", Locale.getDefault())
             val minuteFormat = SimpleDateFormat("mm", Locale.getDefault())
             
+            // 다이얼로그 타이틀과 버튼 텍스트를 수정 모드로 변경
             binding.tvTitle.text = getString(R.string.schedule_edit_title)
             binding.btnCreate.text = getString(R.string.schedule_update)
             
+            // 기존 일정 데이터를 각 입력 필드에 설정
             binding.etStartHour.setText(timeFormat.format(schedule.startTime))
             binding.etStartMinute.setText(minuteFormat.format(schedule.startTime))
             binding.etEndHour.setText(timeFormat.format(schedule.endTime))
@@ -74,17 +85,24 @@ class AddScheduleDialogFragment : DialogFragment() {
         }
     }
 
+    /**
+     * 클릭 리스너들을 설정합니다.
+     * - 시작/종료 시간 선택
+     * - 생성/수정 버튼
+     * - 닫기 버튼
+     */
     private fun setupClickListeners() {
-        // 시작 시간 선택
+        // 시작 시간 선택 영역 클릭 시 TimePicker 다이얼로그 표시
         binding.layoutStartTime.setOnClickListener {
             showTimePicker(true)
         }
 
-        // 종료 시간 선택
+        // 종료 시간 선택 영역 클릭 시 TimePicker 다이얼로그 표시
         binding.layoutEndTime.setOnClickListener {
             showTimePicker(false)
         }
 
+        // 생성/수정 버튼 클릭 시 입력값 검증 후 콜백 호출
         binding.btnCreate.setOnClickListener {
             val startHour = binding.etStartHour.text.toString()
             val startMinute = binding.etStartMinute.text.toString()
@@ -92,17 +110,23 @@ class AddScheduleDialogFragment : DialogFragment() {
             val endMinute = binding.etEndMinute.text.toString()
             val content = binding.etContent.text.toString()
 
+            // 입력값이 유효한 경우에만 처리
             if (validateInputs(startHour, startMinute, endHour, endMinute, content)) {
                 onScheduleCreated?.invoke("$startHour:$startMinute", "$endHour:$endMinute", content)
                 dismiss()
             }
         }
 
+        // 닫기 버튼 클릭 시 다이얼로그 종료
         binding.btnClose.setOnClickListener {
             dismiss()
         }
     }
 
+    /**
+     * 입력값들의 유효성을 검사합니다.
+     * @return 모든 입력값이 유효하면 true
+     */
     private fun validateInputs(
         startHour: String,
         startMinute: String,
@@ -127,6 +151,10 @@ class AddScheduleDialogFragment : DialogFragment() {
         return true
     }
 
+    /**
+     * 현재 시간을 기본값으로 설정합니다.
+     * 시작 시간은 현재 시간, 종료 시간은 1시간 후로 설정됩니다.
+     */
     private fun setupCurrentTime() {
         val calendar = Calendar.getInstance()
         
@@ -149,7 +177,12 @@ class AddScheduleDialogFragment : DialogFragment() {
         binding.etEndMinute.setText(String.format("%02d", minute))
     }
 
+    /**
+     * 시간 선택 다이얼로그를 표시합니다.
+     * @param isStartTime true면 시작 시간, false면 종료 시간
+     */
     private fun showTimePicker(isStartTime: Boolean) {
+        // 현재 설정된 시간값을 가져옴 (없으면 0으로 설정)
         val currentHour = if (isStartTime) {
             binding.etStartHour.text.toString().toIntOrNull() ?: 0
         } else {
@@ -162,11 +195,14 @@ class AddScheduleDialogFragment : DialogFragment() {
             binding.etEndMinute.text.toString().toIntOrNull() ?: 0
         }
 
+        // TimePicker 다이얼로그 생성 및 표시
         CustomTimePickerDialog().apply {
+            // 현재 설정된 시간을 초기값으로 설정
             setInitialTime(currentHour, currentMinute)
+            // 시간 선택 완료 시 처리
             setOnTimeSelectedListener { hour, minute ->
                 if (isStartTime) {
-                    // 시작 시간 설정
+                    // 시작 시간인 경우
                     binding.etStartHour.setText(String.format("%02d", hour))
                     binding.etStartMinute.setText(String.format("%02d", minute))
                     
@@ -175,7 +211,7 @@ class AddScheduleDialogFragment : DialogFragment() {
                     binding.etEndHour.setText(String.format("%02d", endHour))
                     binding.etEndMinute.setText(String.format("%02d", minute))
                 } else {
-                    // 종료 시간만 설정
+                    // 종료 시간인 경우
                     binding.etEndHour.setText(String.format("%02d", hour))
                     binding.etEndMinute.setText(String.format("%02d", minute))
                 }
@@ -183,14 +219,27 @@ class AddScheduleDialogFragment : DialogFragment() {
         }.show(parentFragmentManager, CustomTimePickerDialog.TAG)
     }
 
+    /**
+     * 일정 생성/수정 완료 리스너를 설정합니다.
+     * @param listener 시작시간, 종료시간, 내용을 파라미터로 받는 콜백 함수
+     */
     fun setOnScheduleCreatedListener(listener: (String, String, String) -> Unit) {
         onScheduleCreated = listener
     }
 
+    /**
+     * 수정할 일정 데이터를 설정합니다.
+     * 이 메서드가 호출되면 다이얼로그가 수정 모드로 동작합니다.
+     * @param schedule 수정할 일정 정보
+     */
     fun setScheduleData(schedule: Schedule) {
         editingSchedule = schedule
     }
 
+    /**
+     * Fragment가 제거될 때 메모리 누수 방지를 위해
+     * ViewBinding 객체를 해제합니다.
+     */
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

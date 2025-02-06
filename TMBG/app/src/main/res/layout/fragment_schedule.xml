@@ -5,6 +5,17 @@
     android:layout_height="match_parent"
     android:background="#FFF3E0">
 
+    <!-- 일정 관리 화면의 레이아웃을 정의하는 XML -->
+    <!-- 
+        주요 구성 요소:
+        - 상단 바 (id: topBar)
+            - 뒤로가기 버튼 (id: btnBack)
+            - 화면 제목 (id: tvTitle)
+            - 일정 추가 버튼 (id: btnAdd)
+        - 일정 목록 RecyclerView (id: scheduleRecyclerView)
+        - 로딩 표시 ProgressBar (id: progressBar)
+    -->
+
     <LinearLayout
         android:id="@+id/headerLayout"
         android:layout_width="match_parent"

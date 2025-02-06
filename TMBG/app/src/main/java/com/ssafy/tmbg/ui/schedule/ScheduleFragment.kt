@@ -1,24 +1,19 @@
 package com.ssafy.tmbg.ui.schedule
 
-import android.app.Dialog
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.ssafy.tmbg.R
 import com.ssafy.tmbg.adapter.ScheduleAdapter
-import com.ssafy.tmbg.databinding.DialogAddScheduleBinding
 import com.ssafy.tmbg.databinding.FragmentScheduleBinding
-import com.ssafy.tmbg.data.schedule.Schedule
+import com.ssafy.tmbg.data.schedule.dao.Schedule
+import com.ssafy.tmbg.data.schedule.dao.ScheduleRequest
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
@@ -38,6 +33,16 @@ class ScheduleFragment : Fragment() {
     private val viewModel: ScheduleViewModel by viewModels()
     private var roomId: Long = 1L  // 기본값 1 임시로 해놓은거고 원래는 -1이 맞음
 
+    /**
+     * Fragment 인스턴스를 생성하고 roomId를 전달합니다.
+     * @param roomId 방 ID
+     * @return 생성된 ScheduleFragment 인스턴스
+     * 
+     * 동작 과정:
+     * 1. 새로운 Fragment 인스턴스 생성
+     * 2. arguments Bundle에 roomId 저장
+     * 3. 설정된 Fragment 반환
+     */
     companion object {
         private const val ARG_ROOM_ID = "room_id"
 
@@ -52,7 +57,10 @@ class ScheduleFragment : Fragment() {
 
     /**
      * Fragment의 View를 생성하고 초기화합니다.
-     * ViewBinding을 통해 레이아웃을 inflate합니다.
+     * @param inflater 레이아웃을 inflate하는데 사용되는 LayoutInflater
+     * @param container Fragment가 들어갈 부모 ViewGroup
+     * @param savedInstanceState 이전 상태 정보
+     * @return 생성된 View
      */
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -65,7 +73,12 @@ class ScheduleFragment : Fragment() {
 
     /**
      * View가 생성된 후 호출되며, 초기 설정을 수행합니다.
-     * RecyclerView 설정과 클릭 리스너를 초기화합니다.
+     * 
+     * 동작 과정:
+     * 1. RecyclerView 설정 (어댑터, 레이아웃 매니저)
+     * 2. 클릭 리스너 설정
+     * 3. LiveData 옵저버 설정
+     * 4. roomId 유효성 검사 후 일정 목록 로드
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -83,17 +96,25 @@ class ScheduleFragment : Fragment() {
 
     /**
      * RecyclerView를 초기화하고 설정합니다.
-     * 어댑터와 레이아웃 매니저를 설정합니다.
+     * 
+     * 동작 과정:
+     * 1. 어댑터 인스턴스 생성
+     * 2. 수정/삭제 클릭 리스너 설정
+     * 3. RecyclerView에 어댑터 연결
+     * 4. LinearLayoutManager 설정
      */
     private fun setupRecyclerView() {
         scheduleAdapter = ScheduleAdapter().apply {
+            // 수정 버튼 클릭 시 수정 다이얼로그 표시
             setOnEditClickListener { schedule ->
                 showEditScheduleDialog(schedule)
             }
+            // 삭제 버튼 클릭 시 일정 삭제
             setOnDeleteClickListener { schedule ->
                 deleteSchedule(schedule)
             }
         }
+        // RecyclerView 설정
         binding.scheduleRecyclerView.apply {
             adapter = scheduleAdapter
             layoutManager = LinearLayoutManager(context)
@@ -102,7 +123,12 @@ class ScheduleFragment : Fragment() {
 
     /**
      * 버튼들의 클릭 리스너를 설정합니다.
-     * 뒤로가기와 일정 추가 버튼의 동작을 정의합니다.
+     * 
+     * 동작 과정:
+     * 1. 뒤로가기 버튼:
+     *    - 클릭 시 현재 Fragment를 스택에서 제거
+     * 2. 추가 버튼:
+     *    - 클릭 시 일정 추가 다이얼로그 표시
      */
     private fun setupClickListeners() {
         binding.btnBack.setOnClickListener {
@@ -115,16 +141,30 @@ class ScheduleFragment : Fragment() {
         }
     }
 
+    /**
+     * ViewModel의 LiveData들을 관찰하여 UI를 업데이트합니다.
+     * 
+     * 동작 과정:
+     * 1. schedules LiveData 관찰:
+     *    - 변경 시 RecyclerView 목록 업데이트
+     * 2. isLoading LiveData 관찰:
+     *    - 변경 시 로딩 표시 상태 업데이트
+     * 3. error LiveData 관찰:
+     *    - 변경 시 에러 메시지 토스트 표시
+     */
     private fun setupObservers() {
+        // 일정 목록 변경 감지
         viewModel.schedules.observe(viewLifecycleOwner) { schedules ->
             scheduleAdapter.submitList(schedules)
         }
 
+        // 로딩 상태 변경 감지
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             // TODO: 로딩 표시 구현
             binding.progressBar.isVisible = isLoading
         }
 
+        // 에러 메시지 변경 감지
         viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
             Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
         }
@@ -132,6 +172,10 @@ class ScheduleFragment : Fragment() {
 
     /**
      * Fragment의 초기화 메서드
+     * 
+     * 동작 과정:
+     * 1. arguments에서 roomId를 추출
+     * 2. 추출한 roomId를 멤버 변수에 저장
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -142,24 +186,42 @@ class ScheduleFragment : Fragment() {
 
     /**
      * 일정 추가를 위한 다이얼로그를 표시합니다.
-     * 시간과 내용을 입력받아 새로운 일정을 생성합니다.
+     * 
+     * 동작 과정:
+     * 1. AddScheduleDialogFragment 인스턴스 생성
+     * 2. 일정 생성 리스너 설정:
+     *    - 시간 문자열을 Date 객체로 변환
+     *    - ScheduleRequest 객체 생성
+     *    - ViewModel을 통해 일정 생성 요청
+     * 3. 다이얼로그 표시
      */
     private fun showAddScheduleDialog() {
         val dialogFragment = AddScheduleDialogFragment().apply {
             setOnScheduleCreatedListener { startTime, endTime, content ->
-                val schedule = Schedule.createSchedule(
-                    schedulesId = System.currentTimeMillis(),
-                    roomId = roomId,  // 전달받은 roomId 사용
+                val scheduleRequest = ScheduleRequest(
+                    roomId = roomId,
                     startTime = parseTimeString(startTime),
                     endTime = parseTimeString(endTime),
                     content = content
                 )
-                scheduleAdapter.submitList(scheduleAdapter.currentList + schedule)
+                viewModel.createSchedule(roomId, scheduleRequest)
             }
         }
         dialogFragment.show(parentFragmentManager, AddScheduleDialogFragment.TAG)
     }
 
+    /**
+     * 시간 문자열을 Date 객체로 변환합니다.
+     * 
+     * 동작 과정:
+     * 1. "HH:mm" 형식의 문자열을 시간과 분으로 분리
+     * 2. Calendar 인스턴스 생성
+     * 3. Calendar에 시간과 분 설정
+     * 4. Date 객체로 변환하여 반환
+     * 
+     * @param timeString "HH:mm" 형식의 시간 문자열
+     * @return 변환된 Date 객체
+     */
     private fun parseTimeString(timeString: String): Date {
         val (hour, minute) = timeString.split(":").map { it.toInt() }
         return Calendar.getInstance().apply {
@@ -168,37 +230,48 @@ class ScheduleFragment : Fragment() {
         }.time
     }
 
+    /**
+     * 일정 수정을 위한 다이얼로그를 표시합니다.
+     * 
+     * 동작 과정:
+     * 1. AddScheduleDialogFragment 인스턴스 생성
+     * 2. 기존 일정 데이터 설정
+     * 3. 일정 수정 리스너 설정:
+     *    - 시간 문자열을 Date 객체로 변환
+     *    - 수정된 Schedule 객체 생성
+     *    - ViewModel을 통해 일정 수정 요청
+     * 4. 다이얼로그 표시
+     * 
+     * @param schedule 수정할 일정 정보
+     */
     private fun showEditScheduleDialog(schedule: Schedule) {
         val dialogFragment = AddScheduleDialogFragment().apply {
-            // 기존 일정 데이터 전달
             setScheduleData(schedule)
             setOnScheduleCreatedListener { startTime, endTime, content ->
-                // TODO: API 호출하여 서버에 일정 수정
-                val updatedSchedule = Schedule.createSchedule(
+                val updatedSchedule = Schedule(
                     schedulesId = schedule.schedulesId,
                     roomId = schedule.roomId,
                     startTime = parseTimeString(startTime),
                     endTime = parseTimeString(endTime),
                     content = content
                 )
-                
-                val currentList = scheduleAdapter.currentList.toMutableList()
-                val position = currentList.indexOfFirst { it.schedulesId == schedule.schedulesId }
-                if (position != -1) {
-                    currentList[position] = updatedSchedule
-                    scheduleAdapter.submitList(currentList)
-                }
+                viewModel.updateSchedule(roomId, schedule.schedulesId, updatedSchedule)
             }
         }
-        
         dialogFragment.show(parentFragmentManager, AddScheduleDialogFragment.TAG)
     }
 
+    /**
+     * 일정을 삭제합니다.
+     * 
+     * 동작 과정:
+     * 1. ViewModel을 통해 일정 삭제 요청
+     * 2. 성공 시 목록에서 자동으로 제거됨 (ViewModel에서 처리)
+     * 
+     * @param schedule 삭제할 일정 정보
+     */
     private fun deleteSchedule(schedule: Schedule) {
-        // TODO: API 호출하여 서버에서 일정 삭제
-        val currentList = scheduleAdapter.currentList.toMutableList()
-        currentList.remove(schedule)
-        scheduleAdapter.submitList(currentList)
+        viewModel.deleteSchedule(roomId, schedule.schedulesId)
     }
 
     /**
