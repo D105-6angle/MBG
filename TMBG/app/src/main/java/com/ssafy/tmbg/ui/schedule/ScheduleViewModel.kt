@@ -1,5 +1,6 @@
 package com.ssafy.tmbg.ui.schedule
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -45,18 +46,27 @@ class ScheduleViewModel @Inject constructor(
      */
     fun getSchedules(roomId: Long) {
         viewModelScope.launch {
-            _isLoading.value = true  // 로딩 시작
+            _isLoading.value = true
             try {
                 val response = repository.getSchedules(roomId)
+                Log.d("ScheduleViewModel", "Response: ${response.raw()}")  // 전체 응답 로그
+                Log.d("ScheduleViewModel", "Body: ${response.body()}")     // 응답 바디 로그
+                
                 if (response.isSuccessful) {
-                    _schedules.value = response.body()  // 성공 시 목록 업데이트
+                    response.body()?.schedules?.let { schedules ->
+                        Log.d("ScheduleViewModel", "Schedules: $schedules")  // 파싱된 스케줄 로그
+                        _schedules.value = schedules
+                    } ?: run {
+                        _schedules.value = emptyList()
+                    }
                 } else {
                     _error.value = "스케줄을 불러오는데 실패했습니다."
                 }
             } catch (e: Exception) {
+                Log.e("ScheduleViewModel", "Error: ", e)  // 예외 로그
                 _error.value = e.message ?: "알 수 없는 오류가 발생했습니다."
             } finally {
-                _isLoading.value = false  // 로딩 종료
+                _isLoading.value = false
             }
         }
     }
@@ -122,7 +132,7 @@ class ScheduleViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     val updatedSchedule = response.body()
                     val currentList = _schedules.value.orEmpty().toMutableList()
-                    val position = currentList.indexOfFirst { it.schedulesId == scheduleId }
+                    val position = currentList.indexOfFirst { it.scheduleId == scheduleId }
                     if (position != -1 && updatedSchedule != null) {
                         currentList[position] = updatedSchedule
                         _schedules.value = currentList
@@ -159,7 +169,7 @@ class ScheduleViewModel @Inject constructor(
                 val response = repository.deleteSchedule(roomId, scheduleId)
                 if (response.isSuccessful) {
                     val currentList = _schedules.value.orEmpty().toMutableList()
-                    currentList.removeAll { it.schedulesId == scheduleId }
+                    currentList.removeAll { it.scheduleId == scheduleId }
                     _schedules.value = currentList
                 } else {
                     _error.value = "일정 삭제에 실패했습니다."
@@ -171,4 +181,5 @@ class ScheduleViewModel @Inject constructor(
             }
         }
     }
+
 } 

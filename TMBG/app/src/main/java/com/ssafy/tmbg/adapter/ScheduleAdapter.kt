@@ -112,7 +112,7 @@ private class ScheduleDiffCallback : DiffUtil.ItemCallback<Schedule>() {
      * schedulesId를 기준으로 판단합니다.
      */
     override fun areItemsTheSame(oldItem: Schedule, newItem: Schedule): Boolean {
-        return oldItem.schedulesId == newItem.schedulesId
+        return oldItem.scheduleId == newItem.scheduleId
     }
 
     /**
