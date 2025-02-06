@@ -30,6 +30,16 @@ class HomeFragment : Fragment() {
             .asGif()
             .load(R.drawable.character_gif_origin)
             .into(binding.characterGif)
+        
+        // 전달받은 팀 번호가 있다면 처리
+        arguments?.getInt("selected_team")?.let { teamNumber ->
+            binding.teamIcon.visibility = View.GONE
+            binding.teamNumberText.apply {
+                text = "${teamNumber}조"
+                visibility = View.VISIBLE
+            }
+        }
+
         setupClickListeners()
     }
 

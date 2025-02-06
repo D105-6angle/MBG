@@ -4,8 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import com.ssafy.mbg.R
 import com.ssafy.mbg.adapter.RoomAdapter
 import com.ssafy.mbg.databinding.FragmentRoomListBinding
 
@@ -32,7 +35,8 @@ class RoomListFragment : Fragment() {
     private fun setupRecyclerView() {
         val rooms = listOf(1, 2, 3, 4) // 방 번호 리스트
         val adapter = RoomAdapter(rooms) { roomNumber ->
-            // 방 클릭 시 처리할 로직
+        //방 클릭시 처리 로직
+            onRoomClick(roomNumber)
         }
 
         binding.rvRooms.apply {
@@ -46,6 +50,14 @@ class RoomListFragment : Fragment() {
             // HomeFragment로 돌아가기
             parentFragmentManager.popBackStack()
         }
+    }
+
+    private fun onRoomClick(roomNumber: Int) {
+        // Bundle을 통해 선택된 팀 번호 전달
+        findNavController().navigate(
+            R.id.action_roomListFragment_to_homeFragment,
+            bundleOf("selected_team" to roomNumber)
+        )
     }
 
     override fun onDestroyView() {

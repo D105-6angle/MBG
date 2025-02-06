@@ -12,6 +12,7 @@ import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import com.ssafy.mbg.R
 import com.ssafy.mbg.databinding.FragmentInviteCodeBinding
+import androidx.navigation.fragment.findNavController
 
 class InviteCodeFragment : DialogFragment() {
 
@@ -45,12 +46,8 @@ class InviteCodeFragment : DialogFragment() {
         binding.submitButton.setOnClickListener {
             val code = binding.inviteCodeInput.text.toString()
             if (code.isNotEmpty()) {
-                // activity의 container에 직접 replace
-                activity?.supportFragmentManager?.beginTransaction()
-                    ?.replace(R.id.container, RoomListFragment())
-                    ?.addToBackStack(null)
-                    ?.commit()
                 dismiss()
+                findNavController().navigate(R.id.action_homeFragment_to_roomListFragment)
             }
         }
     }
