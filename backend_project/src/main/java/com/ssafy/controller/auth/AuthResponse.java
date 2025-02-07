@@ -1,13 +1,10 @@
 package com.ssafy.controller.auth;
 
-import com.ssafy.model.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 
-@Getter
-@Builder
-public class LoginResponse {
-    // 로그인 성공했을 때의 응답
+public class AuthResponse {
+    // 로그인, 회원가입 성공했을 때의 응답
     @Getter
     @Builder
     public static class SuccessDto {
@@ -18,7 +15,7 @@ public class LoginResponse {
         private String nickname;
     }
 
-    // 로그인 실패 또는 없는 사용자일 때 응답
+    // 로그인, 회원가입에 실패했을 때의 응답
     @Getter
     @Builder
     public static class FailDto {

@@ -2,23 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.model.mapper.auth.AuthMapper">
 
-    <!-- providerId로 사용자 조회 -->
+    <!-- 사용자 조회 -->
     <select id="findByProviderId" parameterType="string" resultMap="UserResultMap">
         SELECT u.user_id, u.code_id, u.name, u.nickname, u.email, u.is_deleted, u.created_at
         FROM users u LEFT JOIN social_accounts s ON u.user_id = s.user_id
         WHERE s.provider_id = #{providerId}
     </select>
 
-    <!-- 신규 회원가입 (users) -->
-    <insert id="insertUser" parameterType="com.ssafy.model.entity.User" useGeneratedKeys="true" keyProperty="userId">
-        INSERT INTO users (code_id, name, nickname, email, is_deleted, created_at)
-        VALUES (#{codeId}, #{name}, #{nickname}, #{email}, #{isDeleted}, #{createdAt})
+    <!-- 내부 중첩 클래스 참조에는 '.' 대신 '$' 사용 -->
+    <insert id="insertUser" parameterType="com.ssafy.controller.auth.AuthRequest$RegistrationUserData" useGeneratedKeys="true" keyProperty="userId" keyColumn="user_id">
+        INSERT INTO users (code_id, name, nickname, email)
+        VALUES (#{codeId}, #{name}, #{nickname}, #{email})
     </insert>
 
-    <!-- 신규 회원가입 (social_accounts) -->
-    <insert id="insertSocialAccount">
-        INSERT INTO social_accounts (user_id, provider_id)
-        VALUES (#{userId}, #{providerId})
+    <insert id="insertSocial" parameterType="com.ssafy.model.entity.Social">
+        INSERT INTO social_accounts(user_id, code_id, provider_id, access_token, refresh_token)
+        VALUES(#{userId}, #{codeId}, #{providerId}, #{accessToken}, #{refreshToken})
     </insert>
 
     <resultMap id="UserResultMap" type="com.ssafy.model.entity.User">
