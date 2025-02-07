@@ -10,15 +10,16 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ssafy.tmbg.adapter.ScheduleAdapter
 import com.ssafy.tmbg.databinding.FragmentScheduleBinding
 import com.ssafy.tmbg.data.schedule.dao.Schedule
 import com.ssafy.tmbg.data.schedule.dao.ScheduleRequest
+import com.ssafy.tmbg.ui.main.MainViewModel
+import com.ssafy.tmbg.ui.team.TeamViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 /**
@@ -35,7 +36,9 @@ class ScheduleFragment : Fragment() {
     // 일정 목록을 표시할 RecyclerView의 어댑터
     private lateinit var scheduleAdapter: ScheduleAdapter
     private val viewModel: ScheduleViewModel by viewModels()
-    private var roomId: Long = 1L  // 기본값 1 임시로 해놓은거고 원래는 -1이 맞음
+    private val sharedViewModel: MainViewModel by activityViewModels()
+    private var roomId: Int = -1
+    private val teamViewModel: TeamViewModel by viewModels()
 
     /**
      * Fragment 인스턴스를 생성하고 roomId를 전달합니다.
@@ -50,10 +53,10 @@ class ScheduleFragment : Fragment() {
     companion object {
         private const val ARG_ROOM_ID = "room_id"
 
-        fun newInstance(roomId: Long): ScheduleFragment {
+        fun newInstance(roomId: Int): ScheduleFragment {
             return ScheduleFragment().apply {
                 arguments = Bundle().apply {
-                    putLong(ARG_ROOM_ID, roomId)
+                    putInt(ARG_ROOM_ID, roomId)
                 }
             }
         }
@@ -90,11 +93,13 @@ class ScheduleFragment : Fragment() {
         setupClickListeners()
         setupObservers()
         
-        // roomId 유효성 검사 후 요청
-        if (roomId != -1L) {
-            viewModel.getSchedules(roomId)
-        } else {
-            Toast.makeText(context, "방을 먼저 생성해주세요", Toast.LENGTH_SHORT).show()
+        teamViewModel.roomId.observe(viewLifecycleOwner) { id ->
+            if (id != -1) {
+                roomId = id
+                viewModel.getSchedules(roomId)
+            } else {
+                Toast.makeText(context, "방을 먼저 생성해주세요", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -159,7 +164,7 @@ class ScheduleFragment : Fragment() {
     private fun setupObservers() {
         // 일정 목록 변경 감지
         viewModel.schedules.observe(viewLifecycleOwner) { schedules ->
-            scheduleAdapter.submitList(schedules)
+            scheduleAdapter.setScheduleList(schedules)
         }
 
         // 로딩 상태 변경 감지
@@ -186,7 +191,7 @@ class ScheduleFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            roomId = it.getLong(ARG_ROOM_ID)
+            roomId = it.getInt(ARG_ROOM_ID)
         }
     }
 

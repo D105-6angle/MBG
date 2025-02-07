@@ -1,6 +1,7 @@
 package com.ssafy.tmbg.di
 
 import com.ssafy.tmbg.api.ScheduleApi
+import com.ssafy.tmbg.api.TeamApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -44,6 +45,12 @@ object NetworkModule {
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())  // Moshi -> Gson
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideTeamApi(retrofit: Retrofit): TeamApi {
+        return retrofit.create(TeamApi::class.java)
     }
 
 }

@@ -1,0 +1,95 @@
+package com.ssafy.tmbg.ui.team
+
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.ssafy.tmbg.data.team.dao.TeamRequest
+import com.ssafy.tmbg.data.team.repository.TeamRepository
+import android.content.Context
+import android.content.Intent
+import android.widget.Toast
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.LiveData
+import com.ssafy.tmbg.data.team.dao.Team
+import kotlinx.coroutines.launch
+import android.util.Log
+
+
+@HiltViewModel
+class TeamViewModel @Inject constructor(
+    private val repository: TeamRepository
+) : ViewModel() {
+    
+    private val _team = MutableLiveData<Team>()
+    val team: LiveData<Team> = _team
+
+    private val _hasTeam = MutableLiveData<Boolean>()
+    val hasTeam: LiveData<Boolean> = _hasTeam
+
+    private val _roomId = MutableLiveData<Int>()
+    val roomId: LiveData<Int> = _roomId
+
+    init {
+        _hasTeam.value = false
+        _roomId.value = -1
+    }
+
+    fun createTeam(teamRequest: TeamRequest) {
+        viewModelScope.launch {
+            Log.d("TeamViewModel", "팀 생성 시작 - 요청 데이터: $teamRequest")
+            try {
+                val response = repository.createTeam(teamRequest)
+                Log.d("TeamViewModel", "서버 응답 코드: ${response.code()}")
+                Log.d("TeamViewModel", "서버 응답 헤더: ${response.headers()}")
+                Log.d("TeamViewModel", "서버 응답 바디: ${response.body()}")
+                
+                if (response.isSuccessful) {
+                    response.body()?.let { teamCreateResponse ->
+                        Log.d("TeamViewModel", "팀 생성 성공 - 팀 ID: ${teamCreateResponse.roomId}")
+                        _roomId.value = teamCreateResponse.roomId.toInt()
+                        getTeam(teamCreateResponse.roomId.toInt())
+                    } ?: run {
+                        Log.e("TeamViewModel", "팀 생성 성공했지만 응답 바디가 null입니다")
+                    }
+                } else {
+                    Log.e("TeamViewModel", "팀 생성 실패 - HTTP 에러: ${response.errorBody()?.string()}")
+                }
+            } catch (e: Exception) {
+                Log.e("TeamViewModel", "팀 생성 실패 - 네트워크 에러: ${e.message}", e)
+            }
+        }
+    }
+
+    fun shareInviteCode(context: Context) {
+        team.value?.let { team ->
+            val shareIntent = Intent().apply {
+                action = Intent.ACTION_SEND
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, "초대 코드: ${team.inviteCode}")
+            }
+            context.startActivity(Intent.createChooser(shareIntent, "초대 코드 공유"))
+        }
+    }
+
+    fun getTeam(roomId: Int) {
+        viewModelScope.launch {
+            Log.d("TeamViewModel", "팀 정보 조회 시작 - roomId: $roomId")
+            try {
+                val response = repository.getTeam(roomId)
+                Log.d("TeamViewModel", "팀 정보 조회 응답: $response")
+                
+                if (response.isSuccessful) {
+                    response.body()?.let { team ->
+                        Log.d("TeamViewModel", "팀 정보 조회 성공: $team")
+                        _team.value = team
+                    } ?: Log.e("TeamViewModel", "팀 정보 조회 성공했지만 응답 바디가 null입니다")
+                } else {
+                    Log.e("TeamViewModel", "팀 정보 조회 실패 - HTTP 에러: ${response.errorBody()?.string()}")
+                }
+            } catch (e: Exception) {
+                Log.e("TeamViewModel", "팀 정보 조회 실패 - 네트워크 에러: ${e.message}", e)
+            }
+        }
+    }
+}

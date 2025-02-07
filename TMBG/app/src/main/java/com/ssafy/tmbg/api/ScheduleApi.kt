@@ -24,7 +24,7 @@ interface ScheduleApi {
      * Endpoint: /api/rooms/{roomId}/schedules
      */
     @GET("api/rooms/{roomId}/schedules")
-    suspend fun getSchedules(@Path("roomId") roomId: Long): Response<ScheduleResponse>
+    suspend fun getSchedules(@Path("roomId") roomId: Int): Response<List<Schedule>>
 
     /**
      * 새로운 일정을 생성합니다.
@@ -36,7 +36,7 @@ interface ScheduleApi {
      */
     @POST("api/rooms/{roomId}/schedules")
     suspend fun createSchedule(
-        @Path("roomId") roomId: Long,
+        @Path("roomId") roomId: Int,
         @Body scheduleRequest: ScheduleRequest
     ): Response<Schedule>
 
@@ -51,8 +51,8 @@ interface ScheduleApi {
      */
     @PUT("api/rooms/{roomId}/schedules/{scheduleId}")
     suspend fun updateSchedule(
-        @Path("roomId") roomId: Long,
-        @Path("scheduleId") scheduleId: Long,
+        @Path("roomId") roomId: Int,
+        @Path("scheduleId") scheduleId: Int,
         @Body schedule: Schedule
     ): Response<Schedule>
 
@@ -66,7 +66,7 @@ interface ScheduleApi {
      */
     @DELETE("api/rooms/{roomId}/schedules/{scheduleId}")
     suspend fun deleteSchedule(
-        @Path("roomId") roomId: Long,
-        @Path("scheduleId") scheduleId: Long
+        @Path("roomId") roomId: Int,
+        @Path("scheduleId") scheduleId: Int
     ): Response<Unit>
 } 

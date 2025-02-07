@@ -99,8 +99,11 @@
         android:label="팀 상세"
         tools:layout="@layout/fragment_team_detail">
         <argument
-            android:name="teamId"
-            app:argType="string"/>
+            android:name="groupNumber"
+            app:argType="integer"/>
+        <argument
+            android:name="memberCount"
+            app:argType="integer"/>
     </fragment>
 
     <fragment

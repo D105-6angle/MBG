@@ -44,7 +44,7 @@ class ScheduleViewModel @Inject constructor(
      * 4. 실패 시: error LiveData에 에러 메시지 설정
      * 5. 완료 시: 로딩 상태를 false로 설정
      */
-    fun getSchedules(roomId: Long) {
+    fun getSchedules(roomId: Int) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
@@ -57,14 +57,14 @@ class ScheduleViewModel @Inject constructor(
                 Log.d("ScheduleViewModel", "Response raw: ${response.raw()}")
                 
                 if (response.isSuccessful) {
-                    val body = response.body()
-                    Log.d("ScheduleViewModel", "Response body: $body")
+                    val schedules = response.body()
+                    Log.d("ScheduleViewModel", "Response body: $schedules")
                     
-                    body?.schedules?.let { schedules ->
+                    if (schedules != null) {
                         Log.d("ScheduleViewModel", "Parsed schedules: $schedules")
                         _schedules.value = schedules
-                    } ?: run {
-                        Log.e("ScheduleViewModel", "Response body or schedules is null")
+                    } else {
+                        Log.e("ScheduleViewModel", "Response body is null")
                         _schedules.value = emptyList()
                     }
                 } else {
@@ -96,7 +96,7 @@ class ScheduleViewModel @Inject constructor(
      * 4. 실패 시: error LiveData에 에러 메시지 설정
      * 5. 완료 시: 로딩 상태를 false로 설정
      */
-    fun createSchedule(roomId: Long, scheduleRequest: ScheduleRequest) {
+    fun createSchedule(roomId: Int, scheduleRequest: ScheduleRequest) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
@@ -153,7 +153,7 @@ class ScheduleViewModel @Inject constructor(
      * 4. 실패 시: error LiveData에 에러 메시지 설정
      * 5. 완료 시: 로딩 상태를 false로 설정
      */
-    fun updateSchedule(roomId: Long, scheduleId: Long, schedule: Schedule) {
+    fun updateSchedule(roomId: Int, scheduleId: Int, schedule: Schedule) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
@@ -208,7 +208,7 @@ class ScheduleViewModel @Inject constructor(
      * 4. 실패 시: error LiveData에 에러 메시지 설정
      * 5. 완료 시: 로딩 상태를 false로 설정
      */
-    fun deleteSchedule(roomId: Long, scheduleId: Long) {
+    fun deleteSchedule(roomId: Int, scheduleId: Int) {
         viewModelScope.launch {
             _isLoading.value = true
             try {

@@ -19,7 +19,7 @@ class ScheduleRepository @Inject constructor(
      * @param roomId 방 ID
      * @return API 응답
      */
-    suspend fun getSchedules(roomId: Long): Response<ScheduleResponse> = scheduleApi.getSchedules(roomId)
+    suspend fun getSchedules(roomId: Int): Response<List<Schedule>> = scheduleApi.getSchedules(roomId)
     
     /**
      * 새 일정을 생성합니다.
@@ -27,12 +27,12 @@ class ScheduleRepository @Inject constructor(
      * @param scheduleRequest 생성할 일정 정보
      * @return API 응답
      */
-    suspend fun createSchedule(roomId: Long, scheduleRequest: ScheduleRequest) = 
+    suspend fun createSchedule(roomId: Int, scheduleRequest: ScheduleRequest): Response<Schedule> = 
         scheduleApi.createSchedule(roomId, scheduleRequest)
     
-    suspend fun updateSchedule(roomId: Long, scheduleId: Long, schedule: Schedule) =
+    suspend fun updateSchedule(roomId: Int, scheduleId: Int, schedule: Schedule): Response<Schedule> =
         scheduleApi.updateSchedule(roomId, scheduleId, schedule)
     
-    suspend fun deleteSchedule(roomId: Long, scheduleId: Long) = 
+    suspend fun deleteSchedule(roomId: Int, scheduleId: Int): Response<Unit> = 
         scheduleApi.deleteSchedule(roomId, scheduleId)
 } 

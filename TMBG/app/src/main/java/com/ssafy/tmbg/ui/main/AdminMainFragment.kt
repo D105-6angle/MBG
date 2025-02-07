@@ -4,15 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.ssafy.tmbg.R
 import com.ssafy.tmbg.databinding.FragmentAdminMainBinding
 import com.ssafy.tmbg.ui.team.TeamCreateDialog
+import com.ssafy.tmbg.ui.team.TeamViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AdminMainFragment : Fragment() {
     private var _binding: FragmentAdminMainBinding? = null
     private val binding get() = _binding!!
+    private val teamViewModel: TeamViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,9 +48,13 @@ class AdminMainFragment : Fragment() {
             btnMission.setOnClickListener {
                 findNavController().navigate(R.id.action_adminMain_to_mission)
             }
-            // 스케쥴 클릭 시 실행될 액션
+            // 일정 관리 버튼 클릭 처리
             btnSchedule.setOnClickListener {
-                findNavController().navigate(R.id.action_adminMain_to_schedule)
+                if (teamViewModel.roomId.value != -1) {
+                    findNavController().navigate(R.id.action_adminMain_to_schedule)
+                } else {
+                    Toast.makeText(context, "방을 먼저 생성해주세요", Toast.LENGTH_SHORT).show()
+                }
             }
             // 보고서 클릭 시 실행될 액션
             btnReport.setOnClickListener {

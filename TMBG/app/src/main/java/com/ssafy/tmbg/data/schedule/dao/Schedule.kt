@@ -13,26 +13,10 @@ import java.util.*
  * @property content 일정 내용
  */
 data class Schedule(
-    val scheduleId: Long,
-    val roomId: Long,
+    val scheduleId: Int,
+    val roomId: Int,
     val startTime: String,
     val endTime: String,
     val content: String
-){
-    // 필요할 때 Date로 변환하는 확장 함수
-    fun getStartTimeAsDate(): Date {
-        return parseTimeString(startTime)
-    }
-
-    fun getEndTimeAsDate(): Date {
-        return parseTimeString(endTime)
-    }
-    private fun parseTimeString(timeString: String): Date {
-        val (hour, minute) = timeString.split(":").map { it.toInt() }
-        return Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, hour)
-            set(Calendar.MINUTE, minute)
-        }.time
-    }
-}
+)
 
