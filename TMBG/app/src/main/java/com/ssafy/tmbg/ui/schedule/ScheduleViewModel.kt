@@ -48,23 +48,34 @@ class ScheduleViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             try {
+                Log.d("ScheduleViewModel", "Requesting schedules for roomId: $roomId")
                 val response = repository.getSchedules(roomId)
-                Log.d("ScheduleViewModel", "Response: ${response.raw()}")  // 전체 응답 로그
-                Log.d("ScheduleViewModel", "Body: ${response.body()}")     // 응답 바디 로그
+                
+                // 응답 상세 로깅
+                Log.d("ScheduleViewModel", "Response code: ${response.code()}")
+                Log.d("ScheduleViewModel", "Response headers: ${response.headers()}")
+                Log.d("ScheduleViewModel", "Response raw: ${response.raw()}")
                 
                 if (response.isSuccessful) {
-                    response.body()?.schedules?.let { schedules ->
-                        Log.d("ScheduleViewModel", "Schedules: $schedules")  // 파싱된 스케줄 로그
+                    val body = response.body()
+                    Log.d("ScheduleViewModel", "Response body: $body")
+                    
+                    body?.schedules?.let { schedules ->
+                        Log.d("ScheduleViewModel", "Parsed schedules: $schedules")
                         _schedules.value = schedules
                     } ?: run {
+                        Log.e("ScheduleViewModel", "Response body or schedules is null")
                         _schedules.value = emptyList()
                     }
                 } else {
-                    _error.value = "스케줄을 불러오는데 실패했습니다."
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("ScheduleViewModel", "Error response: $errorBody")
+                    Log.e("ScheduleViewModel", "Error code: ${response.code()}")
+                    _error.value = "스케줄을 불러오는데 실패했습니다. (${response.code()})"
                 }
             } catch (e: Exception) {
-                Log.e("ScheduleViewModel", "Error: ", e)  // 예외 로그
-                _error.value = e.message ?: "알 수 없는 오류가 발생했습니다."
+                Log.e("ScheduleViewModel", "Exception while fetching schedules", e)
+                _error.value = "네트워크 오류: ${e.message}"
             } finally {
                 _isLoading.value = false
             }
@@ -89,20 +100,38 @@ class ScheduleViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             try {
+                Log.d("ScheduleViewModel", "Creating schedule for roomId: $roomId")
+                Log.d("ScheduleViewModel", "Request body: $scheduleRequest")
+                
                 val response = repository.createSchedule(roomId, scheduleRequest)
+                
+                // 응답 상세 로깅
+                Log.d("ScheduleViewModel", "Response code: ${response.code()}")
+                Log.d("ScheduleViewModel", "Response headers: ${response.headers()}")
+                Log.d("ScheduleViewModel", "Response raw: ${response.raw()}")
+                
                 if (response.isSuccessful) {
                     // 서버에서 받은 새 일정을 현재 목록에 추가
                     val newSchedule = response.body()
+                    Log.d("ScheduleViewModel", "Response body (new schedule): $newSchedule")
+                    
                     val currentList = _schedules.value.orEmpty().toMutableList()
                     newSchedule?.let {
                         currentList.add(it)
                         _schedules.value = currentList
+                        Log.d("ScheduleViewModel", "Schedule created successfully")
+                    } ?: run {
+                        Log.e("ScheduleViewModel", "Response body is null")
                     }
                 } else {
-                    _error.value = "일정 생성에 실패했습니다."
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("ScheduleViewModel", "Error response: $errorBody")
+                    Log.e("ScheduleViewModel", "Error code: ${response.code()}")
+                    _error.value = "일정 생성에 실패했습니다. (${response.code()})"
                 }
             } catch (e: Exception) {
-                _error.value = e.message ?: "알 수 없는 오류가 발생했습니다."
+                Log.e("ScheduleViewModel", "Exception while creating schedule", e)
+                _error.value = "네트워크 오류: ${e.message}"
             } finally {
                 _isLoading.value = false
             }

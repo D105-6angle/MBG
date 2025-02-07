@@ -7,7 +7,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -42,7 +42,7 @@ object NetworkModule {
         return Retrofit.Builder()
             .baseUrl("https://i12d106.p.ssafy.io/")  // API 서버의 기본 URL
             .client(okHttpClient)
-            .addConverterFactory(MoshiConverterFactory.create())  // JSON 변환을 위한 Moshi 설정
+            .addConverterFactory(GsonConverterFactory.create())  // Moshi -> Gson
             .build()
     }
 

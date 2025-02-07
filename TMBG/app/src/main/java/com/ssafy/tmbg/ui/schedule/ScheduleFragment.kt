@@ -15,6 +15,9 @@ import com.ssafy.tmbg.databinding.FragmentScheduleBinding
 import com.ssafy.tmbg.data.schedule.dao.Schedule
 import com.ssafy.tmbg.data.schedule.dao.ScheduleRequest
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 /**
@@ -192,7 +195,7 @@ class ScheduleFragment : Fragment() {
      * 동작 과정:
      * 1. AddScheduleDialogFragment 인스턴스 생성
      * 2. 일정 생성 리스너 설정:
-     *    - 시간 문자열을 Date 객체로 변환
+     *    - 시간 문자열을 서버 형식으로 변환
      *    - ScheduleRequest 객체 생성
      *    - ViewModel을 통해 일정 생성 요청
      * 3. 다이얼로그 표시
@@ -200,10 +203,12 @@ class ScheduleFragment : Fragment() {
     private fun showAddScheduleDialog() {
         val dialogFragment = AddScheduleDialogFragment().apply {
             setOnScheduleCreatedListener { startTime, endTime, content ->
+                // 시간 문자열을 서버 형식으로 변환
+                val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
                 val scheduleRequest = ScheduleRequest(
                     roomId = roomId,
-                    startTime = parseTimeString(startTime),
-                    endTime = parseTimeString(endTime),
+                    startTime = formatter.format(parseTimeString(startTime)),
+                    endTime = formatter.format(parseTimeString(endTime)),
                     content = content
                 )
                 viewModel.createSchedule(roomId, scheduleRequest)
@@ -253,8 +258,8 @@ class ScheduleFragment : Fragment() {
                 val updatedSchedule = Schedule(
                     scheduleId = schedule.scheduleId,
                     roomId = schedule.roomId,
-                    startTime = parseTimeString(startTime),
-                    endTime = parseTimeString(endTime),
+                    startTime = startTime,
+                    endTime = endTime,      // String 타입으로 직접 전달
                     content = content
                 )
                 viewModel.updateSchedule(roomId, schedule.scheduleId, updatedSchedule)

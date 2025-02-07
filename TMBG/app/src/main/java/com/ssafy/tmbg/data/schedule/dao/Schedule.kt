@@ -1,7 +1,6 @@
 package com.ssafy.tmbg.data.schedule.dao
 
 import java.util.*
-import com.squareup.moshi.JsonClass
 
 /**
  * 일정 정보를 담는 데이터 클래스
@@ -13,12 +12,27 @@ import com.squareup.moshi.JsonClass
  * @property endTime 일정 종료 시간
  * @property content 일정 내용
  */
-@JsonClass(generateAdapter = true)
 data class Schedule(
     val scheduleId: Long,
     val roomId: Long,
-    val startTime: Date,
-    val endTime: Date,
+    val startTime: String,
+    val endTime: String,
     val content: String
-)
+){
+    // 필요할 때 Date로 변환하는 확장 함수
+    fun getStartTimeAsDate(): Date {
+        return parseTimeString(startTime)
+    }
+
+    fun getEndTimeAsDate(): Date {
+        return parseTimeString(endTime)
+    }
+    private fun parseTimeString(timeString: String): Date {
+        val (hour, minute) = timeString.split(":").map { it.toInt() }
+        return Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
+        }.time
+    }
+}
 
