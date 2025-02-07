@@ -1,6 +1,7 @@
 package com.ssafy.mbg.ui.auth
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navercorp.nid.NaverIdLoginSDK
@@ -18,10 +19,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * 인증 관련 ViewModel
- * 소셜 로그인(카카오, 네이버)과 회원가입을 처리
- */
 @HiltViewModel
 class TempAuthViewModel @Inject constructor(
     private val kakaoLoginRepositoryImpl: KakaoLoginRepositoryImpl,
@@ -30,11 +27,9 @@ class TempAuthViewModel @Inject constructor(
     private val serverTokenManager: ServerTokenManager
 ) : ViewModel() {
 
-    // 인증 상태를 관리하는 StateFlow
     private val _authState = MutableStateFlow<AuthState>(AuthState.Initial)
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
-
-    // 에러 메시지 상수
+    val TAG = "Login"
     companion object {
         private const val ERROR_LOGIN_FAILED = "로그인 실패"
         private const val ERROR_REGISTER_FAILED = "회원가입 실패"
@@ -43,10 +38,6 @@ class TempAuthViewModel @Inject constructor(
         private const val ERROR_KAKAO_LOGIN = "카카오 로그인 실패"
     }
 
-    /**
-     * 카카오 로그인 처리
-     * 카카오 SDK를 통해 로그인을 시도하고 성공시 서버 로그인 진행
-     */
     fun handleKakaoLogin() {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
@@ -64,11 +55,6 @@ class TempAuthViewModel @Inject constructor(
         }
     }
 
-    /**
-     * 네이버 로그인 처리
-     * 네이버 SDK를 통해 로그인을 시도
-     * @param context 네이버 로그인 화면 표시를 위한 컨텍스트
-     */
     fun handleNaverLogin(context: Context) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
@@ -76,10 +62,6 @@ class TempAuthViewModel @Inject constructor(
         }
     }
 
-    /**
-     * 네이버 로그인 콜백 생성
-     * 로그인 성공, 실패, 에러 상황 처리
-     */
     private fun getNaverLoginCallback() = object : OAuthLoginCallback {
         override fun onSuccess() {
             viewModelScope.launch {
@@ -96,84 +78,58 @@ class TempAuthViewModel @Inject constructor(
         }
     }
 
-    /**
-     * 네이버 로그인 성공 처리
-     * 사용자 정보를 가져와 서버 로그인 진행
-     */
     private suspend fun handleNaverLoginSuccess() {
         try {
-            val result = naverLoginRepositoryImpl.login()
-            result.onSuccess { socialLoginResult ->
-                handleSocialLogin(
-                    socialId = "naver${socialLoginResult.providerId}",
-                    email = socialLoginResult.email,
-                    name = socialLoginResult.name
-                )
-            }.onFailure { exception ->
-                _authState.value = AuthState.Error(exception.message ?: ERROR_UNKNOWN)
-            }
+            naverLoginRepositoryImpl.login()
+                .onSuccess { socialLoginResult ->
+                    handleSocialLogin(
+                        socialId = "naver${socialLoginResult.providerId}",
+                        email = socialLoginResult.email,
+                        name = socialLoginResult.name
+                    )
+                }
+                .onFailure { exception ->
+                    _authState.value = AuthState.Error(exception.message ?: ERROR_UNKNOWN)
+                }
         } catch (e: Exception) {
             _authState.value = AuthState.Error(ERROR_NAVER_LOGIN)
         }
     }
 
-    /**
-     * 소셜 로그인 공통 처리
-     * 서버에 로그인 요청을 보내고 204 응답일 경우 회원가입 진행
-     * 로그인 진행 시, 토큰 값 저장 하는 로직 필요함
-     *
-     * @param socialId 소셜 로그인 제공자 ID (e.g., "kakao123", "naver456")
-     * @param email 사용자 이메일
-     * @param name 사용자 이름
-     */
     private suspend fun handleSocialLogin(
         socialId: String,
         email: String,
         name: String
     ) {
+        Log.d(TAG, "소셜 로그인 시작: socialId=$socialId, email=$email, name=$name")
         try {
             val loginRequest = LoginRequest(providerId = socialId)
             authRepository.login(loginRequest)
                 .onSuccess { response ->
-                    // 서버에서 넘어온 토큰 저장
                     serverTokenManager.saveToken(
                         accessToken = response.accessToken,
                         refreshToken = response.refreshToken
                     )
-                    // 로그인 성공시 메인으로 이동
                     _authState.value = AuthState.NavigateToMain
                 }
                 .onFailure { exception ->
-                    when {
-                        // 204 No Content: 회원가입 필요
-                        exception.message?.contains("204") == true -> {
-                            _authState.value = AuthState.NeedSignUp(
-                                email = email,
-                                name = name,
-                                socialId = socialId
-                            )
-                        }
-                        // 400 Bad Request 등 다른 에러
-                        else -> {
-                            _authState.value = AuthState.Error(
-                                exception.message ?: ERROR_LOGIN_FAILED
-                            )
-                        }
+                    if (exception.message?.contains("회원가입이 필요합니다") == true) {
+                        _authState.value = AuthState.NeedSignUp(
+                            email = email,
+                            name = name,
+                            socialId = socialId
+                        )
+                    } else {
+                        Log.e(TAG, "서버 로그인 실패", exception)
+                        _authState.value = AuthState.Error(exception.message ?: ERROR_LOGIN_FAILED)
                     }
                 }
         } catch (e: Exception) {
+            Log.e(TAG, "소셜 로그인 예외 발생", e)
             _authState.value = AuthState.Error(e.message ?: ERROR_LOGIN_FAILED)
         }
     }
 
-    /**
-     * 회원가입 처리
-     * 서버에 회원가입 요청을 보내고 성공시 자동 로그인 진행
-     * @param email 사용자 이메일
-     * @param name 사용자 이름
-     * @param socialId 소셜 로그인 제공자 ID
-     * @param nickname 사용자가 설정한 닉네임
-     */
     fun register(email: String, name: String, socialId: String, nickname: String) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
@@ -187,7 +143,6 @@ class TempAuthViewModel @Inject constructor(
 
                 authRepository.register(registerRequest)
                     .onSuccess {
-                        // 회원가입 성공 후 자동 로그인 진행
                         handleSocialLogin(socialId, email, name)
                     }
                     .onFailure { exception ->

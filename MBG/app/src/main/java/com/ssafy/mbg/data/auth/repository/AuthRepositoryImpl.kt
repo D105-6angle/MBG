@@ -1,7 +1,9 @@
 package com.ssafy.mbg.data.auth.repository
 
+import com.google.gson.Gson
 import com.ssafy.mbg.api.AuthApi
 import com.ssafy.mbg.data.auth.common.ApiResponse
+import com.ssafy.mbg.data.auth.dto.LoginErrorResponse
 import com.ssafy.mbg.data.auth.dto.LoginRequest
 import com.ssafy.mbg.data.auth.dto.LoginResponse
 import com.ssafy.mbg.data.auth.dto.RegisterRequest
@@ -72,7 +74,15 @@ class AuthRepositoryImpl @Inject constructor(
                         Result.success(it)
                     } ?: Result.failure(Exception(apiResponse?.error?.toString() ?: noDataError))
                 }
-                STATUS_NO_CONTENT -> Result.failure(Exception(ERROR_LOGIN_NO_DATA))
+                STATUS_NO_CONTENT -> {
+                    val errorBody = response.errorBody()?.string()
+                    if (errorBody != null) {
+                        val errorResponse = Gson().fromJson(errorBody, LoginErrorResponse::class.java)
+                        Result.failure(Exception(errorResponse?.message ?: ERROR_LOGIN_NO_DATA))
+                    } else {
+                        Result.failure(Exception(ERROR_LOGIN_NO_DATA))
+                    }
+                }
                 else -> {
                     val errorMessage = handleErrorCode(response.code()) ?: defaultError
                     Result.failure(Exception(errorMessage))

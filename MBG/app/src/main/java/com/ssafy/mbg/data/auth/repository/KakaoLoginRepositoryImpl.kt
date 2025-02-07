@@ -1,6 +1,7 @@
 package com.ssafy.mbg.data.auth.repository
 
 import android.content.Context
+import android.util.Log
 import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause

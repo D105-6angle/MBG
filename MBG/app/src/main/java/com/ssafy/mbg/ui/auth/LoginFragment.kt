@@ -1,5 +1,6 @@
 package com.ssafy.mbg.ui.auth
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import com.ssafy.mbg.R
 import com.ssafy.mbg.databinding.FragmentLoginBinding
 import com.ssafy.mbg.ui.auth.LoginFragmentDirections
 import com.ssafy.mbg.ui.easteregg.EasterEggDialog
+import com.ssafy.mbg.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -20,7 +22,7 @@ import kotlinx.coroutines.launch
 class LoginFragment : Fragment() {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
-    private val viewModel by viewModels<AuthViewModel>()
+    private val viewModel by viewModels<TempAuthViewModel>()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -63,8 +65,10 @@ class LoginFragment : Fragment() {
                 when (state) {
                     is AuthState.Loading -> {
                         // Show loading if needed
+                        setLoadingState(true)
                     }
                     is AuthState.NeedSignUp -> {
+                        setLoadingState(false)
                         val action = LoginFragmentDirections.actionLoginToSignup(
                             email = state.email,
                             name = state.name,
@@ -72,12 +76,24 @@ class LoginFragment : Fragment() {
                         )
                         findNavController().navigate(action)
                     }
+                    is AuthState.NavigateToMain -> {
+                        startActivity(Intent(requireContext(), MainActivity::class.java))
+                        requireActivity().finish()
+                    }
                     is AuthState.Error -> {
                         Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
                     }
                     else -> {}
                 }
             }
+        }
+    }
+    private fun setLoadingState(isLoading: Boolean) {
+        binding.apply {
+            progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            btnKakaoLogin.isEnabled = !isLoading
+            btnNaverLogin.isEnabled = !isLoading
+            btnGoogleLogin.isEnabled = !isLoading
         }
     }
 
