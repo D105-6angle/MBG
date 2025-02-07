@@ -3,6 +3,7 @@ package com.ssafy.model.entity;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -12,9 +13,11 @@ import java.time.LocalDate;
 public class HeritageBook {
     private Long userId;
     private Long cardId;
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
+    private String codeId;
 
     // 연관
     private User user;
     private Card card;
+
 }
