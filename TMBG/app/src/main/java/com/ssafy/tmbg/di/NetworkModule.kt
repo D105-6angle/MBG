@@ -46,14 +46,4 @@ object NetworkModule {
             .build()
     }
 
-    /**
-     * ScheduleApi 인터페이스의 구현체를 제공합니다.
-     * @param retrofit Retrofit 인스턴스
-     * @return ScheduleApi 구현체
-     */
-    @Provides
-    @Singleton
-    fun provideScheduleApi(retrofit: Retrofit): ScheduleApi {
-        return retrofit.create(ScheduleApi::class.java)
-    }
-} 
+}

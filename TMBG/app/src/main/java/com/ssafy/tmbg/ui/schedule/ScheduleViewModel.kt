@@ -157,20 +157,37 @@ class ScheduleViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             try {
+                Log.d("ScheduleViewModel", "Updating schedule - roomId: $roomId, scheduleId: $scheduleId")
+                Log.d("ScheduleViewModel", "Update request body: $schedule")
+                
                 val response = repository.updateSchedule(roomId, scheduleId, schedule)
+                
+                // 응답 상세 로깅
+                Log.d("ScheduleViewModel", "Response code: ${response.code()}")
+                Log.d("ScheduleViewModel", "Response headers: ${response.headers()}")
+                Log.d("ScheduleViewModel", "Response raw: ${response.raw()}")
+                
                 if (response.isSuccessful) {
                     val updatedSchedule = response.body()
+                    Log.d("ScheduleViewModel", "Response body (updated schedule): $updatedSchedule")
+                    
+                    // 현재 목록에서 수정된 일정 업데이트
                     val currentList = _schedules.value.orEmpty().toMutableList()
-                    val position = currentList.indexOfFirst { it.scheduleId == scheduleId }
-                    if (position != -1 && updatedSchedule != null) {
-                        currentList[position] = updatedSchedule
+                    val index = currentList.indexOfFirst { it.scheduleId == scheduleId }
+                    if (index != -1 && updatedSchedule != null) {
+                        currentList[index] = updatedSchedule
                         _schedules.value = currentList
+                        Log.d("ScheduleViewModel", "Schedule updated successfully")
                     }
                 } else {
-                    _error.value = "일정 수정에 실패했습니다."
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("ScheduleViewModel", "Error response: $errorBody")
+                    Log.e("ScheduleViewModel", "Error code: ${response.code()}")
+                    _error.value = "일정 수정에 실패했습니다. (${response.code()})"
                 }
             } catch (e: Exception) {
-                _error.value = e.message ?: "알 수 없는 오류가 발생했습니다."
+                Log.e("ScheduleViewModel", "Exception while updating schedule", e)
+                _error.value = "네트워크 오류: ${e.message}"
             } finally {
                 _isLoading.value = false
             }

@@ -2,6 +2,7 @@ package com.ssafy.tmbg.ui.schedule
 
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -93,7 +94,7 @@ class ScheduleFragment : Fragment() {
         if (roomId != -1L) {
             viewModel.getSchedules(roomId)
         } else {
-            Toast.makeText(context, "유효하지 않은 방 ID입니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "방을 먼저 생성해주세요", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -255,13 +256,36 @@ class ScheduleFragment : Fragment() {
         val dialogFragment = AddScheduleDialogFragment().apply {
             setScheduleData(schedule)
             setOnScheduleCreatedListener { startTime, endTime, content ->
+                // 현재 날짜 정보 가져오기 (서울 시간)
+                val today = Calendar.getInstance().apply {
+                    timeZone = TimeZone.getTimeZone("Asia/Seoul")
+                }
+                
+                // HH:mm 형식의 시간을 서버 형식으로 변환 (서울 시간 유지)
+                val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+                formatter.timeZone = TimeZone.getTimeZone("Asia/Seoul")  // UTC -> Asia/Seoul
+                
+                // 시작 시간 설정
+                val (startHour, startMinute) = startTime.split(":").map { it.toInt() }
+                val startDate = today.clone() as Calendar
+                startDate.set(Calendar.HOUR_OF_DAY, startHour)
+                startDate.set(Calendar.MINUTE, startMinute)
+                
+                // 종료 시간 설정
+                val (endHour, endMinute) = endTime.split(":").map { it.toInt() }
+                val endDate = today.clone() as Calendar
+                endDate.set(Calendar.HOUR_OF_DAY, endHour)
+                endDate.set(Calendar.MINUTE, endMinute)
+                
                 val updatedSchedule = Schedule(
                     scheduleId = schedule.scheduleId,
                     roomId = schedule.roomId,
-                    startTime = startTime,
-                    endTime = endTime,      // String 타입으로 직접 전달
+                    startTime = formatter.format(startDate.time),
+                    endTime = formatter.format(endDate.time),
                     content = content
                 )
+                
+                Log.d("ScheduleFragment", "Updating schedule with: $updatedSchedule")
                 viewModel.updateSchedule(roomId, schedule.scheduleId, updatedSchedule)
             }
         }

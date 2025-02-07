@@ -1,5 +1,6 @@
 package com.ssafy.tmbg.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -70,28 +71,59 @@ class ScheduleAdapter : ListAdapter<Schedule, ScheduleAdapter.ViewHolder>(Schedu
          * 일정 데이터를 뷰에 바인딩합니다.
          *
          * 동작 과정:
-         * 1. 시간 포맷 설정
-         * 2. 시작~종료 시간 문자열 생성
-         * 3. 시간과 내용을 뷰에 설정
-         * 4. 수정/삭제 버튼 클릭 리스너 설정
+         * 1. 입력 시간 문자열을 파싱하기 위한 포맷터
+         * 2. 출력할 시간 포맷
+         * 3. String -> Date -> 원하는 형식의 String으로 변환
+         * 4. 시작~종료 시간 문자열 생성
+         * 5. 시간과 내용을 뷰에 설정
+         * 6. 수정/삭제 버튼 클릭 리스너 설정
          */
         fun bind(schedule: Schedule) {
-            // 시간 포맷 설정
-            val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-            // 시작~종료 시간 문자열 생성
-            val timeString = "${timeFormat.format(schedule.startTime)} ~ ${timeFormat.format(schedule.endTime)}"
-            
-            // 시간과 내용을 뷰에 설정
-            binding.tvTime.text = timeString
-            binding.tvTitle.text = schedule.content
+            try {
+                Log.d("ScheduleAdapter", "Raw startTime: ${schedule.startTime}")
+                Log.d("ScheduleAdapter", "Raw endTime: ${schedule.endTime}")
 
-            // 수정/삭제 버튼 클릭 리스너 설정
-            binding.btnEdit.setOnClickListener {
-                onEditClick?.invoke(schedule)
-            }
+                // 입력 시간 문자열을 파싱하기 위한 포맷터
+                val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).apply {
+                    timeZone = TimeZone.getTimeZone("Asia/Seoul")  // 한국 시간대 설정
+                }
+                // 출력할 시간 포맷
+                val outputFormat = SimpleDateFormat("HH:mm", Locale.getDefault()).apply {
+                    timeZone = TimeZone.getTimeZone("Asia/Seoul")  // 한국 시간대 설정
+                }
 
-            binding.btnDelete.setOnClickListener {
-                onDeleteClick?.invoke(schedule)
+                // String -> Date -> 원하는 형식의 String으로 변환
+                val startDate = inputFormat.parse(schedule.startTime)
+                val endDate = inputFormat.parse(schedule.endTime)
+                
+                Log.d("ScheduleAdapter", "Parsed startDate: $startDate")
+                Log.d("ScheduleAdapter", "Parsed endDate: $endDate")
+
+                val startTimeFormatted = startDate?.let { outputFormat.format(it) } ?: schedule.startTime
+                val endTimeFormatted = endDate?.let { outputFormat.format(it) } ?: schedule.endTime
+
+                // 시작~종료 시간 문자열 생성
+                val timeString = "$startTimeFormatted ~ $endTimeFormatted"
+                
+                // 시간과 내용을 뷰에 설정
+                binding.tvTime.text = timeString
+                binding.tvTitle.text = schedule.content
+
+                // 수정/삭제 버튼 클릭 리스너 설정
+                binding.btnEdit.setOnClickListener {
+                    onEditClick?.invoke(schedule)
+                }
+
+                binding.btnDelete.setOnClickListener {
+                    onDeleteClick?.invoke(schedule)
+                }
+            } catch (e: Exception) {
+                // 파싱 실패 시 원본 문자열 사용
+                Log.e("ScheduleAdapter", "시간 파싱 에러: ${e.message}")
+                Log.e("ScheduleAdapter", "startTime: ${schedule.startTime}")
+                Log.e("ScheduleAdapter", "endTime: ${schedule.endTime}")
+                binding.tvTime.text = "${schedule.startTime} ~ ${schedule.endTime}"
+                binding.tvTitle.text = schedule.content
             }
         }
     }
