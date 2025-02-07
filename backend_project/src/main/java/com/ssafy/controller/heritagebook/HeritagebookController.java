@@ -1,7 +1,6 @@
 package com.ssafy.controller.heritagebook;
 
 
-import com.ssafy.controller.auth.LoginResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
