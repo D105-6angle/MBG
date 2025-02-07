@@ -91,7 +91,7 @@
                             docker run -d --name ${DOCKER_CONTAINER} \
                                 --network app-network \
                                 -e TZ=Asia/Seoul \
-                                -e SPRING_PROFILES_ACTIVE=prod \
+                                -e SPRING_PROFILES_ACTIVE=prod,ENV \
                                 -e MYSQL_CONTAINER=${MYSQL_CONTAINER} \
                                 -e JWT_SECRET_KEY=${JWT_SECRET_KEY} \
                                 -e DOCKER_PORT=${DOCKER_PORT} \
