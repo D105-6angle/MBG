@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.model.mapper.heritagebook.HeritagebookMapper">
+
+    <resultMap id="HeritageBookResultMap" type="com.ssafy.model.entity.HeritageBook">
+        <id property="cardId" column="card_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="codeId" column="code_id"/>
+        <association property="card" javaType="com.ssafy.model.entity.Card">
+            <result property="name" column="name"/>
+            <result property="imageUrl" column="image_url"/>
+        </association>
+    </resultMap>
+
+    <!-- 도감 전체 카드 조회 -->
+    <select id="findAllByUserId" resultMap="HeritageBookResultMap">
+        SELECT
+            hb.card_id, hb.user_id, hb.created_at,
+            c.code_id, c.name, c.image_url
+        FROM heritage_books hb
+                 JOIN cards c ON hb.card_id = c.card_id
+        WHERE hb.user_id = #{userId}
+        ORDER BY hb.created_at DESC
+    </select>
+
+    <!-- 도감 카드 상세 조회 -->
+    <select id="findByUserIdAndCardId" resultMap="HeritageBookResultMap">
+        SELECT
+            hb.card_id, hb.user_id, hb.created_at,
+            c.code_id, c.name, c.image_url
+        FROM heritage_books hb
+                 JOIN cards c ON hb.card_id = c.card_id
+        WHERE hb.user_id = #{userId} AND hb.card_id = #{cardId}
+    </select>
+
+</mapper>
