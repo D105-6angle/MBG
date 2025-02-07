@@ -10,6 +10,7 @@ import com.ssafy.mbg.data.auth.dto.RegisterRequest
 import com.ssafy.mbg.data.auth.repository.AuthRepository
 import com.ssafy.mbg.data.auth.repository.KakaoLoginRepositoryImpl
 import com.ssafy.mbg.data.auth.repository.NaverLoginRepositoryImpl
+import com.ssafy.mbg.data.manger.ServerTokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,7 +26,8 @@ import javax.inject.Inject
 class TempAuthViewModel @Inject constructor(
     private val kakaoLoginRepositoryImpl: KakaoLoginRepositoryImpl,
     private val naverLoginRepositoryImpl: NaverLoginRepositoryImpl,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val serverTokenManager: ServerTokenManager
 ) : ViewModel() {
 
     // 인증 상태를 관리하는 StateFlow
@@ -117,7 +119,9 @@ class TempAuthViewModel @Inject constructor(
 
     /**
      * 소셜 로그인 공통 처리
-     * 서버에 로그인 요청을 보내고 결과에 따라 상태 업데이트
+     * 서버에 로그인 요청을 보내고 204 응답일 경우 회원가입 진행
+     * 로그인 진행 시, 토큰 값 저장 하는 로직 필요함
+     *
      * @param socialId 소셜 로그인 제공자 ID (e.g., "kakao123", "naver456")
      * @param email 사용자 이메일
      * @param name 사용자 이름
@@ -130,18 +134,31 @@ class TempAuthViewModel @Inject constructor(
         try {
             val loginRequest = LoginRequest(providerId = socialId)
             authRepository.login(loginRequest)
-                .onSuccess {
+                .onSuccess { response ->
+                    // 서버에서 넘어온 토큰 저장
+                    serverTokenManager.saveToken(
+                        accessToken = response.accessToken,
+                        refreshToken = response.refreshToken
+                    )
+                    // 로그인 성공시 메인으로 이동
                     _authState.value = AuthState.NavigateToMain
                 }
                 .onFailure { exception ->
-                    if (exception.message?.contains("400") == true) {
-                        _authState.value = AuthState.NeedSignUp(
-                            email = email,
-                            name = name,
-                            socialId = socialId
-                        )
-                    } else {
-                        _authState.value = AuthState.Error(exception.message ?: ERROR_LOGIN_FAILED)
+                    when {
+                        // 204 No Content: 회원가입 필요
+                        exception.message?.contains("204") == true -> {
+                            _authState.value = AuthState.NeedSignUp(
+                                email = email,
+                                name = name,
+                                socialId = socialId
+                            )
+                        }
+                        // 400 Bad Request 등 다른 에러
+                        else -> {
+                            _authState.value = AuthState.Error(
+                                exception.message ?: ERROR_LOGIN_FAILED
+                            )
+                        }
                     }
                 }
         } catch (e: Exception) {
@@ -170,6 +187,7 @@ class TempAuthViewModel @Inject constructor(
 
                 authRepository.register(registerRequest)
                     .onSuccess {
+                        // 회원가입 성공 후 자동 로그인 진행
                         handleSocialLogin(socialId, email, name)
                     }
                     .onFailure { exception ->

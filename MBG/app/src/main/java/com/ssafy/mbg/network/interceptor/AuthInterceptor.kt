@@ -35,9 +35,8 @@ class AuthInterceptor @Inject constructor(
          * header에 token 값 추가
          */
         if(!requiresAuthentication(originalRequest)) {
-            val token = serverTokenManager.getToken()
+            val token = serverTokenManager.getAcessToken()
             requestBuilder.addHeader("Authorization", "Bearer $token")
-            return chain.proceed(originalRequest)
         }
 
 

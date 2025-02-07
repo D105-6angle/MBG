@@ -15,19 +15,23 @@ class ServerTokenManager @Inject constructor(
         Context.MODE_PRIVATE
     )
 
-    fun saveToken(token : String) {
+    fun saveToken(accessToken : String, refreshToken : String) {
         prefs.edit()
-            .putString(KEY_SERVER_TOKEN, token)
+            .putString(KEY_ACCESS_TOKEN, accessToken)
+            .putString(KEY_REFRESH_TOKEN, refreshToken)
             .apply()
     }
 
-    fun getToken(): String? = prefs.getString(KEY_SERVER_TOKEN, null)
+    fun getAcessToken(): String? = prefs.getString(KEY_ACCESS_TOKEN, null)
+
+    fun getRefreshToken() : String? = prefs.getString(KEY_REFRESH_TOKEN, null)
 
     fun clearToken() {
         prefs.edit().clear().apply()
     }
 
     companion object {
-        private const val KEY_SERVER_TOKEN = "server_token"
+        private const val KEY_ACCESS_TOKEN = "access_token"
+        private const val KEY_REFRESH_TOKEN = "refresh_token"
     }
 }

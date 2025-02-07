@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -42,11 +45,11 @@ android {
         named("release"){
             isMinifyEnabled = false
             setProguardFiles(listOf(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"))
-            buildConfigField("String", "APP_TYPE", "\"student\"")
+            buildConfigField("String", "APP_TYPE", "\"U001\"")
             buildConfigField("String", "BASE_URL", "\"https://i12d106.p.ssafy.io/\"")
         }
         named("debug") {
-            buildConfigField("String", "APP_TYPE", "\"student\"")
+            buildConfigField("String", "APP_TYPE", "\"U001\"")
             buildConfigField("String", "BASE_URL", "\"https://i12d106.p.ssafy.io/\"")
         }
     }
