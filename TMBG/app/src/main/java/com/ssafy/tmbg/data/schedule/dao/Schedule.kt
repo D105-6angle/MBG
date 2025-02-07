@@ -6,17 +6,33 @@ import java.util.*
  * 일정 정보를 담는 데이터 클래스
  * 서버와의 통신 및 앱 내부에서 사용됩니다.
  *
- * @property schedulesId 일정의 고유 ID
+ * @property scheduleId 일정의 고유 ID
  * @property roomId 일정이 속한 방의 ID
  * @property startTime 일정 시작 시간
  * @property endTime 일정 종료 시간
  * @property content 일정 내용
  */
 data class Schedule(
-    val schedulesId: Long,
+    val scheduleId: Long,
     val roomId: Long,
-    val startTime: Date,
-    val endTime: Date,
+    val startTime: String,
+    val endTime: String,
     val content: String
-)
+){
+    // 필요할 때 Date로 변환하는 확장 함수
+    fun getStartTimeAsDate(): Date {
+        return parseTimeString(startTime)
+    }
+
+    fun getEndTimeAsDate(): Date {
+        return parseTimeString(endTime)
+    }
+    private fun parseTimeString(timeString: String): Date {
+        val (hour, minute) = timeString.split(":").map { it.toInt() }
+        return Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
+        }.time
+    }
+}
 

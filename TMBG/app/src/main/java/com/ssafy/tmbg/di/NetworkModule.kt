@@ -7,7 +7,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -42,18 +42,8 @@ object NetworkModule {
         return Retrofit.Builder()
             .baseUrl("https://i12d106.p.ssafy.io/")  // API 서버의 기본 URL
             .client(okHttpClient)
-            .addConverterFactory(MoshiConverterFactory.create())  // JSON 변환을 위한 Moshi 설정
+            .addConverterFactory(GsonConverterFactory.create())  // Moshi -> Gson
             .build()
     }
 
-    /**
-     * ScheduleApi 인터페이스의 구현체를 제공합니다.
-     * @param retrofit Retrofit 인스턴스
-     * @return ScheduleApi 구현체
-     */
-    @Provides
-    @Singleton
-    fun provideScheduleApi(retrofit: Retrofit): ScheduleApi {
-        return retrofit.create(ScheduleApi::class.java)
-    }
-} 
+}

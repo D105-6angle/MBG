@@ -2,6 +2,7 @@ package com.ssafy.tmbg.api
 
 import com.ssafy.tmbg.data.schedule.dao.Schedule
 import com.ssafy.tmbg.data.schedule.dao.ScheduleRequest
+import com.ssafy.tmbg.data.schedule.dao.ScheduleResponse
 import retrofit2.Response
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -23,9 +24,7 @@ interface ScheduleApi {
      * Endpoint: /api/rooms/{roomId}/schedules
      */
     @GET("api/rooms/{roomId}/schedules")
-    suspend fun getSchedules(
-        @Path("roomId") roomId: Long
-    ): Response<List<Schedule>>
+    suspend fun getSchedules(@Path("roomId") roomId: Long): Response<ScheduleResponse>
 
     /**
      * 새로운 일정을 생성합니다.
