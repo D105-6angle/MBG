@@ -15,16 +15,14 @@ import java.util.List;
  */
 @Configuration
 public class SwaggerConfig {
-
-    // TODO: 로컬은 dev, 서버는 prod를 읽어와야 함
-    @Value("${spring.profiles.active:dev}")  // application.properties의 값을 읽어옴
+    @Value("${app.environment:dev}")
     private String activeProfile;
 
     @Bean
     public OpenAPI openAPI() {
         Server server = ("dev".equals(activeProfile))
-                ? new Server().url("http://localhost:8080")
-                : new Server().url("https://i12d106.p.ssafy.io");
+                ? new Server().url("http://localhost:8080").description("Development Server")
+                : new Server().url("https://i12d106.p.ssafy.io").description("Production Server");
 
         Info info = new Info()
                 .title("Munbangu API Documentation")
