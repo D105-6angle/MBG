@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.model.dao.FcmDao">
+
+    <insert id="insert" parameterType="com.ssafy.controller.fcm.FcmDto">
+        INSERT INTO FCM (user_id, token, created_at, updated_at)
+        VALUES (#{userId}, #{token}, NOW(), NOW())
+    </insert>
+
+    <delete id="delete" parameterType="com.ssafy.controller.fcm.FcmDto">
+        DELETE FROM FCM
+        WHERE user_id = #{userId} AND token = #{token}
+    </delete>
+
+    <select id="selectTokensByUserId" parameterType="long" resultType="string">
+        SELECT token
+        FROM FCM
+        WHERE user_id = #{userId}
+    </select>
+
+    <select id="selectAllTokens" resultType="string">
+        SELECT token
+        FROM FCM
+    </select>
+
+    <select id="selectAllUserIds" resultType="string">
+        SELECT DISTINCT user_id
+        FROM FCM
+    </select>
+
+</mapper>

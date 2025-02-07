@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class FCMService {
+public class FCMServiceTest {
 
     public void sendMessageTo(String targetToken, String title, String body) {
         Message message = Message.builder()

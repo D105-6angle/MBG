@@ -1,8 +1,8 @@
 package com.ssafy.model.entity;
 
-import java.time.LocalDateTime;
-
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -11,7 +11,7 @@ import lombok.*;
 @Builder
 public class User {
     private Long userId;
-    private String codeId;
+    private String codeId;  // "U001" (학생), "U002" (교사)
     private String name;
     private String nickname;
     private String email;
