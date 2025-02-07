@@ -15,9 +15,7 @@ import java.util.List;
  */
 @Configuration
 public class SwaggerConfig {
-
-    // TODO: 로컬은 dev, 서버는 prod를 읽어와야 함
-    @Value("${spring.profiles.active:dev}")  // application.properties의 값을 읽어옴
+    @Value("${app.environment:dev}")
     private String activeProfile;
 
     @Bean
