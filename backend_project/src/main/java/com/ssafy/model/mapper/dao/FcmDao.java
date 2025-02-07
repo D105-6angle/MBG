@@ -1,4 +1,4 @@
-package com.ssafy.model.dao;
+package com.ssafy.model.mapper.dao;
 
 import com.ssafy.controller.fcm.FcmDto;
 import org.apache.ibatis.annotations.Mapper;

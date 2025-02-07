@@ -11,6 +11,7 @@
             EC2_PUBLIC_IP = credentials('EC2_PUBLIC_IP')
             MYSQL_PORT = credentials('MYSQL_PORT')
             MYSQL_CONTAINER = credentials('MYSQL_CONTAINER')
+            JWT_SECRET_KEY = credentials('JWT_SECRET_KEY')
         }
 
         stages {
@@ -92,6 +93,7 @@
                                 -e TZ=Asia/Seoul \
                                 -e SPRING_PROFILES_ACTIVE=prod \
                                 -e MYSQL_CONTAINER=${MYSQL_CONTAINER} \
+                                -e JWT_SECRET_KEY=${JWT_SECRET_KEY} \
                                 -e DOCKER_PORT=${DOCKER_PORT} \
                                 -e EC2_PUBLIC_IP=${EC2_PUBLIC_IP} \
                                 -e MYSQL_PORT=${MYSQL_PORT} \

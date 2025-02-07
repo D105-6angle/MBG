@@ -17,12 +17,12 @@ public class FcmDto {
         return userId;
     }
 
-    public String getFcmToken() {
-        return fcmToken;
-    }
-
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getFcmToken() {
+        return fcmToken;
     }
 
     public void setFcmToken(String fcmToken) {
