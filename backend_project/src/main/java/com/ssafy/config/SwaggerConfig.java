@@ -15,6 +15,8 @@ import java.util.List;
  */
 @Configuration
 public class SwaggerConfig {
+
+    // TODO: 로컬은 dev, 서버는 prod를 읽어와야 함
     @Value("${spring.profiles.active:dev}")  // application.properties의 값을 읽어옴
     private String activeProfile;
 
@@ -22,7 +24,7 @@ public class SwaggerConfig {
     public OpenAPI openAPI() {
         Server server = ("dev".equals(activeProfile))
                 ? new Server().url("http://localhost:8080")
-                : new Server().url("https://i12d106.p.ssafy.io/api");
+                : new Server().url("https://i12d106.p.ssafy.io");
 
         Info info = new Info()
                 .title("Munbangu API Documentation")
