@@ -16,7 +16,11 @@ public class FcmServiceImpl implements FcmService {
     @Override
     public int addToken(Long userId, String fcmToken) {
         FcmDto fcm = new FcmDto(userId, fcmToken);
-        return fcmDao.insert(fcm);
+        try {
+            return fcmDao.insert(fcm);
+        } catch (Exception e) {
+            throw new RuntimeException("FCM 토큰 추가 중 오류 발생", e);
+        }
     }
 
     @Override
