@@ -43,9 +43,9 @@ public class AuthController {
             /* -------실제 서비스 코드------- */
             if ("prod".equals(activeProfile)) {
                 typeCode = request.getHeader("X-App-Type");
-                if (typeCode.isEmpty()) return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                if (typeCode == null || typeCode.isEmpty()) return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                                                                 .body(AuthResponse.FailDto.builder().status(400).error("Bad Request")
-                                                                .message("공통 코드가 비었습니다.").build());
+                                                                .message("공통 코드가 비었거나 없습니다.").build());
             } else {
                 /*----------- 테스트코드 -----------*/
                 typeCode = "TestCode";
