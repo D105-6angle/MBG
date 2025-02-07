@@ -166,7 +166,9 @@ class ScheduleFragment : Fragment() {
 
         // 에러 메시지 변경 감지
         viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
-            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+            if (errorMessage.isNotEmpty()) {
+                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -249,13 +251,13 @@ class ScheduleFragment : Fragment() {
             setScheduleData(schedule)
             setOnScheduleCreatedListener { startTime, endTime, content ->
                 val updatedSchedule = Schedule(
-                    schedulesId = schedule.schedulesId,
+                    scheduleId = schedule.scheduleId,
                     roomId = schedule.roomId,
                     startTime = parseTimeString(startTime),
                     endTime = parseTimeString(endTime),
                     content = content
                 )
-                viewModel.updateSchedule(roomId, schedule.schedulesId, updatedSchedule)
+                viewModel.updateSchedule(roomId, schedule.scheduleId, updatedSchedule)
             }
         }
         dialogFragment.show(parentFragmentManager, AddScheduleDialogFragment.TAG)
@@ -271,7 +273,7 @@ class ScheduleFragment : Fragment() {
      * @param schedule 삭제할 일정 정보
      */
     private fun deleteSchedule(schedule: Schedule) {
-        viewModel.deleteSchedule(roomId, schedule.schedulesId)
+        viewModel.deleteSchedule(roomId, schedule.scheduleId)
     }
 
     /**
