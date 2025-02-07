@@ -17,8 +17,8 @@ public class SwaggerConfig {
 
     @Bean
     public OpenAPI openAPI() {
-//        Server httpServer = new Server().url("https://i12d106.p.ssafy.io");     // HTTPS만 사용하도록 설정
-        Server httpServer = new Server().url("http://localhost:8080");     // HTTPS만 사용하도록 설정
+        Server httpServer = new Server().url("https://i12d106.p.ssafy.io");     // HTTPS만 사용하도록 설정
+//        Server httpServer = new Server().url("http://localhost:8080");     // HTTPS만 사용하도록 설정
         Info info = new Info().title("Munbangu API Documentation").version("1.0.0").description("Munbangu");
 
         // TODO: 소셜 로그인 토큰 설정 추가하는 부분
