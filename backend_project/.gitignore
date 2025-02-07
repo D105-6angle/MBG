@@ -38,3 +38,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+## Firebase Admin SDK
+#src/main/resources/munbangu-4a922-firebase-adminsdk-fbsvc-2f5b0a99ec.json
+#
+## Properties files containing sensitive information
+#src/main/resources/application-ENV.properties
