@@ -12,7 +12,7 @@ import com.ssafy.mbg.databinding.FragmentBookBinding
 
 /**
  * 도감 화면의 메인 Fragment
- * 
+ *
  * ViewPager2를 사용하여 문화재/스토리 탭을 구현합니다.
  * 각 탭은 별도의 BookListFragment로 구성됩니다.
  */
@@ -21,8 +21,8 @@ class BookFragment : Fragment() {
     private val binding get() = _binding!!
 
     override fun onCreateView(
-        inflater: LayoutInflater, 
-        container: ViewGroup?, 
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentBookBinding.inflate(inflater, container, false)
@@ -43,7 +43,7 @@ class BookFragment : Fragment() {
             adapter = BookPagerAdapter(this@BookFragment)
             // 양쪽 페이지를 모두 유지
             offscreenPageLimit = 2
-            
+
             // 페이지 변경 리스너 추가
             registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
@@ -73,7 +73,7 @@ class BookFragment : Fragment() {
 
     /**
      * 탭 선택 상태 업데이트
-     * 
+     *
      * @param isCulturalTab 문화재 탭 선택 여부
      */
     private fun updateTabSelection(isCulturalTab: Boolean) {
@@ -89,6 +89,4 @@ class BookFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
-
 }

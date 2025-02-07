@@ -12,13 +12,35 @@ import com.ssafy.mbg.databinding.FragmentBookListBinding
 
 /**
  * 도감의 카드 목록을 표시하는 Fragment
- * 
+ *
  * @property isCultural 문화재 탭 여부 (true: 문화재 탭, false: 스토리 탭)
  */
-class BookListFragment(private val isCultural: Boolean) : Fragment() {
+class BookListFragment : Fragment() {
     private var _binding: FragmentBookListBinding? = null
     private val binding get() = _binding!!
     private lateinit var bookAdapter: BookAdapter
+
+    // Bundle로 전달받은 값을 처리할 변수
+    private var isCultural: Boolean = false
+
+    companion object {
+        private const val ARG_IS_CULTURAL = "is_cultural"
+
+        fun newInstance(isCultural: Boolean): BookListFragment {
+            return BookListFragment().apply {
+                arguments = Bundle().apply {
+                    putBoolean(ARG_IS_CULTURAL, isCultural)
+                }
+            }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.getBoolean(ARG_IS_CULTURAL)?.let {
+            isCultural = it
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,4 +91,4 @@ class BookListFragment(private val isCultural: Boolean) : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-} 
+}
