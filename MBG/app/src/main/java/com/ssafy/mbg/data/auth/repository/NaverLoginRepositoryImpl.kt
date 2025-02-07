@@ -4,9 +4,7 @@ import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.profile.NidProfileCallback
 import com.navercorp.nid.profile.data.NidProfileResponse
-import com.ssafy.mbg.data.auth.dto.SocialLoginResult
 import com.ssafy.mbg.data.auth.dto.SocialUserInfo
-import com.ssafy.mbg.data.auth.dto.TokenResponse
 import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
@@ -14,7 +12,7 @@ import kotlin.coroutines.suspendCoroutine
 
 class NaverLoginRepositoryImpl @Inject constructor() : SocialLoginRepository {
 
-    override suspend fun login(): Result<SocialLoginResult> = suspendCoroutine { continuation ->
+    override suspend fun login(): Result<SocialUserInfo> = suspendCoroutine { continuation ->
         val accessToken = NaverIdLoginSDK.getAccessToken()
 
         if (accessToken.isNullOrEmpty()) {
@@ -22,29 +20,21 @@ class NaverLoginRepositoryImpl @Inject constructor() : SocialLoginRepository {
             return@suspendCoroutine
         }
 
-        // 토큰 정보 가져오기
-        val socialToken = TokenResponse(
-            accessToken = NaverIdLoginSDK.getAccessToken() ?: "",
-            refreshToken = NaverIdLoginSDK.getRefreshToken() ?: "",
-            tokenExpiresAt = NaverIdLoginSDK.getExpiresAt().toString()
-        )
 
-        getUserInfo(continuation, socialToken)
+        getUserInfo(continuation)
     }
 
-    private fun getUserInfo(continuation: Continuation<Result<SocialLoginResult>>, socialToken: TokenResponse) {
+    private fun getUserInfo(continuation: Continuation<Result<SocialUserInfo>>) {
         NidOAuthLogin().callProfileApi(object : NidProfileCallback<NidProfileResponse> {
             override fun onSuccess(result: NidProfileResponse) {
-                val socialLoginResult = SocialLoginResult(
-                    socialUserInfo = SocialUserInfo(
+                val socialUserInfo = SocialUserInfo(
                         providerId = result.profile?.id ?: "",
                         email = result.profile?.email ?: "",
                         name = result.profile?.name ?: ""
-                    ),
-                    token = socialToken
-                )
+                    )
 
-                continuation.resume(Result.success(socialLoginResult))
+
+                continuation.resume(Result.success(socialUserInfo))
             }
 
             override fun onFailure(httpStatus: Int, message: String) {

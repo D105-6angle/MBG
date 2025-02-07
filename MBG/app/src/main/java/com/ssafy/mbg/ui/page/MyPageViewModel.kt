@@ -2,18 +2,23 @@ package com.ssafy.mbg.ui.page
 
 import androidx.lifecycle.ViewModel
 import com.ssafy.mbg.data.auth.dto.User
+import com.ssafy.mbg.data.mypage.repository.MyPageApi
 import com.ssafy.mbg.data.mypage.repository.MyPageRepository
 import com.ssafy.mbg.data.preferences.UserPreferences
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import javax.inject.Inject
 
 /**
  * 마이페이지 화면의 UI 상태를 관리하는 ViewModel
  */
-class MyPageViewModel(
-    private val userPreferences: UserPreferences
+@HiltViewModel
+class MyPageViewModel @Inject constructor(
+    private val userPreferences: UserPreferences,
+    private val repository : MyPageRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<MyPageState>(MyPageState.Initial)
-    private val repository = MyPageRepository()
+
 
     private val userId: String
         get() = userPreferences.userId ?: throw  IllegalArgumentException("유저 ID를 찾을 수 없음")

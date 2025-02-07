@@ -1,7 +1,7 @@
 package com.ssafy.mbg.data.mypage.repository
 
 import com.ssafy.mbg.data.auth.dto.UserProfile
-import com.ssafy.mbg.data.mypage.dto.ApiResponse
+import com.ssafy.mbg.data.auth.common.ApiResponse
 import com.ssafy.mbg.data.mypage.dto.ProblemHistory
 import com.ssafy.mbg.data.mypage.dto.UpdateNicknameRequest
 import com.ssafy.mbg.data.mypage.dto.UserInfo
