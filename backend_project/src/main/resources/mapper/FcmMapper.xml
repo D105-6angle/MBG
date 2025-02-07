@@ -6,7 +6,7 @@
 
     <insert id="insert" parameterType="com.ssafy.controller.fcm.FcmDto">
         INSERT INTO FCM (user_id, token, created_at, updated_at)
-        VALUES (#{userId}, #{token}, NOW(), NOW())
+        VALUES (#{userId}, #{fcmToken}, '2017-01-02 14:44', '2017-01-02 14:44')
     </insert>
 
     <delete id="delete" parameterType="com.ssafy.controller.fcm.FcmDto">
