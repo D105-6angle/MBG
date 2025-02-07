@@ -40,4 +40,6 @@
     <string name="selet_room">방 입장</string>
     <!-- 이스터에그 텍스트 -->
     <string name="easter_egg_txt">구글 로그인은 나중에..🤪</string>
+    <!-- Google Map   -->
+    <string name="api_key">AIzaSyCnaS2BwLjhQ5mWZU0U8z4ppydasbHF_Sk</string>
 </resources>
