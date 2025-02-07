@@ -19,7 +19,7 @@ public class SwaggerConfig {
     public OpenAPI openAPI() {
         // 배포용 서버는 https만 허용 (Nginx 설정 때문)
         String activeProfile = System.getProperty("spring.profiles.active", "dev");
-        Server server = ("dev".equals(activeProfile)) ? new Server().url("http://localhost:8080") : new Server().url("https://i12d106.p.ssafy.io");
+        Server server = ("dev".equals(activeProfile)) ? new Server().url("http://localhost:8080") : new Server().url("https://i12d106.p.ssafy.io/api");
         Info info = new Info().title("Munbangu API Documentation").version("1.0.0").description("Munbangu");
 
         // TODO: 소셜 로그인 토큰 설정 추가하는 부분
