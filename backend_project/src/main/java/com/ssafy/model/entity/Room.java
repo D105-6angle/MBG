@@ -1,8 +1,6 @@
 package com.ssafy.model.entity;
 
-
 import java.time.LocalDateTime;
-
 import lombok.*;
 
 @Getter
@@ -15,7 +13,7 @@ public class Room {
     private Long teacherId;
     private String location;
     private String roomName;
-    private Integer numOfGroups;
+    private int numOfGroups;
     private String inviteCode;
     private LocalDateTime createdAt;
     private boolean status;
