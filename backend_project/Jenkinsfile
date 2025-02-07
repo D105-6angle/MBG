@@ -89,6 +89,7 @@
                             echo "Starting new Spring Boot container..."
                             docker run -d --name ${DOCKER_CONTAINER} \
                                 --network app-network \
+                                -e TZ=Asia/Seoul \
                                 -e SPRING_PROFILES_ACTIVE=prod \
                                 -e MYSQL_CONTAINER=${MYSQL_CONTAINER} \
                                 -e DOCKER_PORT=${DOCKER_PORT} \
