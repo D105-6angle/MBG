@@ -23,8 +23,8 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI openAPI() {
         Server server = ("dev".equals(activeProfile))
-                ? new Server().url("http://localhost:8080")
-                : new Server().url("https://i12d106.p.ssafy.io");
+                ? new Server().url("http://localhost:8080").description("Development Server")
+                : new Server().url("https://i12d106.p.ssafy.io").description("Production Server");
 
         Info info = new Info()
                 .title("Munbangu API Documentation")
