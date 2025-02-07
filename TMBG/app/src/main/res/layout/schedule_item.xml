@@ -1,8 +1,0 @@
-<!-- 일정 항목의 레이아웃을 정의하는 XML -->
-<!-- 
-    주요 구성 요소:
-    - 시간 표시 TextView (id: tvTime)
-    - 내용 표시 TextView (id: tvTitle)
-    - 수정 버튼 (id: btnEdit)
-    - 삭제 버튼 (id: btnDelete)
---> 

@@ -1,5 +1,6 @@
 package com.ssafy.tmbg.ui.schedule
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -45,18 +46,38 @@ class ScheduleViewModel @Inject constructor(
      */
     fun getSchedules(roomId: Long) {
         viewModelScope.launch {
-            _isLoading.value = true  // 로딩 시작
+            _isLoading.value = true
             try {
+                Log.d("ScheduleViewModel", "Requesting schedules for roomId: $roomId")
                 val response = repository.getSchedules(roomId)
+                
+                // 응답 상세 로깅
+                Log.d("ScheduleViewModel", "Response code: ${response.code()}")
+                Log.d("ScheduleViewModel", "Response headers: ${response.headers()}")
+                Log.d("ScheduleViewModel", "Response raw: ${response.raw()}")
+                
                 if (response.isSuccessful) {
-                    _schedules.value = response.body()  // 성공 시 목록 업데이트
+                    val body = response.body()
+                    Log.d("ScheduleViewModel", "Response body: $body")
+                    
+                    body?.schedules?.let { schedules ->
+                        Log.d("ScheduleViewModel", "Parsed schedules: $schedules")
+                        _schedules.value = schedules
+                    } ?: run {
+                        Log.e("ScheduleViewModel", "Response body or schedules is null")
+                        _schedules.value = emptyList()
+                    }
                 } else {
-                    _error.value = "스케줄을 불러오는데 실패했습니다."
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("ScheduleViewModel", "Error response: $errorBody")
+                    Log.e("ScheduleViewModel", "Error code: ${response.code()}")
+                    _error.value = "스케줄을 불러오는데 실패했습니다. (${response.code()})"
                 }
             } catch (e: Exception) {
-                _error.value = e.message ?: "알 수 없는 오류가 발생했습니다."
+                Log.e("ScheduleViewModel", "Exception while fetching schedules", e)
+                _error.value = "네트워크 오류: ${e.message}"
             } finally {
-                _isLoading.value = false  // 로딩 종료
+                _isLoading.value = false
             }
         }
     }
@@ -79,20 +100,38 @@ class ScheduleViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             try {
+                Log.d("ScheduleViewModel", "Creating schedule for roomId: $roomId")
+                Log.d("ScheduleViewModel", "Request body: $scheduleRequest")
+                
                 val response = repository.createSchedule(roomId, scheduleRequest)
+                
+                // 응답 상세 로깅
+                Log.d("ScheduleViewModel", "Response code: ${response.code()}")
+                Log.d("ScheduleViewModel", "Response headers: ${response.headers()}")
+                Log.d("ScheduleViewModel", "Response raw: ${response.raw()}")
+                
                 if (response.isSuccessful) {
                     // 서버에서 받은 새 일정을 현재 목록에 추가
                     val newSchedule = response.body()
+                    Log.d("ScheduleViewModel", "Response body (new schedule): $newSchedule")
+                    
                     val currentList = _schedules.value.orEmpty().toMutableList()
                     newSchedule?.let {
                         currentList.add(it)
                         _schedules.value = currentList
+                        Log.d("ScheduleViewModel", "Schedule created successfully")
+                    } ?: run {
+                        Log.e("ScheduleViewModel", "Response body is null")
                     }
                 } else {
-                    _error.value = "일정 생성에 실패했습니다."
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("ScheduleViewModel", "Error response: $errorBody")
+                    Log.e("ScheduleViewModel", "Error code: ${response.code()}")
+                    _error.value = "일정 생성에 실패했습니다. (${response.code()})"
                 }
             } catch (e: Exception) {
-                _error.value = e.message ?: "알 수 없는 오류가 발생했습니다."
+                Log.e("ScheduleViewModel", "Exception while creating schedule", e)
+                _error.value = "네트워크 오류: ${e.message}"
             } finally {
                 _isLoading.value = false
             }
@@ -118,20 +157,37 @@ class ScheduleViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             try {
+                Log.d("ScheduleViewModel", "Updating schedule - roomId: $roomId, scheduleId: $scheduleId")
+                Log.d("ScheduleViewModel", "Update request body: $schedule")
+                
                 val response = repository.updateSchedule(roomId, scheduleId, schedule)
+                
+                // 응답 상세 로깅
+                Log.d("ScheduleViewModel", "Response code: ${response.code()}")
+                Log.d("ScheduleViewModel", "Response headers: ${response.headers()}")
+                Log.d("ScheduleViewModel", "Response raw: ${response.raw()}")
+                
                 if (response.isSuccessful) {
                     val updatedSchedule = response.body()
+                    Log.d("ScheduleViewModel", "Response body (updated schedule): $updatedSchedule")
+                    
+                    // 현재 목록에서 수정된 일정 업데이트
                     val currentList = _schedules.value.orEmpty().toMutableList()
-                    val position = currentList.indexOfFirst { it.schedulesId == scheduleId }
-                    if (position != -1 && updatedSchedule != null) {
-                        currentList[position] = updatedSchedule
+                    val index = currentList.indexOfFirst { it.scheduleId == scheduleId }
+                    if (index != -1 && updatedSchedule != null) {
+                        currentList[index] = updatedSchedule
                         _schedules.value = currentList
+                        Log.d("ScheduleViewModel", "Schedule updated successfully")
                     }
                 } else {
-                    _error.value = "일정 수정에 실패했습니다."
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("ScheduleViewModel", "Error response: $errorBody")
+                    Log.e("ScheduleViewModel", "Error code: ${response.code()}")
+                    _error.value = "일정 수정에 실패했습니다. (${response.code()})"
                 }
             } catch (e: Exception) {
-                _error.value = e.message ?: "알 수 없는 오류가 발생했습니다."
+                Log.e("ScheduleViewModel", "Exception while updating schedule", e)
+                _error.value = "네트워크 오류: ${e.message}"
             } finally {
                 _isLoading.value = false
             }
@@ -159,7 +215,7 @@ class ScheduleViewModel @Inject constructor(
                 val response = repository.deleteSchedule(roomId, scheduleId)
                 if (response.isSuccessful) {
                     val currentList = _schedules.value.orEmpty().toMutableList()
-                    currentList.removeAll { it.schedulesId == scheduleId }
+                    currentList.removeAll { it.scheduleId == scheduleId }
                     _schedules.value = currentList
                 } else {
                     _error.value = "일정 삭제에 실패했습니다."
@@ -171,4 +227,5 @@ class ScheduleViewModel @Inject constructor(
             }
         }
     }
+
 } 

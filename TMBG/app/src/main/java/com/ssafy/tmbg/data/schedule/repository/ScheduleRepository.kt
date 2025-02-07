@@ -4,6 +4,8 @@ import com.ssafy.tmbg.api.ScheduleApi
 import com.ssafy.tmbg.data.schedule.dao.Schedule
 import com.ssafy.tmbg.data.schedule.dao.ScheduleRequest
 import javax.inject.Inject
+import retrofit2.Response
+import com.ssafy.tmbg.data.schedule.dao.ScheduleResponse
 
 /**
  * 일정 관련 API 호출을 처리하는 Repository
@@ -17,7 +19,7 @@ class ScheduleRepository @Inject constructor(
      * @param roomId 방 ID
      * @return API 응답
      */
-    suspend fun getSchedules(roomId: Long) = scheduleApi.getSchedules(roomId)
+    suspend fun getSchedules(roomId: Long): Response<ScheduleResponse> = scheduleApi.getSchedules(roomId)
     
     /**
      * 새 일정을 생성합니다.

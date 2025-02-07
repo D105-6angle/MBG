@@ -2,6 +2,7 @@ package com.ssafy.tmbg.ui.schedule
 
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,9 @@ import com.ssafy.tmbg.databinding.FragmentScheduleBinding
 import com.ssafy.tmbg.data.schedule.dao.Schedule
 import com.ssafy.tmbg.data.schedule.dao.ScheduleRequest
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 /**
@@ -90,7 +94,7 @@ class ScheduleFragment : Fragment() {
         if (roomId != -1L) {
             viewModel.getSchedules(roomId)
         } else {
-            Toast.makeText(context, "유효하지 않은 방 ID입니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "방을 먼저 생성해주세요", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -166,7 +170,9 @@ class ScheduleFragment : Fragment() {
 
         // 에러 메시지 변경 감지
         viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
-            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+            if (errorMessage.isNotEmpty()) {
+                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -190,7 +196,7 @@ class ScheduleFragment : Fragment() {
      * 동작 과정:
      * 1. AddScheduleDialogFragment 인스턴스 생성
      * 2. 일정 생성 리스너 설정:
-     *    - 시간 문자열을 Date 객체로 변환
+     *    - 시간 문자열을 서버 형식으로 변환
      *    - ScheduleRequest 객체 생성
      *    - ViewModel을 통해 일정 생성 요청
      * 3. 다이얼로그 표시
@@ -198,10 +204,12 @@ class ScheduleFragment : Fragment() {
     private fun showAddScheduleDialog() {
         val dialogFragment = AddScheduleDialogFragment().apply {
             setOnScheduleCreatedListener { startTime, endTime, content ->
+                // 시간 문자열을 서버 형식으로 변환
+                val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
                 val scheduleRequest = ScheduleRequest(
                     roomId = roomId,
-                    startTime = parseTimeString(startTime),
-                    endTime = parseTimeString(endTime),
+                    startTime = formatter.format(parseTimeString(startTime)),
+                    endTime = formatter.format(parseTimeString(endTime)),
                     content = content
                 )
                 viewModel.createSchedule(roomId, scheduleRequest)
@@ -248,14 +256,37 @@ class ScheduleFragment : Fragment() {
         val dialogFragment = AddScheduleDialogFragment().apply {
             setScheduleData(schedule)
             setOnScheduleCreatedListener { startTime, endTime, content ->
+                // 현재 날짜 정보 가져오기 (서울 시간)
+                val today = Calendar.getInstance().apply {
+                    timeZone = TimeZone.getTimeZone("Asia/Seoul")
+                }
+                
+                // HH:mm 형식의 시간을 서버 형식으로 변환 (서울 시간 유지)
+                val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+                formatter.timeZone = TimeZone.getTimeZone("Asia/Seoul")  // UTC -> Asia/Seoul
+                
+                // 시작 시간 설정
+                val (startHour, startMinute) = startTime.split(":").map { it.toInt() }
+                val startDate = today.clone() as Calendar
+                startDate.set(Calendar.HOUR_OF_DAY, startHour)
+                startDate.set(Calendar.MINUTE, startMinute)
+                
+                // 종료 시간 설정
+                val (endHour, endMinute) = endTime.split(":").map { it.toInt() }
+                val endDate = today.clone() as Calendar
+                endDate.set(Calendar.HOUR_OF_DAY, endHour)
+                endDate.set(Calendar.MINUTE, endMinute)
+                
                 val updatedSchedule = Schedule(
-                    schedulesId = schedule.schedulesId,
+                    scheduleId = schedule.scheduleId,
                     roomId = schedule.roomId,
-                    startTime = parseTimeString(startTime),
-                    endTime = parseTimeString(endTime),
+                    startTime = formatter.format(startDate.time),
+                    endTime = formatter.format(endDate.time),
                     content = content
                 )
-                viewModel.updateSchedule(roomId, schedule.schedulesId, updatedSchedule)
+                
+                Log.d("ScheduleFragment", "Updating schedule with: $updatedSchedule")
+                viewModel.updateSchedule(roomId, schedule.scheduleId, updatedSchedule)
             }
         }
         dialogFragment.show(parentFragmentManager, AddScheduleDialogFragment.TAG)
@@ -271,7 +302,7 @@ class ScheduleFragment : Fragment() {
      * @param schedule 삭제할 일정 정보
      */
     private fun deleteSchedule(schedule: Schedule) {
-        viewModel.deleteSchedule(roomId, schedule.schedulesId)
+        viewModel.deleteSchedule(roomId, schedule.scheduleId)
     }
 
     /**
