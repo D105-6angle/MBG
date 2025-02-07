@@ -1,8 +1,6 @@
 package com.ssafy.mbg.ui.page
 
 import androidx.lifecycle.ViewModel
-import com.ssafy.mbg.data.auth.dto.User
-import com.ssafy.mbg.data.mypage.repository.MyPageApi
 import com.ssafy.mbg.data.mypage.repository.MyPageRepository
 import com.ssafy.mbg.data.preferences.UserPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel

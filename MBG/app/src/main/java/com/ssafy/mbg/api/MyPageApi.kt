@@ -1,4 +1,4 @@
-package com.ssafy.mbg.data.mypage.repository
+package com.ssafy.mbg.api
 
 import com.ssafy.mbg.data.auth.dto.UserProfile
 import com.ssafy.mbg.data.auth.common.ApiResponse

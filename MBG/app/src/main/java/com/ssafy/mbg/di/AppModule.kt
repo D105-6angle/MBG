@@ -1,17 +1,16 @@
 package com.ssafy.mbg.di
 
 import android.content.Context
-import com.ssafy.mbg.data.auth.repository.AuthApi
+import com.ssafy.mbg.api.AuthApi
 import com.ssafy.mbg.data.auth.repository.AuthRepository
 import com.ssafy.mbg.data.auth.repository.AuthRepositoryImpl
-import com.ssafy.mbg.data.auth.repository.KakaoLoginRepositoryImpl
 import com.ssafy.mbg.data.auth.repository.PastKakaoLoginRepositoryImpl
-import com.ssafy.mbg.data.auth.repository.PastNaverLoginRepositoryImpl
 import com.ssafy.mbg.data.auth.repository.PastSocialLoginRepository
-import com.ssafy.mbg.data.auth.repository.SocialLoginRepository
-import com.ssafy.mbg.data.mypage.repository.MyPageApi
+import com.ssafy.mbg.api.MyPageApi
+import com.ssafy.mbg.api.ScheduleApi
 import com.ssafy.mbg.data.mypage.repository.MyPageRepository
 import com.ssafy.mbg.data.preferences.UserPreferences
+import com.ssafy.mbg.data.task.repository.ScheduleRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -68,6 +67,18 @@ object AppModule {
     @Singleton
     fun provideAuthApi(retrofit: Retrofit) : AuthApi {
         return retrofit.create(AuthApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideScheduleApi(retrofit: Retrofit) : ScheduleApi {
+        return retrofit.create(ScheduleApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideScheduleRepository(scheduleApi : ScheduleApi) : ScheduleRepository {
+        return ScheduleRepository(scheduleApi)
     }
 //    @Provides
 //    @Singleton

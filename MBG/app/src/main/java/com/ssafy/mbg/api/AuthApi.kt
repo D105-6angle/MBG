@@ -1,4 +1,4 @@
-package com.ssafy.mbg.data.auth.repository
+package com.ssafy.mbg.api
 
 import com.ssafy.mbg.data.auth.dto.LoginRequest
 import com.ssafy.mbg.data.auth.dto.LoginResponse

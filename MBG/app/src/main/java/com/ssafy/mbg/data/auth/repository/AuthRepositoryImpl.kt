@@ -1,5 +1,6 @@
 package com.ssafy.mbg.data.auth.repository
 
+import com.ssafy.mbg.api.AuthApi
 import com.ssafy.mbg.data.auth.common.ApiResponse
 import com.ssafy.mbg.data.auth.dto.LoginRequest
 import com.ssafy.mbg.data.auth.dto.LoginResponse
@@ -21,13 +22,11 @@ class AuthRepositoryImpl @Inject constructor(
         // HTTP 상태 코드 정의
         private const val STATUS_NO_CONTENT = 204  // 요청은 성공했으나 반환할 데이터가 없음 (회원가입 필요)
         private const val STATUS_BAD_REQUEST = 400 // 잘못된 요청
-        private const val STATUS_UNAUTHORIZED = 401 // 인증 실패
 
         // 에러 메시지 정의
         private const val ERROR_LOGIN_NO_DATA = "회원가입이 필요합니다."
         private const val ERROR_REGISTER_NO_DATA = "회원가입 데이터가 없습니다."
         private const val ERROR_BAD_REQUEST = "잘못된 요청입니다."
-        private const val ERROR_UNAUTHORIZED = "인증이 필요합니다."
         private const val ERROR_ALREADY_REGISTERED = "이미 가입된 회원입니다."
         private const val ERROR_LOGIN_FAILED = "로그인 실패"
         private const val ERROR_REGISTER_FAILED = "회원가입 실패"
@@ -42,7 +41,6 @@ class AuthRepositoryImpl @Inject constructor(
      * - 실패: Result.failure(Exception) 다음 상황에 따른 에러 메시지 포함
      *   - 204: 회원가입 필요
      *   - 400: 잘못된 요청
-     *   - 401: 인증 실패
      */
     override suspend fun login(loginRequest: LoginRequest): Result<LoginResponse> {
         return handleApiCall(
@@ -53,7 +51,6 @@ class AuthRepositoryImpl @Inject constructor(
                 when (code) {
                     STATUS_NO_CONTENT -> ERROR_LOGIN_NO_DATA  // 회원가입으로 리다이렉션 필요
                     STATUS_BAD_REQUEST -> ERROR_BAD_REQUEST   // 요청 형식이 잘못됨
-                    STATUS_UNAUTHORIZED -> ERROR_UNAUTHORIZED  // 인증 실패
                     else -> null
                 }
             }

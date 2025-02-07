@@ -53,7 +53,8 @@ class AuthInterceptor @Inject constructor(
     private fun requiresAuthentication(request : Request) : Boolean {
         val noAuthPath = listOf(
             "/auth/login",
-            "/auth/register"
+            "/auth/register",
+            "/rooms/{roomId}/schedules"
         )
         return !noAuthPath.any { request.url.encodedPath.contains(it)}
     }
