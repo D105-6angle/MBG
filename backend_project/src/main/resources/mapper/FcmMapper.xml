@@ -5,8 +5,8 @@
 <mapper namespace="com.ssafy.model.mapper.dao.FcmDao">
 
     <insert id="insert" parameterType="com.ssafy.controller.fcm.FcmDto">
-        INSERT INTO FCM (user_id, token, created_at, updated_at)
-        VALUES (#{userId}, #{fcmToken}, '2017-01-02 14:44', '2017-01-02 14:44')
+        INSERT INTO FCM (user_id, token)
+        VALUES (#{userId}, #{fcmToken})
     </insert>
 
     <delete id="delete" parameterType="com.ssafy.controller.fcm.FcmDto">
