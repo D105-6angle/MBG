@@ -1,6 +1,3 @@
-import java.io.FileInputStream
-import java.util.Properties
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -97,6 +94,7 @@ dependencies {
 
     // RecyclerView
     implementation ("androidx.recyclerview:recyclerview:1.3.2")
+
     // indicator
     implementation ("me.relex:circleindicator:2.1.6")
 
@@ -167,6 +165,9 @@ dependencies {
 
     // 네이버 로그인
     implementation(libs.naver.oauth)
+    // 구글맵 폴리곤
+    implementation ("com.google.maps.android:android-maps-utils:2.4.0")
+
 }
 
 kapt {
