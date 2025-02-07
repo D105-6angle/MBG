@@ -1,6 +1,7 @@
 package com.ssafy.tmbg.di
 
 import android.content.Context
+import com.ssafy.tmbg.api.ScheduleApi
 import com.ssafy.tmbg.data.auth.repository.KakaoLoginRepositoryImpl
 import com.ssafy.tmbg.data.auth.repository.NaverLoginRepositoryImpl
 import com.ssafy.tmbg.data.auth.repository.SocialLoginRepository
@@ -9,6 +10,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import retrofit2.Retrofit
 import javax.inject.Singleton
 
 // AppModule.kt - 앱의 의존성 주입을 위한 Hilt 모듈
@@ -29,4 +31,16 @@ object AppModule {
 //    @Provides
 //    @Singleton
 //    fun provideNaverLoginRepository(): SocialLoginRepository = NaverLoginRepositoryImpl()
+
+
+    /**
+     * ScheduleApi 인터페이스의 구현체를 제공합니다.
+     * @param retrofit Retrofit 인스턴스
+     * @return ScheduleApi 구현체
+     */
+    @Provides
+    @Singleton
+    fun provideScheduleApi(retrofit: Retrofit): ScheduleApi {
+        return retrofit.create(ScheduleApi::class.java)
+    }
 }

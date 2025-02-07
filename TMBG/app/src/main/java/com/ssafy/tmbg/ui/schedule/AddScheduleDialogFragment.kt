@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -68,20 +69,45 @@ class AddScheduleDialogFragment : DialogFragment() {
         
         // 수정 모드일 경우 기존 데이터를 UI에 표시
         editingSchedule?.let { schedule ->
-            // 시간 포맷터 설정 (시간, 분 각각)
-            val timeFormat = SimpleDateFormat("HH", Locale.getDefault())
-            val minuteFormat = SimpleDateFormat("mm", Locale.getDefault())
-            
-            // 다이얼로그 타이틀과 버튼 텍스트를 수정 모드로 변경
             binding.tvTitle.text = getString(R.string.schedule_edit_title)
             binding.btnCreate.text = getString(R.string.schedule_update)
-            
-            // 기존 일정 데이터를 각 입력 필드에 설정
-            binding.etStartHour.setText(timeFormat.format(schedule.startTime))
-            binding.etStartMinute.setText(minuteFormat.format(schedule.startTime))
-            binding.etEndHour.setText(timeFormat.format(schedule.endTime))
-            binding.etEndMinute.setText(minuteFormat.format(schedule.endTime))
-            binding.etContent.setText(schedule.content)
+
+            try {
+                // 서버 형식의 시간을 파싱
+                val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).apply {
+                    timeZone = TimeZone.getTimeZone("Asia/Seoul")
+                }
+                // 화면에 표시할 형식
+                val outputFormat = SimpleDateFormat("HH:mm", Locale.getDefault()).apply {
+                    timeZone = TimeZone.getTimeZone("Asia/Seoul")
+                }
+
+                // 시작 시간 파싱 및 설정
+                val startDate = inputFormat.parse(schedule.startTime)
+                startDate?.let {
+                    val startTime = outputFormat.format(it)
+                    val (hour, minute) = startTime.split(":").map { it.toInt() }
+                    binding.etStartHour.setText(hour.toString())
+                    binding.etStartMinute.setText(minute.toString())
+                }
+
+                // 종료 시간 파싱 및 설정
+                val endDate = inputFormat.parse(schedule.endTime)
+                endDate?.let {
+                    val endTime = outputFormat.format(it)
+                    val (hour, minute) = endTime.split(":").map { it.toInt() }
+                    binding.etEndHour.setText(hour.toString())
+                    binding.etEndMinute.setText(minute.toString())
+                }
+
+                // 내용 설정
+                binding.etContent.setText(schedule.content)
+            } catch (e: Exception) {
+                Log.e("AddScheduleDialog", "시간 파싱 에러: ${e.message}")
+                Log.e("AddScheduleDialog", "startTime: ${schedule.startTime}")
+                Log.e("AddScheduleDialog", "endTime: ${schedule.endTime}")
+                Toast.makeText(context, "시간 형식 변환 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

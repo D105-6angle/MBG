@@ -13,7 +13,7 @@ import java.util.*
  */
 data class ScheduleRequest(
     val roomId: Long,
-    val startTime: Date,
-    val endTime: Date,
+    val startTime: String,
+    val endTime: String,
     val content: String
 ) 
