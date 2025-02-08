@@ -23,8 +23,9 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(String providerId) {
+    public ResponseEntity<?> login(@RequestBody AuthRequest.LoginData loginData) {
         try {
+            String providerId = loginData.getProviderId();
             AuthResponse.SuccessDto response = authService.login(providerId);
             return ResponseEntity.ok(response);
         } catch (NotFoundUserException e) {     // 회원 정보가 없을 때

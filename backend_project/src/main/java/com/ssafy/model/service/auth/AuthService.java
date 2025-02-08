@@ -21,16 +21,13 @@ public class AuthService {
     private final JWTUtil jwtUtil;
 
     public AuthResponse.SuccessDto login(String providerId) {
-        /*
-            findByProviderId()가 Optional<User>를 반환
-            만약 회원이 존재하면 User 객체가 반환됨
-            회원이 존재하지 않으면 NotFoundUserException이 발생
-         */
-        // 회원 조회
-        User user = authMapper.findByProviderId(providerId)
-                .orElseThrow(() -> new NotFoundUserException("회원 정보가 없습니다."));  // 사용자 조회 실패 시
+        // 1. 사용자 조회
+        User user = authMapper.findByProviderId(providerId);
+        if (user == null) {
+            throw new NotFoundUserException("회원 정보가 없습니다.");  // 사용자 조회 실패 시
+        }
 
-        // 조회 성공 시
+        // 2. 조회 성공 시
         String accessToken = jwtUtil.createAccessToken(providerId);
         String refreshToken = jwtUtil.createRefreshToken(providerId);
         return AuthResponse.SuccessDto.builder().userId(user.getUserId())
@@ -44,9 +41,10 @@ public class AuthService {
     @Transactional
     public AuthResponse.SuccessDto regist(AuthRequest.UserInfoData userInfo, String typeCode) {
         String prodiverId = userInfo.getProviderId();;
+        User user = authMapper.findByProviderId(prodiverId);
 
         // 1. 중복 체크
-        if (authMapper.findByProviderId(prodiverId).isPresent()) {
+        if (user != null) {
             throw new DuplicateUserException("이미 가입한 회원입니다.");
         }
 

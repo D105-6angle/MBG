@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class User {
     private Long userId;
     private String codeId;  // "U001" (학생), "U002" (교사)
