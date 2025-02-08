@@ -87,27 +87,6 @@ class PageFragment : Fragment() {
         }
     }
 
-    private fun observeAuthState() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            authViewModel.authState.collect { state ->
-                when (state) {
-                    is AuthState.NavigateToLogin -> {
-                        Intent(requireContext(), SplashActivity::class.java).apply {
-                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                            startActivity(this)
-                        }
-                    }
-                    is AuthState.Success -> {
-                        Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
-                    }
-                    is AuthState.Error -> {
-                        Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
-                    }
-                    else -> {}
-                }
-            }
-        }
-    }
 
     private fun showProfileModal() {
         val profileModal = ProfileModal(
@@ -117,14 +96,13 @@ class PageFragment : Fragment() {
             currentNickname = "김싸피",
             onConfirm = { newNickname ->
                 // 닉네임 변경 처리
+                binding.progressBar.visibility = View.VISIBLE  // 로딩 표시 추가 필요
                 authViewModel.updateNickname(newNickname)
             },
             onLogout = {
-                // 로그아웃 처리
                 authViewModel.logout()
             },
             onWithdraw = {
-                // 회원탈퇴 처리
                 authViewModel.withDraw()
             }
         )
@@ -133,6 +111,37 @@ class PageFragment : Fragment() {
     private fun findProblemAll() : List<ProblemHistory> {
         return MyPageDataSource.solvedProblems
     }
+
+    private fun observeAuthState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            authViewModel.authState.collect { state ->
+                binding.progressBar.visibility = View.GONE  // 로딩 표시 제거
+                when (state) {
+                    is AuthState.Success -> {
+                        when (state.message) {
+                            "닉네임이 변경되었습니다." -> {
+                                Toast.makeText(context, "닉네임이 성공적으로 변경되었습니다", Toast.LENGTH_SHORT).show()
+                                // UI 업데이트가 필요한 경우 여기서 처리
+                                loadData()  // 데이터 새로고침
+                            }
+                            else -> Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    is AuthState.Error -> {
+                        Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                    }
+                    is AuthState.NavigateToLogin -> {
+                        Intent(requireContext(), SplashActivity::class.java).apply {
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(this)
+                        }
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
     private fun loadData() {
         // 더미 데이터 생성 - 새로운 필드 추가
         val histories = findProblemAll()

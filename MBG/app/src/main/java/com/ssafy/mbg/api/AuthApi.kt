@@ -5,7 +5,6 @@ import com.ssafy.mbg.data.auth.dto.LoginResponse
 import com.ssafy.mbg.data.auth.dto.RegisterRequest
 import com.ssafy.mbg.data.auth.dto.RegisterResponse
 import com.ssafy.mbg.data.auth.common.ApiResponse
-import com.ssafy.mbg.data.auth.dto.UpdateUserResponse
 import com.ssafy.mbg.data.auth.dto.WithdrawResponse
 import com.ssafy.mbg.data.mypage.dto.UpdateNicknameRequest
 import retrofit2.Response
@@ -26,15 +25,4 @@ interface AuthApi {
         @Body request: RegisterRequest
     ) : Response<RegisterResponse>
 
-    @PATCH("users/{userId}/nickname")
-    suspend fun updateUserNickname(
-        @Path("userId") userId: Long,
-        @Body request: UpdateNicknameRequest
-    ) : Response<UpdateUserResponse>
-
-    // 회원 탈퇴
-    @DELETE("users/{userId}")
-    suspend fun withDraw(
-        @Path("userId") userId: Long
-    ): Response<WithdrawResponse>
 }

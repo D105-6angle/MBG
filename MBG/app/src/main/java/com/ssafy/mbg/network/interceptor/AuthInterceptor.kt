@@ -1,6 +1,7 @@
 package com.ssafy.mbg.network.interceptor
 
 
+import android.util.Log
 import com.ssafy.mbg.BuildConfig
 import com.ssafy.mbg.data.manger.ServerTokenManager
 import okhttp3.Interceptor
@@ -14,49 +15,60 @@ import javax.inject.Inject
 class AuthInterceptor @Inject constructor(
     private val serverTokenManager: ServerTokenManager
 ) : Interceptor {
-    /**
-     * HTTP 요청을 가로채서 헤더에 인증 정보를 추가
-     *
-     * @param chain Interceptor.Chain 현재 요청에 대한 정보를 담고 있는 체인
-     * @return Response 인증 정보가 포함된 새로운 요청에 대한 응답
-     */
     override fun intercept(chain: Interceptor.Chain): Response {
-        /**
-         * 현재 요청에서 인증이 필요 없다면,
-         * Content-type만 추가 해줌
-         */
         val originalRequest = chain.request()
+        Log.d("AuthInterceptor", "Original request URL: ${originalRequest.url}")
+
         val requestBuilder = originalRequest.newBuilder()
             .addHeader("Content-type", "application/json")
-            .addHeader("X-App-type",BuildConfig.APP_TYPE)
+            .addHeader("X-App-type", BuildConfig.APP_TYPE)
 
-        /**
-         * 현재 요청 에서 인증이 필요하다면,
-         * header에 token 값 추가
-         */
-        if(!requiresAuthentication(originalRequest)) {
+        // requiresAuthentication 결과 로깅
+        val needsAuth = requiresAuthentication(originalRequest)
+        Log.d("AuthInterceptor", "Needs authentication: $needsAuth")
+
+        // 조건문 수정: 인증이 필요한 경우 토큰을 추가
+        if (needsAuth) {
             val token = serverTokenManager.getAcessToken()
-            requestBuilder.addHeader("Authorization", "Bearer $token")
+            Log.d("AuthInterceptor", "Adding token: ${token?.take(10)}...") // 보안을 위해 토큰 일부만 로깅
+
+            if (token.isNullOrEmpty()) {
+                Log.e("AuthInterceptor", "Token is null or empty!")
+            } else {
+                requestBuilder.addHeader("Authorization", "Bearer $token")
+            }
         }
 
+        val newRequest = requestBuilder.build()
 
-        return chain.proceed(requestBuilder.build())
+        // 최종 요청 헤더 로깅
+        Log.d("AuthInterceptor", "Final request headers: ${newRequest.headers}")
 
+        return try {
+            val response = chain.proceed(newRequest)
+            Log.d("AuthInterceptor", "Response code: ${response.code}")
+            if (!response.isSuccessful) {
+                Log.e("AuthInterceptor", "Error response: ${response.message}")
+            }
+            response
+        } catch (e: Exception) {
+            Log.e("AuthInterceptor", "Network error", e)
+            throw e
+        }
     }
 
-    /**
-     * 인증이 필요하지 않은 경우 필터링
-     * 1. 로그인
-     * 2. 회원 가입
-     * 이 두 경우, 토큰 값을 통해 인증을 확인 하지 않으므로
-     */
-    private fun requiresAuthentication(request : Request) : Boolean {
+    private fun requiresAuthentication(request: Request): Boolean {
         val noAuthPath = listOf(
             "/auth/login",
             "/auth/register",
             "/rooms/{roomId}/schedules"
         )
-        return !noAuthPath.any { request.url.encodedPath.contains(it)}
+        // 인증이 필요하지 않은 경로에 포함되어 있으면 false, 그렇지 않으면 true 반환
+        val result = !noAuthPath.any { path ->
+            val matches = request.url.encodedPath.contains(path)
+            Log.d("AuthInterceptor", "Checking path ${request.url.encodedPath} against $path: $matches")
+            matches
+        }
+        return result
     }
-
 }

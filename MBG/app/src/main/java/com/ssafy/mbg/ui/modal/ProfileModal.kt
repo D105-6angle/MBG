@@ -52,25 +52,33 @@ class ProfileModal(
             nameTextView.text = name
             nicknameEditText.hint = "닉네임 : $currentNickname"
 
+            // 닉네임 입력 필드 설정
+            nicknameEditText.apply {
+                setText(currentNickname)  // 현재 닉네임을 기본값으로 설정
+                setSelection(currentNickname.length)  // 커서를 끝으로 이동
+            }
+
             // 클릭 리스너 설정
-            logoutButton.setOnClickListener {
-                onLogout()
-                dismiss()
-            }
-
-            withdrawButton.setOnClickListener {
-                showWithdrawConfirmDialog()
-            }
-
             changeNicknameButton.setOnClickListener {
                 nicknameEditText.requestFocus()
             }
 
             confirmButton.setOnClickListener {
-                val newNickname = nicknameEditText.text.toString()
-                if (newNickname.isNotBlank()) {
-                    onConfirm(newNickname)
-                    dismiss()
+                val newNickname = nicknameEditText.text.toString().trim()
+                when {
+                    newNickname.isBlank() -> {
+                        nicknameEditText.error = "닉네임을 입력해주세요"
+                    }
+                    newNickname == currentNickname -> {
+                        nicknameEditText.error = "현재 닉네임과 동일합니다"
+                    }
+                    newNickname.length < 2 -> {
+                        nicknameEditText.error = "닉네임은 2자 이상이어야 합니다"
+                    }
+                    else -> {
+                        onConfirm(newNickname)
+                        dismiss()
+                    }
                 }
             }
         }

@@ -2,6 +2,7 @@ package com.ssafy.mbg.api
 
 import com.ssafy.mbg.data.auth.dto.UserProfile
 import com.ssafy.mbg.data.auth.common.ApiResponse
+import com.ssafy.mbg.data.auth.dto.WithdrawResponse
 import com.ssafy.mbg.data.mypage.dto.ProblemHistory
 import com.ssafy.mbg.data.mypage.dto.UpdateNicknameRequest
 import com.ssafy.mbg.data.mypage.dto.UserInfo
@@ -31,5 +32,17 @@ interface MyPageApi {
     ) : Response<ApiResponse<UserProfile>>
 
     // 닉네임 변경
+
+    @PATCH("mypage/{userId}/nickname")
+    suspend fun updateUserNickname(
+        @Path("userId") userId: Long,
+        @Body request: UpdateNicknameRequest
+    ) : Response<Unit>
+
+    // 회원 탈퇴
+    @DELETE("mypage/{userId}")
+    suspend fun withDraw(
+        @Path("userId") userId: Long
+    ): Response<WithdrawResponse>
 
 }

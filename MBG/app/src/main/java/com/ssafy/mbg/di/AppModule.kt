@@ -51,9 +51,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideAuthRepository(
-        authApi: AuthApi
+        authApi: AuthApi,
+        myPageApi: MyPageApi
     ): AuthRepository {
-        return AuthRepositoryImpl(authApi)
+        return AuthRepositoryImpl(authApi, myPageApi)
     }
 
 
