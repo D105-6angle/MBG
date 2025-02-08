@@ -19,8 +19,8 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final String JWT_HEADER_NAME = "Authorization";
-    private final String JWT_PREFIX = "Bearer ";
+    public static final String JWT_HEADER_NAME = "Authorization";
+    public static final String JWT_PREFIX = "Bearer ";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
