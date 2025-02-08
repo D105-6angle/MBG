@@ -76,20 +76,17 @@ public class JwtTokenProvider {
 
     /* 토큰에서 Authenication 객체 추출 */
     public Authentication getAuthentication(String token) {
-        // 토큰에서 필요한 정보 추출
-        String providerId = getProviderId(token);
+        String providerId = getProviderId(token);      // 토큰에서 필요한 정보(ProviderId) 추출
         // 모든 인증된 사용자에게 기본 권한 부여 -> 추후 역할(ex. 학생, 선생님, 관리자)에 따라 인가를 별도로 줄 수 있기도 함
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_USER");
 
         /*
             UsernamePasswordAuthenticationToken
             (principal, credentials, authorities)
-
             - principal: 사용자 식별 정보
             - credentails: 비밀번호나 JWT를 보통 사용하므로 null
             - authorities: 권한 목록
          */
-
         // 여러 권한 목록 객체가 생성될 필요가 없으므로 Singleton으로
         return new UsernamePasswordAuthenticationToken(providerId, null, Collections.singleton(authority));
     }
