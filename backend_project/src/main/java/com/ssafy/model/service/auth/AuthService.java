@@ -62,7 +62,7 @@ public class AuthService {
         Long userId = registrationUserData.getUserId();
         String accessToken = jwtTokenProvider.createAccessToken(prodiverId);
         String refreshToken = jwtTokenProvider.createRefreshToken(prodiverId);
-        Social socialData = Social.builder().userId(userId).codeId(typeCode).providerId(prodiverId).accessToken(accessToken)
+        Social socialData = Social.builder().userId(userId).codeId(typeCode).providerId(prodiverId)
                 .refreshToken(refreshToken).build();
 
         result = authMapper.insertSocial(socialData);

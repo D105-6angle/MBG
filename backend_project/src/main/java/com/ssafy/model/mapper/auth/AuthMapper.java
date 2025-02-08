@@ -12,4 +12,6 @@ public interface AuthMapper {
     User findByProviderId(@Param("providerId") String providerId);
     int insertUser(AuthRequest.RegistrationUserData userInfo);
     int insertSocial(Social socialData);
+    Social findSocialByProviderId(@Param("providerId") String providerId);
+    int updateRefreshToken(Social social);
 }
