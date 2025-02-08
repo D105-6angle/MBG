@@ -1,5 +1,7 @@
 package com.ssafy.controller.auth;
 
+import com.ssafy.controller.common.FailResponse;
+import com.ssafy.controller.mypage.MyPageRequest;
 import com.ssafy.exception.auth.DuplicateUserException;
 import com.ssafy.exception.auth.InvalidInputException;
 import com.ssafy.exception.auth.InvalidTokenException;
@@ -19,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@Tag(name = "로그인", description = "로그인 API")
+@Tag(name = "인증/인가", description = "회원가입, 로그인, 토큰 재발급과 관련된 API")
 @RequiredArgsConstructor
 public class AuthController {
     @Value("${app.environment}")
@@ -36,7 +38,7 @@ public class AuthController {
             return ResponseEntity.ok(response);
         } catch (NotFoundUserException e) {     // 회원 정보가 없을 때
             return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                    .body(AuthResponse.FailDto.builder()
+                    .body(FailResponse.builder()
                             .status(204).message("회원 정보가 없습니다.")
                             .error("No Content").build());
         }
@@ -52,7 +54,7 @@ public class AuthController {
             if ("prod".equals(activeProfile)) {
                 typeCode = request.getHeader("X-App-Type");
                 if (typeCode == null || typeCode.isEmpty()) return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                                                .body(AuthResponse.FailDto.builder().status(400).error("Bad Request")
+                                                                .body(FailResponse.builder().status(400).error("Bad Request")
                                                                 .message("공통 코드가 비었거나 없습니다.").build());
             } else {
                 /*----------- 테스트코드 -----------*/
@@ -63,10 +65,10 @@ public class AuthController {
             return ResponseEntity.ok(response);
         } catch (DuplicateUserException e) {    // 이미 가입한 회원일 경우
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(AuthResponse.FailDto.builder().status(409).error("Conflict").message("이미 가입한 회원입니다.").build());
+                    .body(FailResponse.builder().status(409).error("Conflict").message("이미 가입한 회원입니다.").build());
         } catch (InvalidInputException e) {    // 필수 정보 누락
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(AuthResponse.FailDto.builder().status(400).error("Bad Request")
+                    .body(FailResponse.builder().status(400).error("Bad Request")
                             .message("필수 정보가 누락되었습니다.").build());
         }
     }
@@ -81,10 +83,10 @@ public class AuthController {
             return ResponseEntity.ok(response);
         } catch (InvalidTokenException e) {         // 유효하지 않은 토큰일 경우
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(AuthResponse.FailDto.builder().status(401).message(e.getMessage())
+                    .body(FailResponse.builder().status(401).message(e.getMessage())
                             .error("Unauthorized").build());
         } catch (DatabaseOperationException e) {    // DB에 refresh Token 저장 중 오류 발생
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AuthResponse.FailDto.builder()
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(FailResponse.builder()
                     .status(500).message("토큰 재발급 중 오류가 발생했습니다.").error("Internal Server Error").build());
         }
     }

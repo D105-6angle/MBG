@@ -11,6 +11,8 @@ import com.ssafy.model.entity.User;
 import com.ssafy.model.mapper.auth.AuthMapper;
 import com.ssafy.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

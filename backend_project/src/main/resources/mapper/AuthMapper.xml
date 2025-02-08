@@ -2,7 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.model.mapper.auth.AuthMapper">
 
-    <!-- 사용자 조회 -->
+    <!-- UserId로 사용자 찾기 -->
+    <select id="findByUserId" parameterType="Long" resultType="com.ssafy.model.entity.User">
+        SELECT u.user_id AS userId, u.code_id AS codeId, u.name, u.nickname, u.email, u.is_deleted AS isDeleted, u.created_at AS createdAt
+        FROM (SELECT * FROM users WHERE is_deleted != 1) u
+        WHERE u.user_id = #{userId}
+    </select>
+
+    <!-- TODO: 이 밑에도 삭제되지 않은 유저들에 대해서만 적용해야 함 -->
+    <!-- ProviderId로 사용자 조회 -->
     <select id="findByProviderId" parameterType="string" resultType="com.ssafy.model.entity.User">
         SELECT u.user_id AS userId, u.code_id AS codeId, u.name, u.nickname, u.email,
                u.is_deleted AS isDeleted, u.created_at AS createdAt

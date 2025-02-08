@@ -15,12 +15,19 @@ public class AuthResponse {
         private String nickname;
     }
 
-    // 로그인, 회원가입에 실패했을 때의 응답
     @Getter
     @Builder
-    public static class FailDto {
-        private int status;
-        private String message;
-        private String error;
+    public static class SuccessChangeNickname {
+        private Long userId;
+        private String nickname;
     }
+
+    // 로그인, 회원가입에 실패했을 때의 응답
+//    @Getter
+//    @Builder
+//    public static class FailDto {
+//        private int status;
+//        private String message;
+//        private String error;
+//    }
 }
