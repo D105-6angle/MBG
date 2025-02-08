@@ -7,18 +7,16 @@ import com.ssafy.exception.auth.NotFoundUserException;
 import com.ssafy.model.entity.Social;
 import com.ssafy.model.entity.User;
 import com.ssafy.model.mapper.auth.AuthMapper;
-import com.ssafy.util.JWTUtil;
+import com.ssafy.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
     private final AuthMapper authMapper;
-    private final JWTUtil jwtUtil;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public AuthResponse.SuccessDto login(String providerId) {
         // 1. 사용자 조회
@@ -28,8 +26,8 @@ public class AuthService {
         }
 
         // 2. 조회 성공 시
-        String accessToken = jwtUtil.createAccessToken(providerId);
-        String refreshToken = jwtUtil.createRefreshToken(providerId);
+        String accessToken = jwtTokenProvider.createAccessToken(providerId);
+        String refreshToken = jwtTokenProvider.createRefreshToken(providerId);
         return AuthResponse.SuccessDto.builder().userId(user.getUserId())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -62,8 +60,8 @@ public class AuthService {
 
         // 3. Social 정보 및 JWT 토큰 저장
         Long userId = registrationUserData.getUserId();
-        String accessToken = jwtUtil.createAccessToken(prodiverId);
-        String refreshToken = jwtUtil.createRefreshToken(prodiverId);
+        String accessToken = jwtTokenProvider.createAccessToken(prodiverId);
+        String refreshToken = jwtTokenProvider.createRefreshToken(prodiverId);
         Social socialData = Social.builder().userId(userId).codeId(typeCode).providerId(prodiverId).accessToken(accessToken)
                 .refreshToken(refreshToken).build();
 
