@@ -15,4 +15,5 @@ public class TeacherNotice {
     private String content;
     private LocalDateTime createdAt;
     private String title;
+    private Boolean status;  // status 필드 추가
 }

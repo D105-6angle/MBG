@@ -30,4 +30,11 @@
         FROM FCM
     </select>
 
+    <select id="selectTokensByRoomId" parameterType="Long" resultType="FCM">
+        SELECT token_id, FCM.user_id, token, created_at, updated_at
+        FROM FCM
+                 JOIN users ON FCM.user_id = users.user_id
+                 JOIN room_members ON users.user_id = room_members.user_id
+        WHERE room_members.room_id = #{roomId}
+    </select>
 </mapper>

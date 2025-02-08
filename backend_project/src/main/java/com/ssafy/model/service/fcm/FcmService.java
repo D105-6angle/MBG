@@ -8,4 +8,6 @@ public interface FcmService {
     List<String> getTokensByUserId(Long userId);
     List<String> getAllTokens();
     List<String> getAllUserIds(); // 추가된 메서드
+
+    List<String> getAllStudentsId();
 }
