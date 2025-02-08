@@ -3,9 +3,10 @@
 <mapper namespace="com.ssafy.model.mapper.auth.AuthMapper">
 
     <!-- 사용자 조회 -->
-    <select id="findByProviderId" parameterType="string" resultMap="UserResultMap">
-        SELECT u.user_id, u.code_id, u.name, u.nickname, u.email, u.is_deleted, u.created_at
-        FROM users u LEFT JOIN social_accounts s ON u.user_id = s.user_id
+    <select id="findByProviderId" parameterType="string" resultType="com.ssafy.model.entity.User">
+        SELECT u.user_id AS userId, u.code_id AS codeId, u.name, u.nickname, u.email,
+               u.is_deleted AS isDeleted, u.created_at AS createdAt
+        FROM users u INNER JOIN social_accounts s ON u.user_id = s.user_id
         WHERE s.provider_id = #{providerId}
     </select>
 
@@ -19,14 +20,4 @@
         INSERT INTO social_accounts(user_id, code_id, provider_id, access_token, refresh_token)
         VALUES(#{userId}, #{codeId}, #{providerId}, #{accessToken}, #{refreshToken})
     </insert>
-
-    <resultMap id="UserResultMap" type="com.ssafy.model.entity.User">
-       <id property="userId" column="user_id"/>
-        <result property="codeId" column="code_id"/>
-        <result property="name" column="name"/>
-        <result property="nickname" column="nickname"/>
-        <result property="email" column="email"/>
-        <result property="isDeleted" column="is_deleted"/>
-        <result property="createdAt" column="created_at"/>
-    </resultMap>
 </mapper>
