@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.model.mapper.NotificationMapper">
+    <insert id="insertNotification" parameterType="Notification">
+        INSERT INTO notifications (token_id, title, body, room)
+        VALUES (#{tokenId}, #{title}, #{body}, #{room})
+    </insert>
+</mapper>
