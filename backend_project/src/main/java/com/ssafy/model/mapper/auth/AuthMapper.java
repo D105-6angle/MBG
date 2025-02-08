@@ -9,7 +9,11 @@ import java.util.Optional;
 
 @Mapper
 public interface AuthMapper {
+
+    User findByUserId(Long userId);
     User findByProviderId(@Param("providerId") String providerId);
     int insertUser(AuthRequest.RegistrationUserData userInfo);
     int insertSocial(Social socialData);
+    Social findSocialByProviderId(@Param("providerId") String providerId);
+    int updateRefreshToken(Social social);
 }
