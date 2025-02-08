@@ -1,15 +1,20 @@
 package com.ssafy.mbg.data.auth.repository
 
+import android.util.Log
 import com.google.gson.Gson
 import com.ssafy.mbg.api.AuthApi
 import com.ssafy.mbg.data.auth.common.ApiResponse
-import com.ssafy.mbg.data.auth.dto.LoginErrorResponse
+import com.ssafy.mbg.data.auth.dto.ErrorResponse
 import com.ssafy.mbg.data.auth.dto.LoginRequest
 import com.ssafy.mbg.data.auth.dto.LoginResponse
 import com.ssafy.mbg.data.auth.dto.RegisterRequest
 import com.ssafy.mbg.data.auth.dto.RegisterResponse
 import javax.inject.Inject
 
+/**
+ * 인증 관련 API 호출을 처리하는 Repository 구현체
+ * @property authApi 인증 관련 API 인터페이스
+ */
 class AuthRepositoryImpl @Inject constructor(
     private val authApi: AuthApi
 ) : AuthRepository {
@@ -23,13 +28,18 @@ class AuthRepositoryImpl @Inject constructor(
 
         // 에러 메시지 정의
         private const val ERROR_LOGIN_NO_DATA = "회원가입이 필요합니다."
+        private const val ERROR_UNAUTHORIZED = "필수 정보가 누락되었습니다."
         private const val ERROR_REGISTER_NO_DATA = "회원가입 데이터가 없습니다."
         private const val ERROR_ALREADY_REGISTERED = "이미 가입된 회원입니다."
-        private const val ERROR_UNAUTHORIZED = "인증에 실패했습니다."
         private const val ERROR_LOGIN_FAILED = "로그인 실패"
         private const val ERROR_REGISTER_FAILED = "회원가입 실패"
     }
 
+    /**
+     * 로그인 요청을 처리하는 함수
+     * @param loginRequest 로그인에 필요한 데이터를 담은 요청 객체
+     * @return Result<LoginResponse> 로그인 성공 시 토큰 정보를 담은 응답, 실패 시 에러 메시지
+     */
     override suspend fun login(loginRequest: LoginRequest): Result<LoginResponse> {
         return handleApiCall(
             apiCall = { authApi.login(loginRequest) },
@@ -44,6 +54,11 @@ class AuthRepositoryImpl @Inject constructor(
         )
     }
 
+    /**
+     * 회원가입 요청을 처리하는 함수
+     * @param registerRequest 회원가입에 필요한 데이터를 담은 요청 객체
+     * @return Result<RegisterResponse> 회원가입 성공 시 응답 데이터, 실패 시 에러 메시지
+     */
     override suspend fun register(registerRequest: RegisterRequest): Result<RegisterResponse> {
         return handleApiCall(
             apiCall = { authApi.register(registerRequest) },
@@ -59,36 +74,75 @@ class AuthRepositoryImpl @Inject constructor(
         )
     }
 
+    /**
+     * API 호출을 처리하고 응답을 적절히 변환하는 제네릭 함수
+     * @param apiCall API 호출을 수행할 suspend 함수
+     * @param noDataError 데이터가 없을 때 사용할 에러 메시지
+     * @param defaultError 기본 에러 메시지
+     * @param handleErrorCode HTTP 상태 코드에 따른 커스텀 에러 메시지를 처리하는 함수
+     * @return Result<T> API 호출 결과를 담은 Result 객체
+     */
     private suspend fun <T> handleApiCall(
-        apiCall: suspend () -> retrofit2.Response<ApiResponse<T>>,
+        apiCall: suspend () -> retrofit2.Response<T>,  // ApiResponse wrapper 제거
         noDataError: String,
         defaultError: String,
         handleErrorCode: (Int) -> String?
     ): Result<T> {
         return try {
             val response = apiCall()
+            val errorBody = response.errorBody()?.string()
+
+            // 디버깅을 위한 로그 출력
+            Log.d("Auth", "Response Code: ${response.code()}")
+            Log.d("Auth", "Response Body: ${response.body()}")
+            Log.d("Auth", "Error Body: $errorBody")
+            Log.d("Auth", "Headers: ${response.headers()}")
+
             when (response.code()) {
+                // 정상 응답 처리
                 STATUS_OK -> {
-                    val apiResponse = response.body()
-                    apiResponse?.data?.let {
+                    response.body()?.let {
                         Result.success(it)
-                    } ?: Result.failure(Exception(apiResponse?.error?.toString() ?: noDataError))
+                    } ?: Result.failure(Exception(noDataError))
                 }
+                // 회원가입 필요 상태 처리
                 STATUS_NO_CONTENT -> {
                     val errorBody = response.errorBody()?.string()
                     if (errorBody != null) {
-                        val errorResponse = Gson().fromJson(errorBody, LoginErrorResponse::class.java)
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                         Result.failure(Exception(errorResponse?.message ?: ERROR_LOGIN_NO_DATA))
                     } else {
                         Result.failure(Exception(ERROR_LOGIN_NO_DATA))
                     }
                 }
+                // 잘못된 요청 처리
+                STATUS_BAD_REQUEST -> {
+                    val errorBody = response.errorBody()?.string()
+                    if (errorBody != null) {
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        Result.failure(Exception(errorResponse?.message ?: ERROR_ALREADY_REGISTERED))
+                    } else {
+                        Result.failure(Exception(defaultError))
+                    }
+                }
+                // 인증 실패 처리
+                STATUS_UNAUTHORIZED -> {
+                    val errorBody = response.errorBody()?.string()
+                    if (errorBody != null) {
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        Result.failure(Exception(errorResponse?.message ?: ERROR_REGISTER_NO_DATA))
+                    } else {
+                        Result.failure(Exception(defaultError))
+                    }
+                }
+                // 기타 에러 처리
                 else -> {
                     val errorMessage = handleErrorCode(response.code()) ?: defaultError
                     Result.failure(Exception(errorMessage))
                 }
             }
         } catch (e: Exception) {
+            // API 호출 자체가 실패한 경우
             Result.failure(e)
         }
     }

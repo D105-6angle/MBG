@@ -14,7 +14,7 @@ import kotlin.coroutines.suspendCoroutine
 
 class KakaoLoginRepositoryImpl @Inject constructor(
     private val context: Context
-) : PastSocialLoginRepository {
+) : SocialLoginRepository {
     /**
      * 카카오 로그인 수행
      * 카카오톡 앱이 있으면 앱으로, 없으면 계정으로 로그인 시도

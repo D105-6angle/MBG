@@ -13,10 +13,10 @@ interface AuthApi {
     @POST("auth/login")
     suspend fun login(
         @Body request: LoginRequest
-    ) : Response<ApiResponse<LoginResponse>>
+    ) : Response<LoginResponse>
 
     @POST("auth/register")
     suspend fun register(
         @Body request: RegisterRequest
-    ) : Response<ApiResponse<RegisterResponse>>
+    ) : Response<RegisterResponse>
 }

@@ -30,8 +30,17 @@ class ServerTokenManager @Inject constructor(
         prefs.edit().clear().apply()
     }
 
+    fun saveProviderId(providerId: String) {
+        prefs.edit()
+            .putString(KEY_PROVIDER_ID, providerId)
+            .apply()
+    }
+
+    fun getProviderId(): String? = prefs.getString(KEY_PROVIDER_ID, null)
+
     companion object {
         private const val KEY_ACCESS_TOKEN = "access_token"
         private const val KEY_REFRESH_TOKEN = "refresh_token"
+        private const val KEY_PROVIDER_ID = "provider_id"
     }
 }
