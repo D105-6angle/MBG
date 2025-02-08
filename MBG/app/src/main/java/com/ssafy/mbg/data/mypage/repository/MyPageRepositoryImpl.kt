@@ -28,16 +28,4 @@ class MyPageRepository(
         return myPageApi.getDetailProblemHistory(userId, logId)
     }
 
-    // 닉네임 변경
-    suspend fun updateNickname(userId: String, newNickname: String) : Response<ApiResponse<Unit>> {
-        return myPageApi.patchUserNickname(
-            userId = userId,
-            request = UpdateNicknameRequest(nickname = newNickname)
-        )
-    }
-
-    // 회원 탈퇴
-    suspend fun deleteUser(userId: String) : Response<ApiResponse<Unit>> {
-        return myPageApi.deleteUser(userId)
-    }
 }

@@ -31,15 +31,5 @@ interface MyPageApi {
     ) : Response<ApiResponse<UserProfile>>
 
     // 닉네임 변경
-    @PATCH("users/{userId}/nickname")
-    suspend fun patchUserNickname(
-        @Path("userId") userId: String,
-        @Body request: UpdateNicknameRequest
-    ) : Response<ApiResponse<Unit>>
 
-    // 회원 탈퇴
-    @DELETE("users/{userId}")
-    suspend fun deleteUser(
-        @Path("userId") userId: String
-    ): Response<ApiResponse<Unit>>
 }

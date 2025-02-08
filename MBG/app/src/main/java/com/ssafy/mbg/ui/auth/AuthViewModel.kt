@@ -12,6 +12,7 @@ import com.ssafy.mbg.data.auth.repository.AuthRepository
 import com.ssafy.mbg.data.auth.repository.KakaoLoginRepositoryImpl
 import com.ssafy.mbg.data.auth.repository.NaverLoginRepositoryImpl
 import com.ssafy.mbg.data.manger.ServerTokenManager
+import com.ssafy.mbg.data.preferences.UserPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,7 +25,9 @@ class AuthViewModel @Inject constructor(
     private val kakaoLoginRepositoryImpl: KakaoLoginRepositoryImpl,
     private val naverLoginRepositoryImpl: NaverLoginRepositoryImpl,
     private val authRepository: AuthRepository,
-    private val serverTokenManager: ServerTokenManager
+    private val serverTokenManager: ServerTokenManager,
+    private val userPreferences: UserPreferences
+
 ) : ViewModel() {
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Initial)
@@ -130,6 +133,7 @@ class AuthViewModel @Inject constructor(
                     serverTokenManager.saveProviderId(
                         providerId = socialId
                     )
+                    userPreferences.userId = response.userId
                     // 메인 액티비티로 이동
                     _authState.value = AuthState.NavigateToMain
                 }
@@ -176,6 +180,7 @@ class AuthViewModel @Inject constructor(
                         Log.d(TAG, "회원가입 성공 response: $response")
                         serverTokenManager.saveToken(refreshToken = response.refreshToken, accessToken = response.accessToken)
                         serverTokenManager.saveProviderId(socialId)  // providerId 저장
+                        userPreferences.userId = response.userId
                         _authState.value = AuthState.NavigateToMain  // 바로 메인으로 이동
                     }
                     // 실패했다면 실페 에러 메시지 설정
@@ -219,4 +224,54 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
+
+    fun logout() {
+        viewModelScope.launch {
+            serverTokenManager.clearAll()
+            _authState.value = AuthState.NavigateToLogin
+        }
+    }
+
+    fun withDraw() {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            try {
+                val userId = userPreferences.userId
+                if(userId != null) {
+                    authRepository.withDraw(userId)
+                        .onSuccess {
+                            serverTokenManager.clearToken()
+                            userPreferences.userId = null
+                            _authState.value = AuthState.NavigateToLogin
+                        }
+                        .onFailure { exception ->
+                            _authState.value = AuthState.Error(exception.message ?: "회원 탈퇴 실패")
+                        }
+                }
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error("회원 탈퇴")
+            }
+        }
+    }
+
+    fun updateNickname(newNickname : String) {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            try {
+                val userId = userPreferences.userId
+                if(userId != null) {
+                    authRepository.updateNickname(userId, newNickname)
+                        .onSuccess {
+                            _authState.value = AuthState.Success("닉네임이 변경되었습니다")
+                        }
+                        .onFailure { exception ->
+                            _authState.value = AuthState.Error(exception.message ?: "닉네임 변경 실패 ")
+                        }
+                }
+            } catch (e : Exception) {
+                _authState.value = AuthState.Error("닉네임 변경 실패")
+            }
+        }
+    }
+
 }

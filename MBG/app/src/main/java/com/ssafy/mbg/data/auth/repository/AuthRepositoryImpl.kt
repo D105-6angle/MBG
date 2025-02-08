@@ -9,6 +9,9 @@ import com.ssafy.mbg.data.auth.dto.LoginRequest
 import com.ssafy.mbg.data.auth.dto.LoginResponse
 import com.ssafy.mbg.data.auth.dto.RegisterRequest
 import com.ssafy.mbg.data.auth.dto.RegisterResponse
+import com.ssafy.mbg.data.auth.dto.UpdateUserResponse
+import com.ssafy.mbg.data.auth.dto.WithdrawResponse
+import com.ssafy.mbg.data.mypage.dto.UpdateNicknameRequest
 import javax.inject.Inject
 
 /**
@@ -146,4 +149,39 @@ class AuthRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override suspend fun updateNickname(userId: Long, nickname: String): Result<UpdateUserResponse> {
+        return handleApiCall(
+            apiCall = {
+                authApi.updateUserNickname(
+                    userId = userId,
+                    request = UpdateNicknameRequest(nickname = nickname)
+                )
+            },
+            noDataError = "닉네임 변경 데이터가 없습니다.",
+            defaultError = "닉네임 변경 실패",
+            handleErrorCode = { code ->
+                when (code) {
+                    STATUS_BAD_REQUEST -> "잘못된 닉네임 형식입니다."
+                    STATUS_UNAUTHORIZED -> "인증에 실패했습니다."
+                    else -> null
+                }
+            }
+        )
+    }
+
+    override suspend fun withDraw(userId: Long): Result<WithdrawResponse> {
+        return handleApiCall(
+            apiCall = { authApi.withDraw(userId) },
+            noDataError = "회원 탈퇴 데이터가 없습니다.",
+            defaultError = "회원 탈퇴 실패",
+            handleErrorCode = { code ->
+                when (code) {
+                    STATUS_UNAUTHORIZED -> "인증에 실패했습니다."
+                    else -> null
+                }
+            }
+        )
+    }
+
 }

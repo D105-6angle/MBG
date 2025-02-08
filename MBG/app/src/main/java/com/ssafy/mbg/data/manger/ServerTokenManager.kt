@@ -36,6 +36,14 @@ class ServerTokenManager @Inject constructor(
             .apply()
     }
 
+    fun clearAll() {
+        prefs.edit()
+            .remove(KEY_ACCESS_TOKEN)
+            .remove(KEY_REFRESH_TOKEN)
+            .remove(KEY_PROVIDER_ID)
+            .apply()
+    }
+
     fun getProviderId(): String? = prefs.getString(KEY_PROVIDER_ID, null)
 
     companion object {

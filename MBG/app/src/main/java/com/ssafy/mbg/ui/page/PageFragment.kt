@@ -1,21 +1,33 @@
 package com.ssafy.mbg.ui.page
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ssafy.mbg.adapter.ProblemHistoryAdapter
 import com.ssafy.mbg.data.mypage.dto.MyPageDataSource
 import com.ssafy.mbg.data.mypage.dto.ProblemHistory
 import com.ssafy.mbg.databinding.FragmentPageBinding
+import com.ssafy.mbg.ui.auth.AuthState
+import com.ssafy.mbg.ui.auth.AuthViewModel
 import com.ssafy.mbg.ui.modal.ProfileModal
+import com.ssafy.mbg.ui.splash.SplashActivity
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class PageFragment : Fragment() {
     private var _binding: FragmentPageBinding? = null
     private val binding get() = _binding!!
+
+    private val authViewModel : AuthViewModel by viewModels()
 
     private lateinit var problemHistoryAdapter: ProblemHistoryAdapter
 
@@ -47,6 +59,7 @@ class PageFragment : Fragment() {
         setupBackButton()
         setupSettingButton()
         loadData()
+        observeAuthState()
     }
 
     override fun onDestroyView() {
@@ -74,6 +87,28 @@ class PageFragment : Fragment() {
         }
     }
 
+    private fun observeAuthState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            authViewModel.authState.collect { state ->
+                when (state) {
+                    is AuthState.NavigateToLogin -> {
+                        Intent(requireContext(), SplashActivity::class.java).apply {
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(this)
+                        }
+                    }
+                    is AuthState.Success -> {
+                        Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                    }
+                    is AuthState.Error -> {
+                        Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
     private fun showProfileModal() {
         val profileModal = ProfileModal(
             context = requireContext(),
@@ -82,12 +117,15 @@ class PageFragment : Fragment() {
             currentNickname = "김싸피",
             onConfirm = { newNickname ->
                 // 닉네임 변경 처리
+                authViewModel.updateNickname(newNickname)
             },
             onLogout = {
                 // 로그아웃 처리
+                authViewModel.logout()
             },
             onWithdraw = {
                 // 회원탈퇴 처리
+                authViewModel.withDraw()
             }
         )
         profileModal.show()
