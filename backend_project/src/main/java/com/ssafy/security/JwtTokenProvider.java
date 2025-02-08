@@ -1,7 +1,9 @@
 package com.ssafy.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,13 +65,36 @@ public class JwtTokenProvider {
                 .build().parseClaimsJws(token).getBody().getSubject();
     }
 
+    /* 토큰 만료 여부 검사 */
+    public boolean isTokenExpired(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes())).build().parseClaimsJws(token).getBody();
+            Date expiration = claims.getExpiration();
+            return expiration.before(new Date());
+        } catch (ExpiredJwtException e) {       // 만료일이 다 된 경우
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     // 토큰 유효성 검증
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                    .build().parseClaimsJws(token);
+            // 1. parserBuilder()로 JWT 파서 생성
+            Jwts.parserBuilder()
+                    // 2. JWT를 생성할 때 사용한 동일한 비밀키 설정
+                    .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                    // 3. 파서된 내용 빌드
+                    .build()
+                    // 4. JWT 파싱 시도 (서명 검증, 토큰 만료 여부 확인, 토큰 형식 검증)
+                    .parseClaimsJws(token);
             return true;
+        } catch (ExpiredJwtException | SecurityException | MalformedJwtException e) {
+            // 1)토큰이 만료된 경우, 2)서명이 유효하지 않은 경우, 3) 토큰 형식이 잘못된 경우
+            return false;
         } catch (Exception e) {
+            // 그 외
             return false;
         }
     }
@@ -79,7 +104,6 @@ public class JwtTokenProvider {
         String providerId = getProviderId(token);      // 토큰에서 필요한 정보(ProviderId) 추출
         // 모든 인증된 사용자에게 기본 권한 부여 -> 추후 역할(ex. 학생, 선생님, 관리자)에 따라 인가를 별도로 줄 수 있기도 함
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_USER");
-
         /*
             UsernamePasswordAuthenticationToken
             (principal, credentials, authorities)
