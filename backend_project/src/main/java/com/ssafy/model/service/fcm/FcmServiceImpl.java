@@ -2,16 +2,17 @@ package com.ssafy.model.service.fcm;
 
 import com.ssafy.controller.fcm.FcmDto;
 import com.ssafy.model.mapper.dao.FcmDao;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class FcmServiceImpl implements FcmService {
 
-    @Autowired
-    private FcmDao fcmDao;
+    private final FcmDao fcmDao;
 
     @Override
     public int addToken(Long userId, String fcmToken) {
@@ -40,12 +41,18 @@ public class FcmServiceImpl implements FcmService {
     }
 
     @Override
-    public List<String> getAllUserIds() {
+    public List<Long> getAllUserIds() {
         return fcmDao.selectAllUserIds();
     }
 
     @Override
-    public List<String> getAllStudentsId() {
-        return fcmDao.selectAllUserIds();
+    public List<Long> getStudentIdsByRoomId(Long roomId) {
+        return fcmDao.selectStudentIdsByRoomId(roomId);
+    }
+
+    @Override
+    public List<String> getTokensByRoomId(Long roomId) {
+
+        return fcmDao.selectTokensByRoomId(roomId);
     }
 }
