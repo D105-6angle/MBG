@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import com.ssafy.model.entity.Constants;
-import com.ssafy.model.entity.message.Notification;
 import com.ssafy.model.entity.message.FcmMessage;
 import com.ssafy.model.entity.message.Message;
+import com.ssafy.model.entity.message.Notification;
 import org.apache.http.HttpHeaders;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
-
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -23,6 +22,7 @@ import okhttp3.Response;
 
 @Service
 public class FirebaseCloudMessageService {
+
     private final String API_URL = "https://fcm.googleapis.com/v1/projects/" + Constants.FIREBASE_PROJECT_ID + "/messages:send";
     private final ObjectMapper objectMapper;
 
@@ -31,12 +31,15 @@ public class FirebaseCloudMessageService {
     }
 
     private String getAccessToken() throws IOException {
+
         GoogleCredentials googleCredentials = GoogleCredentials
                 .fromStream(new ClassPathResource(Constants.FIREBASE_KEY_FILE).getInputStream())
                 .createScoped(Arrays.asList("https://www.googleapis.com/auth/cloud-platform"));
 
         googleCredentials.refreshIfExpired();
-        return googleCredentials.getAccessToken().getTokenValue();
+        String token = googleCredentials.getAccessToken().getTokenValue();
+
+        return token;
     }
 
     private String makeMessage(String targetToken, String title, String body) throws JsonProcessingException {
@@ -59,7 +62,8 @@ public class FirebaseCloudMessageService {
                 .build();
 
         Response response = client.newCall(request).execute();
+        // 응답 로그 출력 (필요에 따라 주석 처리 가능)
         System.out.println(response.body().string());
     }
-}
 
+}
