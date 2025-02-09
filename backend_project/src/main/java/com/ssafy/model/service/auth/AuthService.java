@@ -1,18 +1,13 @@
 package com.ssafy.model.service.auth;
 import com.ssafy.controller.auth.AuthRequest;
 import com.ssafy.controller.auth.AuthResponse;
-import com.ssafy.exception.auth.DuplicateUserException;
-import com.ssafy.exception.auth.InvalidInputException;
-import com.ssafy.exception.auth.InvalidTokenException;
-import com.ssafy.exception.auth.NotFoundUserException;
+import com.ssafy.exception.auth.*;
 import com.ssafy.exception.common.DatabaseOperationException;
 import com.ssafy.model.entity.Social;
 import com.ssafy.model.entity.User;
 import com.ssafy.model.mapper.auth.AuthMapper;
 import com.ssafy.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,14 +17,12 @@ public class AuthService {
     private final AuthMapper authMapper;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthResponse.SuccessDto login(String providerId) {
+    public AuthResponse.SuccessDto login(String providerId) throws NotFoundUserException, WithdrawnUserException {
         // 1. 사용자 조회
-        User user = authMapper.findByProviderId(providerId);
-        if (user == null) {
-            throw new NotFoundUserException("회원 정보가 없습니다.");  // 사용자 조회 실패 시
-        }
-
-        // 2. 조회 성공 시
+        User user = findUser(providerId);
+        // 2. 탈퇴한 사용자인지 확인
+        validateUserWithdrawal(user);
+        // 3. 조회 성공 시
         String accessToken = jwtTokenProvider.createAccessToken(providerId);
         String refreshToken = jwtTokenProvider.createRefreshToken(providerId);
         return AuthResponse.SuccessDto.builder().userId(user.getUserId())
@@ -41,38 +34,61 @@ public class AuthService {
     }
 
     @Transactional
-    public AuthResponse.SuccessDto regist(AuthRequest.UserInfoData userInfo, String typeCode) {
-        String prodiverId = userInfo.getProviderId();;
-        User user = authMapper.findByProviderId(prodiverId);
+    public AuthResponse.SuccessDto regist(AuthRequest.UserInfo userInfo, String typeCode) throws DatabaseOperationException, DuplicateUserException {
+        String providerId = userInfo.getProviderId();
+        User user = authMapper.findByProviderId(providerId);
+        String email, name, nickname;
 
-        // 1. 중복 체크
+        // 1. 이미 가입한 적이 있는 경우
         if (user != null) {
-            throw new DuplicateUserException("이미 가입한 회원입니다.");
-        }
+            // 회원 탈퇴하지 않은 경우
+            if (!user.isDeleted()) {
+                throw new DuplicateUserException("이미 가입한 회원입니다.");
+            }
 
-        // 2. 사용자 정보 DB 저장
-        String email = userInfo.getEmail();
-        String name = userInfo.getName();
-        String nickname = userInfo.getNickname();
-        AuthRequest.RegistrationUserData registrationUserData = AuthRequest.RegistrationUserData.builder().codeId(typeCode)
-                .providerId(prodiverId).email(email).name(name).nickname(nickname).build();
+            // 회원 탈퇴 한 경우 (재가입)
+            email = userInfo.getEmail();
+            name = userInfo.getName();
+            nickname = userInfo.getNickname();
+            AuthRequest.Registration data = AuthRequest.Registration.builder().codeId(typeCode).providerId(providerId).email(email).name(name).nickname(nickname).build();
 
-        int result = authMapper.insertUser(registrationUserData);
-        if (result == 0) {
-            throw new InvalidInputException("사용자 저장에 실패했습니다. 누락된 정보가 있어요.");
-        }
+            // 사용자 정보 업데이트
+            int result = authMapper.updateUserForReJoin(data, user.getUserId());
+            validateDatabaseOperation(result, "사용자 정보 저장");
+
+            // 소셜 정보 업데이트
+            String accessToken = jwtTokenProvider.createAccessToken(providerId);
+            String refreshToken = jwtTokenProvider.createRefreshToken(providerId);
+            result = authMapper.updateSocialForReJoin(providerId, refreshToken);
+            validateDatabaseOperation(result, "소셜 정보 저장");
+
+            return AuthResponse.SuccessDto.builder().userId(user.getUserId())
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .nickname(userInfo.getNickname())
+                    .message("회원가입 성공! 바로 메인 페이지로 이동 부탁합니다.")
+                    .build();
+
+        } else {    // 2. 신규 가입인 경우
+        // 사용자 정보 DB 저장
+        email = userInfo.getEmail();
+        name = userInfo.getName();
+        nickname = userInfo.getNickname();
+        AuthRequest.Registration data = AuthRequest.Registration.builder().codeId(typeCode)
+                .providerId(providerId).email(email).name(name).nickname(nickname).build();
+
+        int result = authMapper.insertUser(data);
+        validateDatabaseOperation(result, "사용자 정보 저장");
 
         // 3. Social 정보 및 JWT 토큰 저장
-        Long userId = registrationUserData.getUserId();
-        String accessToken = jwtTokenProvider.createAccessToken(prodiverId);
-        String refreshToken = jwtTokenProvider.createRefreshToken(prodiverId);
-        Social socialData = Social.builder().userId(userId).codeId(typeCode).providerId(prodiverId)
+        Long userId = data.getUserId();
+        String accessToken = jwtTokenProvider.createAccessToken(providerId);
+        String refreshToken = jwtTokenProvider.createRefreshToken(providerId);
+        Social socialData = Social.builder().userId(userId).codeId(typeCode).providerId(providerId)
                 .refreshToken(refreshToken).build();
 
         result = authMapper.insertSocial(socialData);
-        if (result == 0) {
-            throw new InvalidInputException("사용자 저장에 실패했습니다. 누락된 정보가 있어요.");
-        }
+        validateDatabaseOperation(result, "소셜 정보 저장");
 
         // 4. 회원가입 성공 응답
         return AuthResponse.SuccessDto.builder().userId(userId)
@@ -81,35 +97,79 @@ public class AuthService {
                 .nickname(userInfo.getNickname())
                 .message("회원가입 성공! 바로 메인 페이지로 이동 부탁합니다.")
                 .build();
+        }
     }
 
     @Transactional
-    public AuthResponse.SuccessDto reissue(String refreshToken) {
+    public AuthResponse.SuccessDto reissue(String providerId, String refreshToken) throws InvalidTokenException, DatabaseOperationException {
         // 1. refresh Token 유효성 검증
-        if (!jwtTokenProvider.validateToken(refreshToken)) {
-            throw new InvalidTokenException("유효하지 않은 토큰입니다.");
-        }
+        validateToken(refreshToken);
+        // 2. DB에 저장된 refresh Token과 비교
+        Social social = findSocial(providerId);
+        validateEqualToken(social.getRefreshToken(), refreshToken);
 
-        // 2. refresh Token으로 사용자 정보 가져오기
-        String providerId = jwtTokenProvider.getProviderId(refreshToken);
-        // 3. DB에 저장된 refresh Token과 비교
-        Social social = authMapper.findSocialByProviderId(providerId);
-        if (social == null || !refreshToken.equals(social.getRefreshToken())) {
-            throw new InvalidTokenException("저장된 토큰 정보가 일치하지 않습니다.");
-        }
-
-        // 4. 새로운 토큰 발급
+        // 3. 새로운 토큰 발급
         String newAccessToken = jwtTokenProvider.createAccessToken(providerId);
         String newRefreshToken = jwtTokenProvider.createRefreshToken(providerId);
-
-        // 5. DB의 refresh Token 업데이트
+        // 4. DB의 refresh Token 업데이트
         social.updateRefreshToken(newRefreshToken);
         int result = authMapper.updateRefreshToken(social);
-        if (result == 0) {
-            throw new DatabaseOperationException("Refresh Token 업데이트에 실패했습니다.");
-        }
+        validateDatabaseOperation(result, "Refresh Token 업데이트");
 
         return AuthResponse.SuccessDto.builder().accessToken(newAccessToken).refreshToken(newRefreshToken)
                 .message("토큰 재발급에 성공했습니다.").build();
+    }
+
+    /* 사용자 조회 및 존재 여부 확인 */
+    public User findUser(String providerId) throws NotFoundUserException {
+        User user = authMapper.findByProviderId(providerId);
+        if (user == null) {
+            throw new NotFoundUserException("사용자를 찾을 수 없습니다.");
+        }
+
+        return user;
+    }
+
+    public Social findSocial(String providerId) throws NotFoundUserException {
+        Social social = authMapper.findSocialByProviderId(providerId);
+        if (social == null) {
+            throw new NotFoundUserException("소셜 정보를 찾을 수 없습니다.");
+        }
+        return social;
+    }
+
+    /* 사용자 탈퇴 여부 확인 */
+    public void validateUserWithdrawal(User user) throws WithdrawnUserException {
+        if (user.isDeleted()) {
+            throw new WithdrawnUserException("탈퇴한 사용자입니다.");
+        }
+    }
+
+    /* 리소스 접근 권한 확인 */
+    public void validateResourceOwnership(User user, Long userId) throws UnauthorizedException {
+        if (!user.getUserId().equals(userId)) {
+            throw new UnauthorizedException("본인이 아닌 리소스에 대한 접근 권한이 없습니다.");
+        }
+    }
+
+    /* 데이터베이스 작업 결과 검증 */
+    public void validateDatabaseOperation(int result, String operationName) throws DatabaseOperationException {
+        if (result == 0) {
+            throw new DatabaseOperationException(operationName + " 작업이 실패했습니다.");
+        }
+    }
+
+    /* DB에 저장된 토큰과 일치하는지 검사 */
+    public void validateEqualToken(String dbToken, String inputToken) throws InvalidTokenException {
+        if (!dbToken.equals(inputToken)) {
+            throw new InvalidTokenException("저장된 토큰과 일치하지 않습니다.");
+        }
+    }
+
+    /* 토큰 유효성 검사 */
+    public void validateToken(String token) throws InvalidTokenException {
+        if (!jwtTokenProvider.validateToken(token)) {
+            throw new InvalidTokenException("유효하지 않은 토큰입니다.");
+        }
     }
 }

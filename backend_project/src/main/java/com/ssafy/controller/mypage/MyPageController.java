@@ -36,4 +36,12 @@ public class MyPageController {
         }
     }
 
+//    @Operation(summary = "회원 탈퇴")
+//    @DeleteMapping("{userId}")
+//    public ResponseEntity<?> withdrawUser(@PathVariable Long userId) {
+//        try {
+//            myPageService.withdrawUser(userId);
+//            return ResponseEntity.ok().build();
+//        } catch (No)
+//    }
 }

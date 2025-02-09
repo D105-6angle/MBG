@@ -1,13 +1,11 @@
 package com.ssafy.controller.auth;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 public class AuthRequest {
-
     // 로그인할 때 클라이언트에서 보내는 providerId
     @Getter
     @NoArgsConstructor
@@ -19,7 +17,7 @@ public class AuthRequest {
     @Setter
     @SuperBuilder
     @NoArgsConstructor
-    public static class UserInfoData {
+    public static class UserInfo {
         private String providerId;
         private String email;
         private String name;
@@ -31,7 +29,7 @@ public class AuthRequest {
     @Setter
     @SuperBuilder
     @NoArgsConstructor
-    public static class RegistrationUserData extends UserInfoData {
+    public static class Registration extends UserInfo {
         private Long userId;
         private String codeId;
     }
