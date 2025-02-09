@@ -6,5 +6,5 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface MypageMapper {
     int changeNickname(@Param("userId") Long userId, @Param("newNickname") String newNickname);
-
+    int withdrawUser(Long userId);
 }

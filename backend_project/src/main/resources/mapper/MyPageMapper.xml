@@ -9,4 +9,11 @@
         WHERE user_id = #{userId}
     </update>
 
+    <!-- 회원 탈퇴 -->
+    <update id="withdrawUser">
+        UPDATE users
+        SET is_deleted = true
+        WHERE user_id = #{userId}
+    </update>
+
 </mapper>
