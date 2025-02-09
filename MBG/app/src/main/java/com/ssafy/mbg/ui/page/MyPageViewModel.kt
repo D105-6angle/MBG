@@ -2,7 +2,7 @@ package com.ssafy.mbg.ui.page
 
 import androidx.lifecycle.ViewModel
 import com.ssafy.mbg.data.mypage.repository.MyPageRepository
-import com.ssafy.mbg.data.preferences.UserPreferences
+import com.ssafy.mbg.di.UserPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject

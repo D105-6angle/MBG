@@ -1,4 +1,4 @@
-package com.ssafy.mbg.data.manger
+package com.ssafy.mbg.di
 
 import android.content.Context
 import android.content.SharedPreferences

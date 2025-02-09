@@ -1,4 +1,4 @@
-package com.ssafy.mbg.data.preferences
+package com.ssafy.mbg.di
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext

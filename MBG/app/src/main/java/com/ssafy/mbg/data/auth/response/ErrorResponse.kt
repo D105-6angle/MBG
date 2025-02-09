@@ -1,4 +1,4 @@
-package com.ssafy.mbg.data.auth.dto
+package com.ssafy.mbg.data.auth.response
 
 data class ErrorResponse(
     val status: String,

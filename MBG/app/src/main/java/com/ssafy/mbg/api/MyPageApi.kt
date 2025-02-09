@@ -1,8 +1,8 @@
 package com.ssafy.mbg.api
 
-import com.ssafy.mbg.data.auth.dto.UserProfile
+import com.ssafy.mbg.data.auth.dao.UserProfile
 import com.ssafy.mbg.data.auth.common.ApiResponse
-import com.ssafy.mbg.data.auth.dto.WithdrawResponse
+import com.ssafy.mbg.data.auth.response.WithdrawResponse
 import com.ssafy.mbg.data.mypage.dto.ProblemHistory
 import com.ssafy.mbg.data.mypage.dto.UpdateNicknameRequest
 import com.ssafy.mbg.data.mypage.dto.UserInfo

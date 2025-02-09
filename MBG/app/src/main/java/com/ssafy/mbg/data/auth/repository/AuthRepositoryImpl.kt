@@ -4,13 +4,12 @@ import android.util.Log
 import com.google.gson.Gson
 import com.ssafy.mbg.api.AuthApi
 import com.ssafy.mbg.api.MyPageApi
-import com.ssafy.mbg.data.auth.common.ApiResponse
-import com.ssafy.mbg.data.auth.dto.ErrorResponse
-import com.ssafy.mbg.data.auth.dto.LoginRequest
-import com.ssafy.mbg.data.auth.dto.LoginResponse
-import com.ssafy.mbg.data.auth.dto.RegisterRequest
-import com.ssafy.mbg.data.auth.dto.RegisterResponse
-import com.ssafy.mbg.data.auth.dto.WithdrawResponse
+import com.ssafy.mbg.data.auth.response.ErrorResponse
+import com.ssafy.mbg.data.auth.request.LoginRequest
+import com.ssafy.mbg.data.auth.response.LoginResponse
+import com.ssafy.mbg.data.auth.request.RegisterRequest
+import com.ssafy.mbg.data.auth.response.RegisterResponse
+import com.ssafy.mbg.data.auth.response.WithdrawResponse
 import com.ssafy.mbg.data.mypage.dto.UpdateNicknameRequest
 import javax.inject.Inject
 

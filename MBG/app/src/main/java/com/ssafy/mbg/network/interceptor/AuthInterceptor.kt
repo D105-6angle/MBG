@@ -3,7 +3,7 @@ package com.ssafy.mbg.network.interceptor
 
 import android.util.Log
 import com.ssafy.mbg.BuildConfig
-import com.ssafy.mbg.data.manger.ServerTokenManager
+import com.ssafy.mbg.di.ServerTokenManager
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response

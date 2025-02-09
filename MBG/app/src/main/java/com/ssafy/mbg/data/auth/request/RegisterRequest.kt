@@ -1,4 +1,4 @@
-package com.ssafy.mbg.data.auth.dto
+package com.ssafy.mbg.data.auth.request
 
 data class RegisterRequest(
     val providerId : String,

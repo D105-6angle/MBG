@@ -6,13 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.OAuthLoginCallback
-import com.ssafy.mbg.data.auth.dto.LoginRequest
-import com.ssafy.mbg.data.auth.dto.RegisterRequest
+import com.ssafy.mbg.data.auth.request.LoginRequest
+import com.ssafy.mbg.data.auth.request.RegisterRequest
 import com.ssafy.mbg.data.auth.repository.AuthRepository
 import com.ssafy.mbg.data.auth.repository.KakaoLoginRepositoryImpl
 import com.ssafy.mbg.data.auth.repository.NaverLoginRepositoryImpl
-import com.ssafy.mbg.data.manger.ServerTokenManager
-import com.ssafy.mbg.data.preferences.UserPreferences
+import com.ssafy.mbg.di.ServerTokenManager
+import com.ssafy.mbg.di.UserPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
