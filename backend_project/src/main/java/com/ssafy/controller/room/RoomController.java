@@ -1,14 +1,11 @@
 package com.ssafy.controller.room;
 
+import com.ssafy.model.entity.User;
+import com.ssafy.model.service.auth.AuthService;
 import com.ssafy.model.service.room.RoomService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import com.ssafy.security.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,29 +18,29 @@ import org.springframework.web.bind.annotation.*;
 public class RoomController {
 
     private final RoomService roomService;
+    private final JwtTokenProvider jwtTokenProvider; // JWT 토큰 파싱용 Bean
+    private final AuthService authService;
 
-//    @Operation(summary = "방 생성")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "201", description = "방 생성 성공"),
-//            @ApiResponse(responseCode = "400", description = "잘못된 요청",
-//                    content = @Content(schema = @Schema(implementation = ApiResponse.class))),
-//            @ApiResponse(responseCode = "401", description = "인증 실패")
-//    })
-//    @PostMapping
-//    public ResponseEntity<RoomResponse.Room> createRoom(
-//            @Valid @RequestBody RoomRequest request, HttpServletRequest httpRequest) {
-//
-//        // JWT에서 teacherId 및 teacherName 추출
-//        // TODO: 여기서 받을 필요 X -> userId를 클라이언트가 가지고 있기 때문에 이르
-//        Long teacherId = (Long) httpRequest.getAttribute("teacherId");
-////        String teacherName = (String) httpRequest.getAttribute("teacherName");
-//
-////        if (teacherId == null || teacherName == null) {
-////            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-////        }
-////
-////        return ResponseEntity
-////                .status(HttpStatus.CREATED)
-////                .body(roomService.createRoom(teacherId, teacherName, request));
-//    }
+    @PostMapping
+    public ResponseEntity<RoomResponse.Room> createRoom(@RequestBody RoomRequest roomRequest,
+                                                        HttpServletRequest request) {
+
+        // HTTP 헤더의 Authorization에서 JWT 토큰 추출 ("Bearer {token}" 형식)
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("인증 토큰이 없습니다.");
+        }
+        String token = authHeader.substring(7);
+
+        // JwtTokenProvider -> providerId
+        String providerId = jwtTokenProvider.getProviderId(token);
+
+        // providerId → teacherId
+        User user = authService.findUser(providerId);
+        Long teacherId = user.getUserId();
+
+        // RoomService에 teacherId를 전달 -> 방 생성
+        RoomResponse.Room roomResponse = roomService.createRoom(roomRequest, teacherId);
+        return ResponseEntity.ok(roomResponse);
+    }
 }

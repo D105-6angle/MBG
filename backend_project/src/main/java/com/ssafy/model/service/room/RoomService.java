@@ -2,12 +2,16 @@ package com.ssafy.model.service.room;
 
 import com.ssafy.controller.room.RoomRequest;
 import com.ssafy.controller.room.RoomResponse;
+import com.ssafy.exception.common.DatabaseOperationException;
+import com.ssafy.exception.common.InvalidRequestException;
 import com.ssafy.model.entity.Room;
 import com.ssafy.model.mapper.room.RoomMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -15,28 +19,39 @@ public class RoomService {
 
     private final RoomMapper roomMapper;
 
-    public RoomResponse.Room createRoom(Long teacherId, String teacherName, RoomRequest request) {
+    public RoomResponse.Room createRoom(RoomRequest request, Long teacherId) {
+        // 필수 항목 검증
+        if (request.getRoomName() == null || request.getRoomName().trim().isEmpty() ||
+                request.getLocation() == null || request.getLocation().trim().isEmpty() ||
+                request.getNumOfGroups() <= 0) {
+            throw new InvalidRequestException("잘못된 요청입니다. 필수 항목을 확인해주세요.");
+        }
+
+        // 초대 코드 생성 (UUID의 앞 8자리)
+        String inviteCode = generateInviteCode();
+
+        // Room 엔티티 생성
         Room room = Room.builder()
-                .teacherId(teacherId)
                 .roomName(request.getRoomName())
                 .location(request.getLocation())
                 .numOfGroups(request.getNumOfGroups())
-                .inviteCode(generateInviteCode())
+                .inviteCode(inviteCode)
                 .createdAt(LocalDateTime.now())
+                .teacherId(teacherId)
                 .status(true)
                 .build();
 
-        roomMapper.insertRoom(room);
+        // 방 생성
+        try {
+            roomMapper.insertRoom(room);
+        } catch (Exception e) {
+            throw new DatabaseOperationException("방 생성 중 DB 작업에 실패했습니다.");
+        }
 
-        return toRoomResponse(room, teacherId, teacherName);
-    }
+        // 입력된 조 갯수만큼 그룹 생성
+        createGroupsForRoom(room.getRoomId(), request.getNumOfGroups());
 
-    //초대 코드
-    private String generateInviteCode() {
-        return "INV" + System.currentTimeMillis();
-    }
-
-    private RoomResponse.Room toRoomResponse(Room room, Long teacherId, String teacherName) {
+        // RoomResponse 객체 생성
         return RoomResponse.Room.builder()
                 .roomId(room.getRoomId())
                 .roomName(room.getRoomName())
@@ -44,10 +59,16 @@ public class RoomService {
                 .inviteCode(room.getInviteCode())
                 .numOfGroups(room.getNumOfGroups())
                 .createdAt(room.getCreatedAt())
-                .teacher(RoomResponse.Teacher.builder()
-                        .teacherId(teacherId)
-                        .name(teacherName)
-                        .build())
                 .build();
+    }
+
+    //초대코드
+    private String generateInviteCode() {
+        return UUID.randomUUID().toString().substring(0, 8);
+    }
+
+    // 조(그룹) 생성
+    private void createGroupsForRoom(Long roomId, int numOfGroups) {
+
     }
 }

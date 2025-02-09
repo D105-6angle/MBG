@@ -31,4 +31,27 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(FailResponse.builder()
                 .status(400).message(e.getMessage()).error("Bad Request").build());
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<FailResponse> handleIllegalArgumentException(IllegalArgumentException e) {
+        log.error("Illegal argument: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(FailResponse.builder()
+                        .status(400)
+                        .message(e.getMessage())
+                        .error("Illegal Argument")
+                        .build());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<FailResponse> handleGeneralException(Exception e) {
+        log.error("Unhandled exception: ", e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(FailResponse.builder()
+                        .status(500)
+                        .message("서버 오류가 발생했습니다.")
+                        .error("Internal Server Error")
+                        .build());
+    }
+
 }

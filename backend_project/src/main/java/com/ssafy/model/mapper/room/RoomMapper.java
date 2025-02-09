@@ -6,5 +6,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface RoomMapper {
     void insertRoom(Room room);
-
+    Room selectRoomById(long roomId);
 }

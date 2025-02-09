@@ -1,11 +1,32 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.model.mapper.room.RoomMapper">
 
+    <resultMap id="RoomResultMap" type="com.ssafy.model.entity.Room">
+        <id property="roomId" column="room_id" />
+        <result property="teacherId" column="teacher_id" />
+        <result property="location" column="location" />
+        <result property="roomName" column="room_name" />
+        <result property="numOfGroups" column="num_of_groups" />
+        <result property="inviteCode" column="invite_code" />
+        <result property="createdAt" column="created_at" />
+        <result property="status" column="status" />
+    </resultMap>
+
+    <!-- 방 생성 (insert) -->
     <insert id="insertRoom" parameterType="com.ssafy.model.entity.Room" useGeneratedKeys="true" keyProperty="roomId">
-        INSERT INTO rooms (teacher_id, room_name, location, num_of_groups, invite_code, created_at, status
-        ) VALUES ( #{teacherId}, #{roomName}, #{location}, #{numOfGroups}, #{inviteCode}, #{createdAt}, #{status}
-                 )
+        INSERT INTO rooms (teacher_id, location, room_name, num_of_groups, invite_code, created_at, status)
+        VALUES (#{teacherId}, #{location}, #{roomName}, #{numOfGroups}, #{inviteCode}, #{createdAt}, #{status})
     </insert>
 
+    <!-- 방 정보 조회 (select) -->
+    <select id="selectRoomById" parameterType="long" resultMap="RoomResultMap">
+        SELECT room_id, teacher_id, location, room_name, num_of_groups, invite_code, created_at, status
+        FROM rooms
+        WHERE room_id = #{roomId}
+    </select>
+
 </mapper>
+
