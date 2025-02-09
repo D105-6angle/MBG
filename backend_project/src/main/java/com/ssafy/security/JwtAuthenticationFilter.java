@@ -24,10 +24,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // TODO: 다음 필터 혹은 DispatcherSevlet으로 가기 전에 JWT 토큰을 점검
         // 1. JWT 토큰 추출
         String token = extrectToken(request);
-
         // 2. JWT 토큰 내용이 존재하고, 유효한 토큰인지 검사
         if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
             // 유효한 토큰이라면 사용자 인증 정보 객체를 생성해서 SecurityContext에 등록 (그러면 요청이 처리되어 완료될 때까지 전역적으로 접근이 가능)
