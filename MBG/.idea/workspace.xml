@@ -108,16 +108,33 @@
   <component name="ChangeListManager">
     <list default="true" id="db4e149f-3cf5-43c3-bfbb-fc103ac6d4b2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/api/AuthApi.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/api/AuthApi.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/api/MyPageApi.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/api/MyPageApi.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/data/auth/dto/UpdateUserResponse.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/data/auth/dto/UpdateUserResponse.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/data/auth/repository/AuthRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/data/auth/repository/AuthRepository.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/data/auth/repository/AuthRepositoryImpl.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/data/auth/repository/AuthRepositoryImpl.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/di/AppModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/di/AppModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/network/interceptor/AuthInterceptor.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/network/interceptor/AuthInterceptor.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/network/ApiClient.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/ui/auth/SignupFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/ui/auth/SignupFragment.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/ui/modal/ProfileModal.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/ui/modal/ProfileModal.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/ui/page/PageFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/ui/page/PageFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_page.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_page.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_sign_up.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_sign_up.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/auth/dto/ApiResponse.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/auth/dto/LoginRequest.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/auth/dto/LoginResponse.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/auth/dto/RegisterRequest.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/auth/dto/RegisterResponse.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/auth/dto/SocialLoginResult.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/auth/dto/SocialUserInfo.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/auth/dto/TokenResponse.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/auth/dto/User.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/auth/repository/AuthApi.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/api/AuthApi.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/auth/repository/AuthRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/auth/repository/AuthRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/auth/repository/KakaoLoginRepositoryImpl.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/auth/repository/KakaoLoginRepositoryImpl.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/auth/repository/NaverLoginRepositoryImpl.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/auth/repository/NaverLoginRepositoryImpl.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/auth/repository/SocialLoginRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/auth/repository/SocialLoginRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/di/AppModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/di/AppModule.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/di/NetworkModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/di/NetworkModule.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/auth/AuthState.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/auth/AuthState.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/auth/AuthViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/auth/AuthViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/auth/LoginFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/auth/LoginFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/auth/SignUpFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/auth/SignUpFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/res/layout/fragment_login.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/res/layout/fragment_login.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/res/layout/fragment_sign_up.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/res/layout/fragment_sign_up.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -127,7 +144,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=Default, isTemplate=false, identifier=serial=192.168.0.12:39205;connection=26f93f0d)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=Default, isTemplate=false, identifier=serial=192.168.0.11:43607;connection=364f207b)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />

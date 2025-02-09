@@ -45,6 +45,8 @@ class ProfileModal(
         }
     }
 
+
+
     private fun initializeViews() {
         with(binding) {
             // 초기값 설정
@@ -75,11 +77,20 @@ class ProfileModal(
                     newNickname.length < 2 -> {
                         nicknameEditText.error = "닉네임은 2자 이상이어야 합니다"
                     }
+
+                    newNickname.length > 13 -> {
+                        nicknameEditText.error = "닉네임은 13자 이하여야 합니다"
+                    }
                     else -> {
                         onConfirm(newNickname)
                         dismiss()
                     }
                 }
+            }
+
+            logoutButton.setOnClickListener {
+                onLogout()
+                dismiss()
             }
         }
     }

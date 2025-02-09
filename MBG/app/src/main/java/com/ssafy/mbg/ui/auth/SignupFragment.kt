@@ -41,7 +41,24 @@ class SignupFragment : Fragment() {
     private fun setupClickListeners() {
         binding.btnSignUp.setOnClickListener {
             val nickname = binding.etNickname.text.toString()
-            viewModel.register(args.email, args.name, args.socialId, nickname)
+            when {
+                nickname.isBlank() -> {
+                    binding.nicknameInputLayout.error = "닉네임을 입력해주세요"
+                }
+
+                nickname.length < 2 -> {
+                    binding.nicknameInputLayout.error = "닉네임은 2자 이상이어야 합니다"
+                }
+
+                nickname.length > 13 -> {
+                    binding.nicknameInputLayout.error = "닉네임은 13자 이하여야 합니다"
+                }
+
+                else -> {
+                    binding.nicknameInputLayout.error = null
+                    viewModel.register(args.email, args.name, args.socialId, nickname)
+                }
+            }
         }
     }
 
@@ -63,6 +80,7 @@ class SignupFragment : Fragment() {
                         binding.progressBar.visibility = View.GONE
                         Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
                     }
+
                     else -> binding.progressBar.visibility = View.GONE
                 }
             }

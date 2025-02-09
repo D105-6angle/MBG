@@ -4,7 +4,7 @@ import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.profile.NidProfileCallback
 import com.navercorp.nid.profile.data.NidProfileResponse
-import com.ssafy.tmbg.data.auth.dto.SocialUserInfo
+import com.ssafy.tmbg.data.auth.dao.SocialUserInfo
 import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume

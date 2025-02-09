@@ -50,17 +50,25 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/etNickname"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/nicknameInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:background="@drawable/edit_text_background"
-            android:hint="@string/hint_text"
-            android:minHeight="52dp"
-            android:padding="16dp"
-            android:textColorHint="#999999"
-            app:layout_constraintTop_toBottomOf="@id/tvNicknameLabel" />
+            app:errorEnabled="true"
+            app:layout_constraintTop_toBottomOf="@id/tvNicknameLabel">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etNickname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edit_text_background"
+                android:hint="@string/hint_text"
+                android:minHeight="52dp"
+                android:padding="16dp"
+                android:textColorHint="#999999" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/tvNewUserQuestion"
