@@ -10,5 +10,5 @@ interface AuthRepository {
     suspend fun login(loginRequest: LoginRequest) : Result<LoginResponse>
     suspend fun register(registerRequest: RegisterRequest) : Result<RegisterResponse>
     suspend fun updateNickname(userId: Long, nickname : String) : Result<Unit>
-    suspend fun withDraw(userId : Long) : Result<WithdrawResponse>
+    suspend fun withDraw(userId : Long) : Result<Unit>
 }

@@ -92,6 +92,10 @@ class ProfileModal(
                 onLogout()
                 dismiss()
             }
+
+            withdrawButton.setOnClickListener {
+                showWithdrawConfirmDialog()
+            }
         }
     }
 

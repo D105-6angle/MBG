@@ -199,7 +199,7 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun withDraw(userId: Long): Result<WithdrawResponse> {
+    override suspend fun withDraw(userId: Long): Result<Unit> {
         return handleApiCall(
             apiCall = { myPageApi.withDraw(userId) },
             noDataError = "회원 탈퇴 데이터가 없습니다.",

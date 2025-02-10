@@ -31,6 +31,14 @@ class PageFragment : Fragment() {
 
     private lateinit var problemHistoryAdapter: ProblemHistoryAdapter
 
+    private fun getTitle(solvedCount : Int) : String {
+        return when {
+            solvedCount in 0..5 -> "꿈 꾸는 도전자"
+            solvedCount in 6..10 -> "꿈 많은 모험가"
+            else -> "꿈이룬 탐험가"
+        }
+
+    }
     private fun initializeAdapter() {
         problemHistoryAdapter = ProblemHistoryAdapter { history ->
             val action = PageFragmentDirections.actionPageFragmentToHistoryDetailFragment(
@@ -146,5 +154,8 @@ class PageFragment : Fragment() {
         // 더미 데이터 생성 - 새로운 필드 추가
         val histories = findProblemAll()
         problemHistoryAdapter.updateHistories(histories)
+
+        val solvedCount = histories.size
+        binding.profileTitle.text = getTitle(solvedCount)
     }
 }

@@ -43,6 +43,6 @@ interface MyPageApi {
     @DELETE("mypage/{userId}")
     suspend fun withDraw(
         @Path("userId") userId: Long
-    ): Response<WithdrawResponse>
+    ): Response<Unit>
 
 }
