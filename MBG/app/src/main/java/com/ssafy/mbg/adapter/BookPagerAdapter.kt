@@ -10,7 +10,7 @@ class BookPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
     override fun getItemCount(): Int = 2
 
     override fun createFragment(position: Int): Fragment {
-        return BookListFragment(position == 0).also {
+        return BookListFragment.newInstance(position == 0).also {
             fragments[position] = it
         }
     }
@@ -18,4 +18,4 @@ class BookPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
     fun notifyTabChanged(position: Int) {
         fragments[position]?.refreshCards()
     }
-} 
+}
