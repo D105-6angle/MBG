@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.model.mapper.room.GroupMapper">
+
+    <resultMap id="MemberResultMap" type="com.ssafy.controller.room.member.MemberResponse">
+        <result property="userId"   column="user_id"/>
+        <result property="name"     column="name"/>
+        <result property="nickname" column="nickname"/>
+        <result property="email"    column="email"/>
+    </resultMap>
+
+    <!-- num_of_groups -->
+    <select id="selectNumOfGroupsByRoomId" parameterType="long" resultType="int">
+        SELECT num_of_groups
+        FROM rooms
+        WHERE room_id = #{roomId}
+    </select>
+
+    <!-- 조원 목록 조회 -->
+    <select id="selectMembersByRoomAndGroup"
+            parameterType="map"
+            resultMap="MemberResultMap">
+        SELECT
+            u.user_id    AS user_id,
+            u.name       AS name,
+            u.nickname   AS nickname,
+            u.email      AS email
+        FROM memberships m
+                 JOIN users u ON m.user_id = u.user_id
+        WHERE m.room_id = #{roomId}
+          AND m.group_no = #{groupNo}
+    </select>
+
+    <!-- 특정 방/조에 속한 멤버 수 -->
+    <select id="countMembers" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM memberships
+        WHERE room_id = #{roomId}
+          AND group_no = #{groupNo}
+    </select>
+
+    <!-- 전체 미션 수 -->
+    <select id="countTotalMissions" parameterType="long" resultType="int">
+        <!-- 수정됨: 예시로 상수값 10을 반환하도록 변경 (실제 미션 테이블이 없으므로) -->
+        SELECT 10
+    </select>
+
+    <!-- 현재 조가 완료한 미션 수 -->
+    <select id="countCompletedMissions" parameterType="map" resultType="int">
+        <!-- 수정됨: tmission_completions -> pmission_completions, join 조건 수정 및 DISTINCT 사용 -->
+        SELECT COUNT(DISTINCT tc.mission_id)
+        FROM pmission_completions tc
+        JOIN memberships m ON tc.user_id = m.user_id
+        WHERE m.room_id = #{roomId}
+        AND m.group_no = #{groupNo}
+    </select>
+
+    <!-- 특정 방, 특정 조의 특정 멤버를 삭제 -->
+    <delete id="deleteMember" parameterType="map">
+        DELETE FROM memberships
+        WHERE room_id = #{roomId}
+          AND group_no = #{groupNo}
+          AND user_id = #{userId}
+    </delete>
+
+</mapper>

@@ -7,10 +7,11 @@ import com.ssafy.exception.common.InvalidRequestException;
 import com.ssafy.model.entity.Room;
 import com.ssafy.model.mapper.room.RoomMapper;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Service
@@ -18,6 +19,7 @@ import java.util.UUID;
 public class RoomService {
 
     private final RoomMapper roomMapper;
+    private static final Logger logger = LoggerFactory.getLogger(RoomService.class);
 
     public RoomResponse.Room createRoom(RoomRequest request, Long teacherId) {
         // 필수 항목 검증
@@ -48,8 +50,7 @@ public class RoomService {
             throw new DatabaseOperationException("방 생성 중 DB 작업에 실패했습니다.");
         }
 
-        // 입력된 조 갯수만큼 그룹 생성
-        createGroupsForRoom(room.getRoomId(), request.getNumOfGroups());
+        logger.info("Room {} 생성됨. 그룹 번호: 1 ~ {}", room.getRoomId(), room.getNumOfGroups());
 
         // RoomResponse 객체 생성
         return RoomResponse.Room.builder()
@@ -62,13 +63,8 @@ public class RoomService {
                 .build();
     }
 
-    //초대코드
+    // 초대코드 생성 메서드
     private String generateInviteCode() {
         return UUID.randomUUID().toString().substring(0, 8);
-    }
-
-    // 조(그룹) 생성
-    private void createGroupsForRoom(Long roomId, int numOfGroups) {
-
     }
 }

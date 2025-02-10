@@ -4,6 +4,7 @@ import com.ssafy.model.entity.User;
 import com.ssafy.model.service.auth.AuthService;
 import com.ssafy.model.service.room.RoomService;
 import com.ssafy.security.JwtTokenProvider;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class RoomController {
     private final RoomService roomService;
     private final JwtTokenProvider jwtTokenProvider; // JWT 토큰 파싱용 Bean
     private final AuthService authService;
-
+    @Operation(summary = "방 생성")
     @PostMapping
     public ResponseEntity<RoomResponse.Room> createRoom(@RequestBody RoomRequest roomRequest,
                                                         HttpServletRequest request) {
