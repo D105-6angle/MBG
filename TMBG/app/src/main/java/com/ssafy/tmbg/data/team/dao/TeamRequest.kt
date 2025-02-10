@@ -5,5 +5,5 @@ import java.util.*
 data class TeamRequest(
     val roomName: String,
     val location : String,
-    val numberOfGroups:Int,
+    val numOfGroups:Int,
 )

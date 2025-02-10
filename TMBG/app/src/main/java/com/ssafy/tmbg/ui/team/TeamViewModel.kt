@@ -30,9 +30,14 @@ class TeamViewModel @Inject constructor(
     private val _roomId = MutableLiveData<Int>()
     val roomId: LiveData<Int> = _roomId
 
+    // 에러 메시지를 위한 LiveData 추가
+    private val _error = MutableLiveData<String>()
+    val error: LiveData<String> = _error
+
     init {
         _hasTeam.value = false
         _roomId.value = -1
+        _error.value = ""
     }
 
     fun createTeam(teamRequest: TeamRequest) {
@@ -51,12 +56,16 @@ class TeamViewModel @Inject constructor(
                         getTeam(teamCreateResponse.roomId.toInt())
                     } ?: run {
                         Log.e("TeamViewModel", "팀 생성 성공했지만 응답 바디가 null입니다")
+                        _error.value = "팀 생성 응답이 비어있습니다"
                     }
                 } else {
-                    Log.e("TeamViewModel", "팀 생성 실패 - HTTP 에러: ${response.errorBody()?.string()}")
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("TeamViewModel", "팀 생성 실패 - HTTP 에러: $errorBody")
+                    _error.value = "팀 생성에 실패했습니다 (${response.code()})"
                 }
             } catch (e: Exception) {
                 Log.e("TeamViewModel", "팀 생성 실패 - 네트워크 에러: ${e.message}", e)
+                _error.value = "네트워크 오류: ${e.message}"
             }
         }
     }

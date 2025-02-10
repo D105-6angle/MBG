@@ -2,7 +2,6 @@ package com.ssafy.tmbg.data.team.dao
 
 // Team 데이터
 data class Team(
-
     val roomId: Number,
     val roomName: String,
     val inviteCode: String,
@@ -19,5 +18,4 @@ data class Teacher(
 data class Group(
     val groupNo: Number,
     val memberCount: Number
-
 )

@@ -13,11 +13,11 @@ import retrofit2.http.Path
 interface TeamApi {
 
     /** 생성된 방을 조회*/
-    @GET("api/rooms/{roomId}")
+    @GET("rooms/{roomId}")
     suspend fun getTeam(@Path("roomId") roomId:Int,): Response<Team>
 
     /**방 생성*/
-    @POST("api/rooms")
+    @POST("rooms")
     suspend fun createTeam(@Body teamRequest: TeamRequest): Response<TeamCreateResponse>
 
 }

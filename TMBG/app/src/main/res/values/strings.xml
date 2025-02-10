@@ -12,6 +12,16 @@
     <string name="hint_text">김봉년</string>
     <string name="submit_sign_up_btn">애들 관리하러 가기</string>
 
+    <!--로그아웃 회원탈퇴-->
+    <string name="register_out">회원탈퇴</string>
+    <string name="my_email">qud5252@naver.com</string>
+    <string name="my_name">김병년</string>
+    <string name="my_nick">김븅년</string>
+    <string name="confirm">확인</string>
+    <string name="confirm_withdraw">정말 탈퇴하나요?</string>
+    <string name="withdraw_msg">진짜로..?ㅠㅠ</string>
+    <string name="change">변경하기</string>
+
     <!-- 팀 모달 -->
     <string name="team_count">조 갯수</string>
     <string name="team_destination">위치</string>

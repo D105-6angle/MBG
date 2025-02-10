@@ -56,7 +56,6 @@ class AuthInterceptor @Inject constructor(
         val noAuthPath = listOf(
             "/auth/login",
             "/auth/register",
-            "/rooms/{roomId}/schedules"
         )
         // 인증이 필요하지 않은 경로에 포함되어 있으면 false, 그렇지 않으면 true 반환
         val result = !noAuthPath.any { path ->
