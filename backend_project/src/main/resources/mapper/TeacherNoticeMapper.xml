@@ -1,34 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.model.mapper.fcm.TeacherNoticeMapper">
-    <insert id="insertNotice" parameterType="TeacherNotice" useGeneratedKeys="true" keyProperty="noticeId">
-        INSERT INTO teacher_notices (
-            room_id,
-            content,
-            title
-        ) VALUES (
-                     #{roomId},
-                     #{content},
-                     #{title}
-                 )
-    </insert>
 
-    <select id="selectNotice" resultType="TeacherNotice">
-        SELECT notice_id, room_id, content, created_at, title, status
-        FROM teacher_notices
-        WHERE notice_id = #{noticeId} AND room_id = #{roomId}
-    </select>
-
-    <select id="selectNoticesByRoomId" resultType="TeacherNotice">
-        SELECT notice_id, room_id, content, created_at, title, status
+    <!-- 공지사항 목록 조회 -->
+    <select id="getNoticesByRoomId" resultType="com.ssafy.controller.TeacherNotice.TeacherNoticeDto">
+        SELECT
+            notice_id as noticeId,
+            content
         FROM teacher_notices
         WHERE room_id = #{roomId}
         ORDER BY created_at DESC
     </select>
 
+    <!-- 공지사항 등록 -->
+    <insert id="insertNotice" parameterType="com.ssafy.model.entity.TeacherNotice"
+            useGeneratedKeys="true" keyProperty="noticeId">
+        INSERT INTO teacher_notices (
+            room_id,
+            content,
+            title,
+            created_at,
+            status
+        ) VALUES (
+                     #{roomId},
+                     #{content},
+                     #{title},
+                     NOW(),
+                     FALSE
+                 )
+    </insert>
+
+    <!-- 공지사항 상세 조회 -->
+    <select id="selectNotice" resultType="com.ssafy.model.entity.TeacherNotice">
+        SELECT
+            notice_id as noticeId,
+            room_id as roomId,
+            content,
+            created_at as createdAt,
+            title,
+            status
+        FROM teacher_notices
+        WHERE notice_id = #{noticeId} AND room_id = #{roomId}
+    </select>
+
+    <!-- 방별 공지사항 목록 조회 -->
+    <select id="selectNoticesByRoomId" resultType="com.ssafy.model.entity.TeacherNotice">
+        SELECT
+            notice_id as noticeId,
+            room_id as roomId,
+            content,
+            created_at as createdAt,
+            title,
+            status
+        FROM teacher_notices
+        WHERE room_id = #{roomId}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 공지사항 상태 업데이트 -->
     <update id="updateNoticeStatus">
         UPDATE teacher_notices
         SET status = #{status}
         WHERE notice_id = #{noticeId}
     </update>
+
 </mapper>

@@ -1,5 +1,6 @@
 package com.ssafy.model.service.fcm;
 
+import com.ssafy.controller.TeacherNotice.TeacherNoticeDto;
 import com.ssafy.model.entity.Alarm;
 import com.ssafy.model.entity.TeacherNotice;
 import com.ssafy.model.mapper.dao.FcmDao;
@@ -66,6 +67,10 @@ public class TeacherNoticeService {
         } else if (errors.size() == tokens.size()) {
             throw new RuntimeException("모든 FCM 메시지 전송이 실패했습니다.");
         }
+    }
+
+    public List<TeacherNoticeDto> getNoticesByRoomId(Long roomId) {
+        return teacherNoticeMapper.getNoticesByRoomId(roomId);
     }
 
 //    @Transactional
