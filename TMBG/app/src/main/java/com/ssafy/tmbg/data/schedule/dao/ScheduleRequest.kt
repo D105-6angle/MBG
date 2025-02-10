@@ -12,7 +12,7 @@ import java.util.*
  * @property content 일정 내용
  */
 data class ScheduleRequest(
-    val roomId: Long,
+    val roomId: Int,
     val startTime: String,
     val endTime: String,
     val content: String

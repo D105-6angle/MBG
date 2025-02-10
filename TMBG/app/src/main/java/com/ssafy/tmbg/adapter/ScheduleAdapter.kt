@@ -3,12 +3,10 @@ package com.ssafy.tmbg.adapter
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.DiffUtil
 import com.ssafy.tmbg.databinding.ItemScheduleBinding
 import com.ssafy.tmbg.data.schedule.dao.Schedule
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -16,8 +14,10 @@ import java.util.*
  * 일정 목록을 RecyclerView에 표시하기 위한 어댑터
  * ListAdapter를 상속받아 일정 목록의 변경사항을 효율적으로 처리합니다.
  */
-class ScheduleAdapter : ListAdapter<Schedule, ScheduleAdapter.ViewHolder>(ScheduleDiffCallback()) {
+class ScheduleAdapter : RecyclerView.Adapter<ScheduleAdapter.ViewHolder>() {
 
+    private var scheduleList = mutableListOf<Schedule>()
+    
     // 수정/삭제 버튼 클릭 리스너
     private var onEditClick: ((Schedule) -> Unit)? = null
     private var onDeleteClick: ((Schedule) -> Unit)? = null
@@ -29,6 +29,12 @@ class ScheduleAdapter : ListAdapter<Schedule, ScheduleAdapter.ViewHolder>(Schedu
 
     fun setOnDeleteClickListener(listener: (Schedule) -> Unit) {
         onDeleteClick = listener
+    }
+
+    fun setScheduleList(list: List<Schedule>) {
+        scheduleList.clear()
+        scheduleList.addAll(list)
+        notifyDataSetChanged()
     }
 
     /**
@@ -55,7 +61,7 @@ class ScheduleAdapter : ListAdapter<Schedule, ScheduleAdapter.ViewHolder>(Schedu
      * @param position 데이터 위치
      */
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(scheduleList[position])
     }
 
     /**
@@ -148,4 +154,6 @@ class ScheduleAdapter : ListAdapter<Schedule, ScheduleAdapter.ViewHolder>(Schedu
             return oldItem == newItem
         }
     }
+
+    override fun getItemCount(): Int = scheduleList.size
 }

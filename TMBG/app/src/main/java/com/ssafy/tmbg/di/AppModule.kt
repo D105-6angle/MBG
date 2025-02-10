@@ -1,6 +1,7 @@
 package com.ssafy.tmbg.di
 
 import android.content.Context
+import android.content.SharedPreferences
 import com.ssafy.tmbg.api.AuthApi
 import com.ssafy.tmbg.api.ScheduleApi
 import com.ssafy.tmbg.data.auth.repository.AuthRepository
@@ -63,5 +64,11 @@ object AppModule {
         authApi: AuthApi
     ): AuthRepository {
         return AuthRepositoryImpl(authApi)
+    }
 
-    }}
+    @Provides
+    @Singleton
+    fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences("TMBG_PREFS", Context.MODE_PRIVATE)
+    }
+}
