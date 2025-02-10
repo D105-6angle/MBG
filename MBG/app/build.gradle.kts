@@ -105,8 +105,8 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 
     // FCM 사용 위한 plugins
-//    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
-//    implementation ("com.google.firebase:firebase-messaging-ktx")
+    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
+    implementation ("com.google.firebase:firebase-messaging-ktx")
 
     // Retrofit2
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -146,12 +146,12 @@ dependencies {
     implementation("com.jakewharton.timber:timber:5.0.1")
 
     // firebase 사용에 필요한 의존성 추가 firebase + database
-//    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
-//    implementation("com.google.firebase:firebase-database-ktx")
+    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
+    implementation("com.google.firebase:firebase-database-ktx")
 
     // firebase auth 에서 필요한 의존성 추가
-//    implementation ("com.google.firebase:firebase-auth-ktx")
-//    implementation ("com.google.android.gms:play-services-auth:20.7.0")
+    implementation ("com.google.firebase:firebase-auth-ktx")
+    implementation ("com.google.android.gms:play-services-auth:20.7.0")
 
     // JUnit Test
     testImplementation(libs.junit)
