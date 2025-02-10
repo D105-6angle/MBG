@@ -4,7 +4,7 @@ import android.content.Context
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
-import com.ssafy.mbg.data.auth.dto.SocialUserInfo
+import com.ssafy.mbg.data.auth.dao.SocialUserInfo
 import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume

@@ -1,7 +1,10 @@
 package com.ssafy.tmbg.di
 
 import android.content.Context
+import com.ssafy.tmbg.api.AuthApi
 import com.ssafy.tmbg.api.ScheduleApi
+import com.ssafy.tmbg.data.auth.repository.AuthRepository
+import com.ssafy.tmbg.data.auth.repository.AuthRepositoryImpl
 import com.ssafy.tmbg.data.auth.repository.KakaoLoginRepositoryImpl
 import com.ssafy.tmbg.data.auth.repository.NaverLoginRepositoryImpl
 import com.ssafy.tmbg.data.auth.repository.SocialLoginRepository
@@ -32,7 +35,11 @@ object AppModule {
 //    @Singleton
 //    fun provideNaverLoginRepository(): SocialLoginRepository = NaverLoginRepositoryImpl()
 
-
+    @Provides
+    @Singleton
+    fun provideAuthApi(retrofit: Retrofit) : AuthApi {
+        return retrofit.create(AuthApi::class.java)
+    }
     /**
      * ScheduleApi 인터페이스의 구현체를 제공합니다.
      * @param retrofit Retrofit 인스턴스
@@ -43,4 +50,18 @@ object AppModule {
     fun provideScheduleApi(retrofit: Retrofit): ScheduleApi {
         return retrofit.create(ScheduleApi::class.java)
     }
-}
+
+    @Provides
+    @Singleton
+    fun providerUserPreferences(@ApplicationContext context: Context) : UserPreferences {
+        return UserPreferences(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthRepository(
+        authApi: AuthApi
+    ): AuthRepository {
+        return AuthRepositoryImpl(authApi)
+
+    }}

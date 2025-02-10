@@ -1,4 +1,4 @@
-package com.ssafy.tmbg.data.auth.dao
+package com.ssafy.mbg.data.auth.dao
 
 data class User(
     val userId : String,

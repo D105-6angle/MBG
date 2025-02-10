@@ -12,8 +12,6 @@ plugins {
     id("androidx.navigation.safeargs.kotlin")
     kotlin("plugin.serialization") version "1.5.0"
 }
-// 앱 키를 가져오기 위해 properties 변수 선언
-
 
 android {
     namespace = "com.ssafy.tmbg"
@@ -47,6 +45,12 @@ android {
         named("release"){
             isMinifyEnabled = false
             setProguardFiles(listOf(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"))
+            buildConfigField("String", "APP_TYPE", "\"U002\"")
+            buildConfigField("String", "BASE_URL", "\"https://i12d106.p.ssafy.io/api/\"")
+        }
+        named("debug") {
+            buildConfigField("String", "APP_TYPE", "\"U002\"")
+            buildConfigField("String", "BASE_URL", "\"https://i12d106.p.ssafy.io/api/\"")
         }
     }
     compileOptions {
@@ -64,7 +68,6 @@ android {
         viewBinding = true
         buildConfig = true
     }
-
 
 }
 
@@ -109,10 +112,6 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
-
-    // Gson 관련 의존성 추가
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.google.code.gson:gson:2.9.0")
 
     // OkHttp3
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
@@ -169,6 +168,9 @@ dependencies {
 
     // 네이버 로그인
     implementation(libs.naver.oauth)
+    // 구글맵 폴리곤
+    implementation ("com.google.maps.android:android-maps-utils:2.4.0")
+
 }
 
 kapt {

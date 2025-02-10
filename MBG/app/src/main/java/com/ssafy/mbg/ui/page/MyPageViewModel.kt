@@ -1,21 +1,24 @@
 package com.ssafy.mbg.ui.page
 
 import androidx.lifecycle.ViewModel
-import com.ssafy.mbg.data.auth.dto.User
 import com.ssafy.mbg.data.mypage.repository.MyPageRepository
-import com.ssafy.mbg.data.preferences.UserPreferences
+import com.ssafy.mbg.di.UserPreferences
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import javax.inject.Inject
 
 /**
  * 마이페이지 화면의 UI 상태를 관리하는 ViewModel
  */
-class MyPageViewModel(
-    private val userPreferences: UserPreferences
+@HiltViewModel
+class MyPageViewModel @Inject constructor(
+    private val userPreferences: UserPreferences,
+    private val repository : MyPageRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<MyPageState>(MyPageState.Initial)
-    private val repository = MyPageRepository()
 
-    private val userId: String
+
+    private val userId: Long
         get() = userPreferences.userId ?: throw  IllegalArgumentException("유저 ID를 찾을 수 없음")
     /**
      * 사용자의 마이페이지 정보를 조회
@@ -110,50 +113,4 @@ class MyPageViewModel(
         }
     }
 
-    /**
-     * @param userId 사용자 ID
-     * @request newNickname 변경할 닉네임
-     */
-
-    suspend fun updateNickname(userId: String, newNickname: String) {
-        _uiState.value = MyPageState.Loading
-        try {
-            val res = repository.updateNickname(userId, newNickname)
-            if (res.isSuccessful) {
-                // 성공 처리
-                _uiState.value = MyPageState.Success(message = "닉네임이 변경 되었어요!")
-            } else {
-                // 에러 처리
-                _uiState.value = MyPageState.Error(
-                    message = res.body()?.message ?: "알 수 없는 에러가 발생했습니다"
-                )
-            }
-        } catch (e: Exception) {
-            // 네트워크 예외 처리
-            _uiState.value = MyPageState.Error("네트워크 오류가 발생 했습니다.")
-        }
-    }
-
-    /**
-     * @param userId 사용자 ID
-     */
-    suspend fun deleteUser(userId: String) {
-        _uiState.value = MyPageState.Loading
-        try {
-            val res = repository.deleteUser(userId)
-            if (res.isSuccessful) {
-                // 성공 처리
-                userPreferences.userId = null
-                _uiState.value = MyPageState.Success()
-            } else {
-                // 예외 처리
-                _uiState.value = MyPageState.Error(
-                    message = res.body()?.message ?: "알 수 없는 에러가 발생 했습니다."
-                )
-            }
-        } catch (e: Exception) {
-            // 네트워크 예외 처리
-            _uiState.value = MyPageState.Error("네트워크 오류가 발생했습니다.")
-        }
-    }
 }
