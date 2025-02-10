@@ -28,7 +28,7 @@ class MbgApplication : Application() {
         catch (e:Exception) {
             Log.d(SocialTAG, "초기화 실패")
         }
-//        val key = KeyHashUtil.getKeyHash(this)
-//        Log.d(TAG, key)
+        val key = KeyHashUtil.getKeyHash(this)
+        Log.d(SocialTAG, key)
     }
 }
