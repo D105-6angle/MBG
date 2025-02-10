@@ -233,46 +233,46 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-//    fun withDraw() {
-//        viewModelScope.launch {
-//            _authState.value = AuthState.Loading
-//            try {
-//                val userId = userPreferences.userId
-//                if(userId != null) {
-//                    authRepository.withDraw(userId)
-//                        .onSuccess {
-//                            serverTokenManager.clearToken()
-//                            userPreferences.userId = null
-//                            _authState.value = AuthState.NavigateToLogin
-//                        }
-//                        .onFailure { exception ->
-//                            _authState.value = AuthState.Error(exception.message ?: "회원 탈퇴 실패")
-//                        }
-//                }
-//            } catch (e: Exception) {
-//                _authState.value = AuthState.Error("회원 탈퇴")
-//            }
-//        }
-//    }
-//
-//    fun updateNickname(newNickname : String) {
-//        viewModelScope.launch {
-//            _authState.value = AuthState.Loading
-//            try {
-//                val userId = userPreferences.userId
-//                if(userId != null) {
-//                    authRepository.updateNickname(userId, newNickname)
-//                        .onSuccess {
-//                            _authState.value = AuthState.Success("닉네임이 변경되었습니다")
-//                        }
-//                        .onFailure { exception ->
-//                            _authState.value = AuthState.Error(exception.message ?: "닉네임 변경 실패 ")
-//                        }
-//                }
-//            } catch (e : Exception) {
-//                _authState.value = AuthState.Error("닉네임 변경 실패")
-//            }
-//        }
-//    }
+    fun withDraw() {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            try {
+                val userId = userPreferences.userId
+                if(userId != null) {
+                    authRepository.withDraw(userId)
+                        .onSuccess {
+                            serverTokenManager.clearToken()
+                            userPreferences.userId = null
+                            _authState.value = AuthState.NavigateToLogin
+                        }
+                        .onFailure { exception ->
+                            _authState.value = AuthState.Error(exception.message ?: "회원 탈퇴 실패")
+                        }
+                }
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error("회원 탈퇴")
+            }
+        }
+    }
+
+    fun updateNickname(newNickname : String) {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            try {
+                val userId = userPreferences.userId
+                if(userId != null) {
+                    authRepository.updateNickname(userId, newNickname)
+                        .onSuccess {
+                            _authState.value = AuthState.Success("닉네임이 변경되었습니다")
+                        }
+                        .onFailure { exception ->
+                            _authState.value = AuthState.Error(exception.message ?: "닉네임 변경 실패 ")
+                        }
+                }
+            } catch (e : Exception) {
+                _authState.value = AuthState.Error("닉네임 변경 실패")
+            }
+        }
+    }
 
 }

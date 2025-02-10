@@ -12,27 +12,133 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- 위치 선택 버튼 -->
+    <!-- 위치 선택 버튼 (기존) -->
     <Button
         android:id="@+id/btn_pick_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
         android:layout_margin="16dp"
-        android:text="Pick Location"
         android:backgroundTint="@android:color/black"
-        android:textColor="@android:color/white"
-        android:layout_gravity="top|start" />
+        android:text="Pick Location"
+        android:textColor="@android:color/white" />
+
+    <!-- 모드 토글 버튼 -->
+    <ToggleButton
+        android:id="@+id/toggle_mode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_margin="16dp"
+        android:textOff="Auto Mode"
+        android:textOn="Picker Mode" />
+
+    <!-- 화살표 버튼 컨테이너 (Picker Mode일 때만 보임) -->
+    <GridLayout
+        android:id="@+id/arrow_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="16dp"
+        android:columnCount="3"
+        android:rowCount="3"
+        android:elevation="8dp"
+        android:visibility="gone">
+
+        <!-- 좌상 (빈 공간) -->
+        <View
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_row="0"
+            android:layout_column="0" />
+
+        <!-- 위쪽 화살표 -->
+        <ImageButton
+            android:id="@+id/btn_arrow_up"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_row="0"
+            android:layout_column="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/arrow_up_float"
+            android:contentDescription="Up" />
+
+        <!-- 우상 (빈 공간) -->
+        <View
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_row="0"
+            android:layout_column="2" />
+
+        <!-- 왼쪽 화살표 -->
+        <ImageButton
+            android:id="@+id/btn_arrow_left"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/arrow_up_float"
+            android:rotation="-90"
+            android:contentDescription="Left" />
+
+        <!-- 가운데 (빈 공간) -->
+        <View
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_row="1"
+            android:layout_column="1" />
+
+        <!-- 오른쪽 화살표 -->
+        <ImageButton
+            android:id="@+id/btn_arrow_right"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_row="1"
+            android:layout_column="2"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/arrow_up_float"
+            android:rotation="90"
+            android:contentDescription="Right" />
+
+        <!-- 좌하 (빈 공간) -->
+        <View
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_row="2"
+            android:layout_column="0" />
+
+        <!-- 아래쪽 화살표 -->
+        <ImageButton
+            android:id="@+id/btn_arrow_down"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_row="2"
+            android:layout_column="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/arrow_up_float"
+            android:rotation="180"
+            android:contentDescription="Down" />
+
+        <!-- 우하 (빈 공간) -->
+        <View
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_row="2"
+            android:layout_column="2" />
+
+    </GridLayout>
 
     <!-- Bottom Sheet: 피커 리스트와 사용자 위치 간의 거리 표시 -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-        app:behavior_peekHeight="170dp"
+        android:background="@drawable/top_radius_bottom_sheet"
         app:behavior_fitToContents="false"
         app:behavior_halfExpandedRatio="0.5"
-        android:background="@drawable/top_radius_bottom_sheet">
+        app:behavior_peekHeight="170dp"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <!-- 상단 Handle Bar (드래그 손잡이) -->
         <View
@@ -41,31 +147,31 @@
             android:layout_height="6dp"
             android:layout_marginTop="10dp"
             android:background="@drawable/bottom_sheet_handle"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/bottomSheetTitleTextView"
             android:layout_width="0dp"
             android:layout_height="100dp"
+            android:gravity="center"
             android:text="찾는 중 입니다"
+            android:textColor="@color/black"
             android:textSize="15sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
-            android:gravity="center"
-            app:layout_constraintTop_toBottomOf="@+id/bottom_sheet_handle"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@+id/bottom_sheet_handle" />
 
         <View
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@+id/bottomSheetTitleTextView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:background="@color/white" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bottomSheetTitleTextView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

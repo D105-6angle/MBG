@@ -4,15 +4,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.ssafy.mbg.ui.modal.ProfileModal
 import com.ssafy.tmbg.R
 import com.ssafy.tmbg.databinding.FragmentAdminMainBinding
+import com.ssafy.tmbg.ui.auth.AuthViewModel
 import com.ssafy.tmbg.ui.team.TeamCreateDialog
+import com.ssafy.tmbg.ui.team.TeamViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AdminMainFragment : Fragment() {
     private var _binding: FragmentAdminMainBinding? = null
     private val binding get() = _binding!!
+    private val teamViewModel: TeamViewModel by viewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
+    private val authViewModel: AuthViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -26,13 +37,26 @@ class AdminMainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupClickListeners()
+
+        // TeamViewModel의 roomId 변경을 관찰하여 MainViewModel과 동기화
+        teamViewModel.roomId.observe(viewLifecycleOwner) { roomId ->
+            if (roomId != -1) {
+                mainViewModel.setRoomId(roomId)
+            }
+        }
     }
     // 네비게이션 설정을 통해, 각 버튼 클릭 시 네비게이션 액션 호출
     private fun setupClickListeners() {
         binding.apply {
-            // Team의 경우 먼저 팀 생성 모달창이 보여줘야 함
+            // Team 버튼 클릭 시 roomId 체크
             btnTeam.setOnClickListener {
-                TeamCreateDialog().show(childFragmentManager, "TeamCreateDialog")
+                if (mainViewModel.roomId.value != -1) {
+                    // 이미 생성된 방이 있으면 바로 TeamFragment로 이동
+                    findNavController().navigate(R.id.action_adminMain_to_team)
+                } else {
+                    // 생성된 방이 없으면 TeamCreateDialog 표시
+                    TeamCreateDialog().show(childFragmentManager, "TeamCreateDialog")
+                }
             }
             // 공지사항 클릭 시 실행될 액션
             btnNotice.setOnClickListener {
@@ -42,17 +66,47 @@ class AdminMainFragment : Fragment() {
             btnMission.setOnClickListener {
                 findNavController().navigate(R.id.action_adminMain_to_mission)
             }
-            // 스케쥴 클릭 시 실행될 액션
+            // 일정 관리 버튼 클릭 처리
             btnSchedule.setOnClickListener {
-                findNavController().navigate(R.id.action_adminMain_to_schedule)
+                if (mainViewModel.roomId.value != -1) {
+                    findNavController().navigate(R.id.action_adminMain_to_schedule)
+                } else {
+                    Toast.makeText(context, "방을 먼저 생성해주세요", Toast.LENGTH_SHORT).show()
+                }
             }
             // 보고서 클릭 시 실행될 액션
             btnReport.setOnClickListener {
                 findNavController().navigate(R.id.action_adminMain_to_report)
             }
+
+            // 설정 클릭 시 실행될 액션
+            btnSetting.setOnClickListener{
+                showProfileModal()
+            }
+
         }
     }
 
+    private fun showProfileModal() {
+        val profileModal = ProfileModal(
+            context = requireContext(),
+            email = "kimssafy@ssafy.com",
+            name = "김싸피",
+            currentNickname = "김싸피",
+            onConfirm = { newNickname ->
+                // 닉네임 변경 처리
+                binding.progressBar.visibility = View.VISIBLE  // 로딩 표시 추가 필요
+                authViewModel.updateNickname(newNickname)
+            },
+            onLogout = {
+                authViewModel.logout()
+            },
+            onWithdraw = {
+                authViewModel.withDraw()
+            }
+        )
+        profileModal.show()
+    }
     fun navigateToTeam() {
         // 모달창에서 쓸 액션 이 곳에서 정의(메인 화면이 가장 최상단이기 때문)
         findNavController().navigate(R.id.action_adminMain_to_team)

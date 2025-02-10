@@ -80,11 +80,6 @@
           <theme>@style/Theme.MBG</theme>
         </config>
       </layout>
-      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_splash.xml">
-        <config>
-          <theme>@style/Theme.MBG</theme>
-        </config>
-      </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_task.xml">
         <config>
           <theme>@style/Theme.MBG</theme>
@@ -212,6 +207,7 @@
         <option value="Class" />
         <option value="Kotlin Interface" />
         <option value="Kotlin Data Class" />
+        <option value="layoutResourceFile" />
         <option value="resourceFile" />
         <option value="Kotlin Class" />
         <option value="layoutResourceFile" />
@@ -238,6 +234,8 @@
     &quot;DEBUGGABLE_DEVICE&quot;: &quot;samsung-sm_g991n-adb-R3CR70TZQ5Y-i0lsD7._adb-tls-connect._tcp.&quot;,
     &quot;DEBUGGABLE_PROCESS&quot;: &quot;com.ssafy.mbg&quot;,
     &quot;DEBUGGER_ID&quot;: &quot;Auto&quot;,
+    &quot;Gradle.MBG [signingReport].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.MBG [signing].executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
@@ -246,9 +244,12 @@
     &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
     &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature/S12P11D106-75-auth-api-front&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/S12P11D106-35-map-ui&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/SSAFY/Documents/S12P11D106/MBG/app/src/main/res/drawable&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/SSAFY/Documents/S12P11D106/TMBG&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.17&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;AndroidSdkUpdater&quot;,
     &quot;show.do.not.copy.http.proxy.settings.to.gradle&quot;: &quot;true&quot;,
     &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
@@ -266,16 +267,9 @@
       <recent name="$PROJECT_DIR$/app/src/main/res/drawable" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\SSAFY\Desktop\S12P11D106\MBG\app\src\main\java\com\ssafy\mbg\data\auth\response" />
+      <recent name="C:\Users\SSAFY\Documents\S12P11D106\MBG\app" />
       <recent name="C:\Users\SSAFY\Documents\S12P11D106\MBG\app\src\main\res\drawable" />
       <recent name="C:\Users\SSAFY\Desktop\S12P11D106\MBG\app\src\main\res\drawable" />
-    </key>
-    <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
-      <recent name="com.ssafy.mbg.di" />
-      <recent name="com.ssafy.mbg.data.auth.request" />
-      <recent name="com.ssafy.mbg.data.auth.response" />
-      <recent name="com.ssafy.mbg.data.task.dao" />
-      <recent name="com.ssafy.mbg.api" />
     </key>
   </component>
   <component name="RunAnythingCache">

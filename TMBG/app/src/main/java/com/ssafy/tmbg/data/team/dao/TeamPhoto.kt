@@ -1,4 +1,4 @@
-package com.ssafy.tmbg.data.team
+package com.ssafy.tmbg.data.team.dao
 
 // TeamPhoto 데이터
 data class TeamPhoto(
