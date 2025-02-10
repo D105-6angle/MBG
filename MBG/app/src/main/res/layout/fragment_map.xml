@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -33,62 +34,100 @@
         android:textOn="Picker Mode" />
 
     <!-- 화살표 버튼 컨테이너 (Picker Mode일 때만 보임) -->
-    <LinearLayout
+    <GridLayout
         android:id="@+id/arrow_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="16dp"
+        android:columnCount="3"
+        android:rowCount="3"
         android:elevation="8dp"
-        android:orientation="vertical"
         android:visibility="gone">
 
-        <ImageButton
-            android:id="@+id/btn_arrow_up"
-
+        <!-- 좌상 (빈 공간) -->
+        <View
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:layout_row="0"
+            android:layout_column="0" />
+
+        <!-- 위쪽 화살표 -->
+        <ImageButton
+            android:id="@+id/btn_arrow_up"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_row="0"
+            android:layout_column="1"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Up"
-            android:src="@android:drawable/arrow_up_float" />
+            android:src="@android:drawable/arrow_up_float"
+            android:contentDescription="Up" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+        <!-- 우상 (빈 공간) -->
+        <View
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_row="0"
+            android:layout_column="2" />
 
-            <ImageButton
-                android:id="@+id/btn_arrow_left"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Left"
-                android:rotation="-90"
-                android:src="@android:drawable/arrow_up_float" />
+        <!-- 왼쪽 화살표 -->
+        <ImageButton
+            android:id="@+id/btn_arrow_left"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/arrow_up_float"
+            android:rotation="-90"
+            android:contentDescription="Left" />
 
-            <View
-                android:layout_width="16dp"
-                android:layout_height="48dp" />
+        <!-- 가운데 (빈 공간) -->
+        <View
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_row="1"
+            android:layout_column="1" />
 
-            <ImageButton
-                android:id="@+id/btn_arrow_right"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Right"
-                android:rotation="90"
-                android:src="@android:drawable/arrow_up_float" />
-        </LinearLayout>
+        <!-- 오른쪽 화살표 -->
+        <ImageButton
+            android:id="@+id/btn_arrow_right"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_row="1"
+            android:layout_column="2"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/arrow_up_float"
+            android:rotation="90"
+            android:contentDescription="Right" />
 
+        <!-- 좌하 (빈 공간) -->
+        <View
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_row="2"
+            android:layout_column="0" />
+
+        <!-- 아래쪽 화살표 -->
         <ImageButton
             android:id="@+id/btn_arrow_down"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:layout_row="2"
+            android:layout_column="1"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Down"
+            android:src="@android:drawable/arrow_up_float"
             android:rotation="180"
-            android:src="@android:drawable/arrow_up_float" />
-    </LinearLayout>
+            android:contentDescription="Down" />
+
+        <!-- 우하 (빈 공간) -->
+        <View
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_row="2"
+            android:layout_column="2" />
+
+    </GridLayout>
 
     <!-- Bottom Sheet: 피커 리스트와 사용자 위치 간의 거리 표시 -->
     <androidx.constraintlayout.widget.ConstraintLayout

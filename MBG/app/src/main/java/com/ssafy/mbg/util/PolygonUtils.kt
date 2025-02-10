@@ -34,7 +34,6 @@ object PolygonUtils {
      */
     fun distanceToPolygon(point: LatLng, polygon: List<LatLng>): Double {
         var minDistance = Double.MAX_VALUE
-        // 폴리곤은 마지막 좌표와 첫 좌표를 연결하는 선분까지 계산합니다.
         for (i in polygon.indices) {
             val start = polygon[i]
             val end = polygon[(i + 1) % polygon.size]

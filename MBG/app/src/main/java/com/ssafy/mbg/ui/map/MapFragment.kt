@@ -12,9 +12,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
-import android.widget.LinearLayout
 import android.widget.Toast
 import android.widget.ToggleButton
+import android.widget.GridLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -46,9 +46,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private val LOCATION_PERMISSION_REQUEST_CODE = 100
 
-    // 외부 PolygonData에서 polygonCoordinates 참조 (좌표 개수는 최소 3개 ~ 20개 이상 가능)
-    private val polygonCoordinates = PolygonData.polygonCoordinates
-    private lateinit var polygon: Polygon
+    // 여러 개의 폴리곤 좌표 집합을 참조
+    private val polygonList: List<List<LatLng>> = PolygonData.polygonList
+    // 그려진 폴리곤들을 저장할 리스트
+    private val drawnPolygons = mutableListOf<Polygon>()
 
     // Bottom Sheet 내 텍스트뷰 (피커 리스트와 거리 표시)
     private lateinit var bottomSheetTextView: androidx.appcompat.widget.AppCompatTextView
@@ -71,13 +72,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val additionalPickerMarkers = mutableListOf<Marker>()
     private val additionalPickerCircles = mutableListOf<Circle>()
 
-    // 면적(폴리곤) 리스트 – 필요에 따라 여러 개 추가할 수 있습니다.
-    private val initialAreaList = listOf(
-        Area("폴리곤 영역 1", polygonCoordinates)
-        // 추가 면적은 여기 추가하면 됩니다.
-    )
+    // 면적(폴리곤) 리스트 – polygonList의 각 폴리곤을 Area로 매핑
+    private val initialAreaList = polygonList.mapIndexed { index, coordinates ->
+        Area("폴리곤 영역 ${index + 1}", coordinates)
+    }
 
-    // 위치 선택 모드 플래그 (기존: 지도 클릭 시 추가 피커 등록)
+    // 위치 선택 모드 플래그 (지도 클릭 시 추가 피커 등록)
     private var isPickMode = false
     // 추가 피커 번호 카운터 (자동 이름 부여용)
     private var additionalPickerCount = 1
@@ -90,8 +90,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     // 가장 가까운 대상으로 사용자 위치와 연결할 선(Polyline)
     private var nearestLine: Polyline? = null
 
-    // 새로운 기능: Picker Mode 토글 (Auto Mode vs. Picker Mode)
-    // Picker Mode일 때는 자동 위치 갱신 대신 사용자가 화살표 버튼을 통해 위치를 이동시킵니다.
+    // Picker Mode 토글: Picker Mode일 때는 자동 위치 갱신 대신 화살표 버튼을 통한 수동 이동 사용
     private var isPickerModeEnabled = false
 
     override fun onCreateView(
@@ -99,14 +98,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // fragment_map.xml에는 지도, Pick Location 버튼, 토글 버튼, 화살표 버튼, Bottom Sheet가 포함됨
+        // fragment_map.xml에는 지도, Pick Location 버튼, 토글 버튼, 화살표(GridLayout) 버튼, Bottom Sheet가 포함됨
         return inflater.inflate(R.layout.fragment_map, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-
         bottomSheetTextView = view.findViewById(R.id.bottomSheetTitleTextView)
 
         // 지도 Fragment 초기화
@@ -122,8 +120,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         // 토글 버튼 (Auto Mode / Picker Mode 전환)
         val toggleMode: ToggleButton = view.findViewById(R.id.toggle_mode)
-        // Picker Mode일 때 사용할 화살표 버튼 컨테이너
-        val arrowContainer: LinearLayout = view.findViewById(R.id.arrow_container)
+        // arrow_container를 GridLayout으로 참조 (XML에 정의된 GridLayout)
+        val arrowContainer: GridLayout = view.findViewById(R.id.arrow_container)
         toggleMode.setOnCheckedChangeListener { _, isChecked ->
             isPickerModeEnabled = isChecked
             if (isPickerModeEnabled) {
@@ -179,20 +177,20 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
         setupMap()
-        drawPolygon()
+        drawPolygons()  // 여러 개의 폴리곤 그리기
         addInitialPickerMarkers()  // 초기 피커 3개와 초록색 원 표시
 
-        // 최초에는 내 위치가 아직 파악되지 않았다면 초기 피커("시작점") 위치로 카메라 이동
+        // 최초에 내 위치가 파악되지 않았다면 초기 피커("시작점") 위치로 카메라 이동
         if (userMarker == null) {
             googleMap.moveCamera(
                 CameraUpdateFactory.newLatLngZoom(initialPickerList[0].location, 15f)
             )
         }
 
-        // 지도 클릭 시 – 만약 위치 선택 모드이면 추가 피커를 등록
+        // 지도 클릭 시 – 위치 선택 모드이면 추가 피커 등록
         googleMap.setOnMapClickListener { latLng ->
             if (isPickMode) {
-                isPickMode = false // 선택 모드 해제
+                isPickMode = false  // 선택 모드 해제
                 val newPickerName = "추가 피커 $additionalPickerCount"
                 additionalPickerCount++
                 additionalPickerList.add(Picker(newPickerName, latLng))
@@ -238,14 +236,18 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         startLocationUpdates()
     }
 
-    private fun drawPolygon() {
-        polygon = googleMap.addPolygon(
-            PolygonOptions()
-                .addAll(polygonCoordinates)
-                .strokeColor(0x5500FF00)
-                .fillColor(0x2200FF00)
-                .strokeWidth(5f)
-        )
+    // 여러 개의 폴리곤을 그리는 함수
+    private fun drawPolygons() {
+        polygonList.forEach { coordinates ->
+            val poly = googleMap.addPolygon(
+                PolygonOptions()
+                    .addAll(coordinates)
+                    .strokeColor(0x5500FF00)
+                    .fillColor(0x2200FF00)
+                    .strokeWidth(5f)
+            )
+            drawnPolygons.add(poly)
+        }
     }
 
     private fun addInitialPickerMarkers() {
@@ -277,7 +279,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             override fun onLocationResult(locationResult: LocationResult) {
                 for (location in locationResult.locations) {
                     val userLatLng = LatLng(location.latitude, location.longitude)
-                    // Auto Mode일 때만 현재 위치 자동 업데이트 (Picker Mode에서는 수동 이동)
+                    // Auto Mode일 때만 자동 업데이트 (Picker Mode에서는 수동 이동)
                     updateUserLocation(userLatLng)
                     checkIfWithinRadius(userLatLng)
                     checkIfInsidePolygon(userLatLng)
@@ -301,7 +303,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         )
     }
 
-    // Auto Mode일 때만 현재 위치를 업데이트 (Picker Mode에서는 수동 이동)
+    // Auto Mode일 때만 내 위치 업데이트 (Picker Mode에서는 수동 이동)
     private fun updateUserLocation(userLatLng: LatLng) {
         if (userMarker == null) {
             val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.target_marker)
@@ -343,9 +345,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private var isInsidePolygonToastShown = false
     private fun checkIfInsidePolygon(userLatLng: LatLng) {
-        if (PolyUtil.containsLocation(userLatLng, polygonCoordinates, true) && !isInsidePolygonToastShown) {
-            Toast.makeText(requireContext(), "You are in Gumi", Toast.LENGTH_SHORT).show()
-            isInsidePolygonToastShown = true
+        // 모든 폴리곤에 대해 내부 포함 여부 확인
+        polygonList.forEach { coordinates ->
+            if (PolyUtil.containsLocation(userLatLng, coordinates, true) && !isInsidePolygonToastShown) {
+                Toast.makeText(requireContext(), "You are in Gumi", Toast.LENGTH_SHORT).show()
+                isInsidePolygonToastShown = true
+            }
         }
     }
 
@@ -371,9 +376,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             )
             Triple(picker.name, results[0].toDouble(), picker.location)
         }
-        val areaDistances = initialAreaList.map { area ->
-            val distance = PolygonUtils.distanceToPolygon(currentLocation, area.coordinates)
-            Triple(area.name, distance, PolygonUtils.closestPointOnPolygon(currentLocation, area.coordinates))
+        // 면적(폴리곤)의 경우, 모든 폴리곤에 대해 거리 계산
+        val areaDistances = polygonList.flatMapIndexed { index, coordinates ->
+            val distance = PolygonUtils.distanceToPolygon(currentLocation, coordinates)
+            listOf(Triple("폴리곤 영역 ${index + 1}", distance, PolygonUtils.closestPointOnPolygon(currentLocation, coordinates)))
         }
         val allDistances = (pickerDistances + areaDistances)
             .sortedWith(compareBy({ it.second }, { it.first }))
@@ -408,12 +414,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 nearestTargetName = picker.name
             }
         }
-        for (area in initialAreaList) {
-            val distance = PolygonUtils.distanceToPolygon(userLatLng, area.coordinates)
+        for (coordinates in polygonList) {
+            val distance = PolygonUtils.distanceToPolygon(userLatLng, coordinates)
             if (distance < nearestDistance) {
                 nearestDistance = distance
-                nearestTargetPoint = PolygonUtils.closestPointOnPolygon(userLatLng, area.coordinates)
-                nearestTargetName = area.name
+                nearestTargetPoint = PolygonUtils.closestPointOnPolygon(userLatLng, coordinates)
+                nearestTargetName = "폴리곤 영역" // 필요시 인덱스를 추가할 수 있음
             }
         }
         nearestTargetPoint?.let { targetPoint ->
@@ -424,7 +430,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     .color(Color.RED)
                     .width(5f)
             )
-            // 토글 시 가장 가까운 대상을 Toast로 띄우지 않도록 주석 처리
+            // 가장 가까운 대상 Toast 메시지는 주석 처리
             /*
             Toast.makeText(
                 requireContext(),
