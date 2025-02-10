@@ -45,15 +45,16 @@ class TeamViewModel @Inject constructor(
             Log.d("TeamViewModel", "팀 생성 시작 - 요청 데이터: $teamRequest")
             try {
                 val response = repository.createTeam(teamRequest)
-                Log.d("TeamViewModel", "서버 응답 코드: ${response.code()}")
-                Log.d("TeamViewModel", "서버 응답 헤더: ${response.headers()}")
-                Log.d("TeamViewModel", "서버 응답 바디: ${response.body()}")
+                Log.d("TeamViewModel", "createTeam 응답 코드: ${response.code()}")
                 
                 if (response.isSuccessful) {
                     response.body()?.let { teamCreateResponse ->
-                        Log.d("TeamViewModel", "팀 생성 성공 - 팀 ID: ${teamCreateResponse.roomId}")
-                        _roomId.value = teamCreateResponse.roomId.toInt()
-                        getTeam(teamCreateResponse.roomId.toInt())
+                        val roomId = teamCreateResponse.roomId.toInt()
+                        _roomId.value = roomId
+                        Log.d("TeamViewModel", "팀 생성 성공 - roomId: $roomId")
+                        Log.d("TeamViewModel", "getTeam 호출 직전")
+                        getTeam(roomId)
+                        Log.d("TeamViewModel", "getTeam 호출 직후")
                     } ?: run {
                         Log.e("TeamViewModel", "팀 생성 성공했지만 응답 바디가 null입니다")
                         _error.value = "팀 생성 응답이 비어있습니다"
@@ -83,21 +84,31 @@ class TeamViewModel @Inject constructor(
 
     fun getTeam(roomId: Int) {
         viewModelScope.launch {
-            Log.d("TeamViewModel", "팀 정보 조회 시작 - roomId: $roomId")
+            Log.d("TeamViewModel", "getTeam 함수 시작 - roomId: $roomId")
             try {
+                Log.d("TeamViewModel", "getTeam API 호출 직전 - URL: /api/rooms/$roomId")
                 val response = repository.getTeam(roomId)
-                Log.d("TeamViewModel", "팀 정보 조회 응답: $response")
+                Log.d("TeamViewModel", "getTeam API 호출 직후")
+                Log.d("TeamViewModel", "팀 정보 조회 응답: ${response.raw()}")
+                Log.d("TeamViewModel", "응답 헤더: ${response.headers()}")
                 
                 if (response.isSuccessful) {
                     response.body()?.let { team ->
                         Log.d("TeamViewModel", "팀 정보 조회 성공: $team")
                         _team.value = team
-                    } ?: Log.e("TeamViewModel", "팀 정보 조회 성공했지만 응답 바디가 null입니다")
+                    } ?: run {
+                        Log.e("TeamViewModel", "팀 정보 조회 성공했지만 응답 바디가 null입니다")
+                        _error.value = "팀 정보가 비어있습니다"
+                    }
                 } else {
-                    Log.e("TeamViewModel", "팀 정보 조회 실패 - HTTP 에러: ${response.errorBody()?.string()}")
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("TeamViewModel", "팀 정보 조회 실패 - HTTP 에러: $errorBody")
+                    Log.e("TeamViewModel", "에러 응답 코드: ${response.code()}")
+                    _error.value = "팀 정보 조회에 실패했습니다 (${response.code()})"
                 }
             } catch (e: Exception) {
                 Log.e("TeamViewModel", "팀 정보 조회 실패 - 네트워크 에러: ${e.message}", e)
+                _error.value = "네트워크 오류: ${e.message}"
             }
         }
     }

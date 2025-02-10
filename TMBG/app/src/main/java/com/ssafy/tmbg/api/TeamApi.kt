@@ -14,7 +14,7 @@ interface TeamApi {
 
     /** 생성된 방을 조회*/
     @GET("rooms/{roomId}")
-    suspend fun getTeam(@Path("roomId") roomId:Int,): Response<Team>
+    suspend fun getTeam(@Path("roomId") roomId:Int): Response<Team>
 
     /**방 생성*/
     @POST("rooms")

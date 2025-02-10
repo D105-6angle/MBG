@@ -44,8 +44,14 @@ class TeamCreateDialog : DialogFragment() {
         // TeamViewModel의 상태 관찰
         teamViewModel.team.observe(viewLifecycleOwner) { team ->
             team?.let {
+                Log.d("TeamCreateDialog", "Team created successfully: $team")
+                Log.d("TeamCreateDialog", "parentFragment: $parentFragment")
                 dismiss()
-                (parentFragment as? AdminMainFragment)?.navigateToTeam()
+                val adminMainFragment = parentFragment as? AdminMainFragment
+                Log.d("TeamCreateDialog", "adminMainFragment: $adminMainFragment")
+                adminMainFragment?.navigateToTeam() ?: run {
+                    Log.e("TeamCreateDialog", "Failed to cast parentFragment to AdminMainFragment")
+                }
             }
         }
 
@@ -86,8 +92,8 @@ class TeamCreateDialog : DialogFragment() {
             setBackgroundDrawableResource(android.R.color.transparent)
 
             val displayMetrics = requireContext().resources.displayMetrics
-            val width = (displayMetrics.widthPixels * 0.9).toInt()
-            val height = (displayMetrics.heightPixels * 0.8).toInt()
+            val width = (displayMetrics.widthPixels * 0.8).toInt()  // 90% -> 80%
+            val height = (displayMetrics.heightPixels * 0.6).toInt()  // 80% -> 60%
 
             setLayout(width, height)
         }
