@@ -30,6 +30,7 @@ public class MyPageController {
         return ResponseEntity.ok().build();
     }
 
+
     @Operation(summary = "회원 탈퇴")
     @DeleteMapping("{userId}")
     public ResponseEntity<?> withdrawUser(@AuthenticationPrincipal String providerId, @PathVariable Long userId) {
