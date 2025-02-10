@@ -7,7 +7,17 @@
     android:layout_height="match_parent"
     android:background="#FFE8D9">
 
-    <!-- 뒤로 가기 버튼 -->
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ImageButton
         android:id="@+id/backButton"
         android:layout_width="wrap_content"
@@ -19,7 +29,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-<!--  세팅 버튼  -->
     <ImageButton
         android:id="@+id/settingsButton"
         android:layout_width="wrap_content"
@@ -49,18 +58,39 @@
             android:scaleType="centerCrop" />
     </androidx.cardview.widget.CardView>
 
-    <TextView
-        android:id="@+id/profileName"
+    <!-- 이름과 칭호를 감싸는 LinearLayout -->
+    <LinearLayout
+        android:id="@+id/nameContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="@string/profile_name"
-        android:textSize="20sp"
-        android:textColor="#000000"
+        android:orientation="horizontal"
+        android:gravity="center"
         app:layout_constraintTop_toBottomOf="@id/profileCard"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/profileTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/my_nick"
+            android:textSize="16sp"
+            android:textColor="#666666"
+            android:background="@drawable/title_background"
+            android:padding="4dp" />
+        <TextView
+            android:id="@+id/profileName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/profile_name"
+            android:textSize="20sp"
+            android:textColor="#000000" />
+
+
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/historyTitle"
@@ -72,9 +102,8 @@
         android:textSize="20sp"
         android:textColor="#000000"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/profileName"
-        app:layout_constraintStart_toStartOf="parent"
-        />
+        app:layout_constraintTop_toBottomOf="@id/nameContainer"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/problemHistory"
@@ -83,8 +112,6 @@
         android:layout_marginTop="24dp"
         android:padding="16dp"
         app:layout_constraintTop_toBottomOf="@id/historyTitle"
-        app:layout_constraintBottom_toBottomOf="parent"
-        />
-
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -40,6 +40,39 @@ object MyPageDataSource {
             description = "뒤주는 조선시대에 곡식을 보관하던 전통 가구입니다. " +
                     "주로 쌀, 보리 등의 곡물을 보관하는 데 사용되었으며, " +
                     "습기를 막기 위해 바닥을 띄워 제작되었습니다."
+        ),
+        ProblemHistory(
+            logId = "4",
+            cardId = "c-3",
+            imageUrl = R.drawable.cultural_2,
+            name = "뒤주",
+            lastSolvedAt = "문제 풀이 날짜 : 2024-01-19",
+            result = false,
+            description = "뒤주는 조선시대에 곡식을 보관하던 전통 가구입니다. " +
+                    "주로 쌀, 보리 등의 곡물을 보관하는 데 사용되었으며, " +
+                    "습기를 막기 위해 바닥을 띄워 제작되었습니다."
+        ),
+        ProblemHistory(
+            logId = "5",
+            cardId = "c-3",
+            imageUrl = R.drawable.cultural_2,
+            name = "뒤주",
+            lastSolvedAt = "문제 풀이 날짜 : 2024-01-19",
+            result = false,
+            description = "뒤주는 조선시대에 곡식을 보관하던 전통 가구입니다. " +
+                    "주로 쌀, 보리 등의 곡물을 보관하는 데 사용되었으며, " +
+                    "습기를 막기 위해 바닥을 띄워 제작되었습니다."
+        ),
+        ProblemHistory(
+            logId = "6",
+            cardId = "c-3",
+            imageUrl = R.drawable.cultural_2,
+            name = "뒤주",
+            lastSolvedAt = "문제 풀이 날짜 : 2024-01-19",
+            result = false,
+            description = "뒤주는 조선시대에 곡식을 보관하던 전통 가구입니다. " +
+                    "주로 쌀, 보리 등의 곡물을 보관하는 데 사용되었으며, " +
+                    "습기를 막기 위해 바닥을 띄워 제작되었습니다."
         )
     )
 }

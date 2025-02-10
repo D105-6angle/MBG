@@ -4,7 +4,7 @@ import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.profile.NidProfileCallback
 import com.navercorp.nid.profile.data.NidProfileResponse
-import com.ssafy.mbg.data.auth.dto.SocialUserInfo
+import com.ssafy.mbg.data.auth.dao.SocialUserInfo
 import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
@@ -16,9 +16,10 @@ class NaverLoginRepositoryImpl @Inject constructor() : SocialLoginRepository {
         val accessToken = NaverIdLoginSDK.getAccessToken()
 
         if (accessToken.isNullOrEmpty()) {
-            continuation.run { resume(Result.failure(Exception("네이버 로그인이 필요합니다"))) }
+            continuation.resume(Result.failure(Exception("네이버 로그인이 필요합니다")))
             return@suspendCoroutine
         }
+
 
         getUserInfo(continuation)
     }
@@ -26,13 +27,14 @@ class NaverLoginRepositoryImpl @Inject constructor() : SocialLoginRepository {
     private fun getUserInfo(continuation: Continuation<Result<SocialUserInfo>>) {
         NidOAuthLogin().callProfileApi(object : NidProfileCallback<NidProfileResponse> {
             override fun onSuccess(result: NidProfileResponse) {
-                val userInfo = SocialUserInfo(
-                    providerId = result.profile?.id ?: "",
-                    email = result.profile?.email ?: "",
-                    name = result.profile?.name ?: ""
-                )
+                val socialUserInfo = SocialUserInfo(
+                        providerId = result.profile?.id ?: "",
+                        email = result.profile?.email ?: "",
+                        name = result.profile?.name ?: ""
+                    )
 
-                continuation.resume(Result.success(userInfo))
+
+                continuation.resume(Result.success(socialUserInfo))
             }
 
             override fun onFailure(httpStatus: Int, message: String) {

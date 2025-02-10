@@ -1,6 +1,6 @@
 package com.ssafy.mbg.ui.page
 
-import com.ssafy.mbg.data.auth.dto.UserProfile
+import com.ssafy.mbg.data.auth.dao.UserProfile
 import com.ssafy.mbg.data.mypage.dto.ProblemHistory
 import com.ssafy.mbg.data.mypage.dto.UserInfo
 
