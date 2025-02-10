@@ -27,7 +27,7 @@ public class TeacherNoticeService {
     private final FirebaseCloudMessageService firebaseCloudMessageService;
 
     @Transactional
-    public void createNoticeAndNotify(Long roomId, Long teacherId, String content) {
+    public void createNoticeAndNotify(Long roomId, String content) {
         String title = "공지 알림";
         TeacherNotice notice = TeacherNotice.builder()
                 .roomId(roomId)
