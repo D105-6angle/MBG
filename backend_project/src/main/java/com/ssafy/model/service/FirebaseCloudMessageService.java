@@ -2,6 +2,7 @@ package com.ssafy.model.service;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Map;
 
 import com.ssafy.model.entity.Constants;
 import com.ssafy.model.entity.message.FcmMessage;
@@ -50,6 +51,15 @@ public class FirebaseCloudMessageService {
         return objectMapper.writeValueAsString(fcmMessage);
     }
 
+    private String makeMessageWithData(String targetToken, String title, String body, Map<String, String> data) throws JsonProcessingException {
+        Notification notification = new Notification(title, body, null);
+        Message message = new Message(notification, targetToken);
+        message.putAllData(data);  // 데이터 추가
+        FcmMessage fcmMessage = new FcmMessage(false, message);
+
+        return objectMapper.writeValueAsString(fcmMessage);
+    }
+
     public void sendMessageTo(String targetToken, String title, String body) throws IOException {
         String message = makeMessage(targetToken, title, body);
         OkHttpClient client = new OkHttpClient();
@@ -63,6 +73,21 @@ public class FirebaseCloudMessageService {
 
         Response response = client.newCall(request).execute();
         // 응답 로그 출력 (필요에 따라 주석 처리 가능)
+        System.out.println(response.body().string());
+    }
+
+    public void sendMessageWithData(String targetToken, String title, String body, Map<String, String> data) throws IOException {
+        String message = makeMessageWithData(targetToken, title, body, data);
+        OkHttpClient client = new OkHttpClient();
+        RequestBody requestBody = RequestBody.create(message, MediaType.get("application/json; charset=utf-8"));
+        Request request = new Request.Builder()
+                .url(API_URL)
+                .post(requestBody)
+                .addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + getAccessToken())
+                .addHeader(HttpHeaders.CONTENT_TYPE, "application/json; UTF-8")
+                .build();
+
+        Response response = client.newCall(request).execute();
         System.out.println(response.body().string());
     }
 

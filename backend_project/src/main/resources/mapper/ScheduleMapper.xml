@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.model.mapper.schedule.ScheduleMapper">
-
     <select id="findByRoomId" resultType="com.ssafy.model.entity.Schedule">
         SELECT
             schedule_id as scheduleId,
@@ -14,25 +13,55 @@
     </select>
 
     <select id="findByRoomIdAndScheduleId" resultType="com.ssafy.model.entity.Schedule">
-        SELECT schedule_id, room_id, start_time, end_time, content
+        SELECT
+            schedule_id as scheduleId,
+            room_id as roomId,
+            start_time as startTime,
+            end_time as endTime,
+            content
         FROM schedules
-        WHERE room_id = #{roomId} AND schedule_id = #{scheduleId}
+        WHERE room_id = #{roomId}
+          AND schedule_id = #{scheduleId}
     </select>
 
-    <insert id="insert" parameterType="com.ssafy.model.entity.Schedule" useGeneratedKeys="true" keyProperty="scheduleId">
-        INSERT INTO schedules (room_id, start_time, end_time, content)
-        VALUES (#{roomId}, #{startTime}, #{endTime}, #{content})
+    <insert id="insert" parameterType="com.ssafy.model.entity.Schedule"
+            useGeneratedKeys="true" keyProperty="scheduleId">
+        INSERT INTO schedules (
+            room_id,
+            start_time,
+            end_time,
+            content
+        ) VALUES (
+                     #{roomId},
+                     #{startTime},
+                     #{endTime},
+                     #{content}
+                 )
     </insert>
 
     <update id="update" parameterType="com.ssafy.model.entity.Schedule">
         UPDATE schedules
-        SET start_time = #{startTime},
+        SET
+            start_time = #{startTime},
             end_time = #{endTime},
             content = #{content}
-        WHERE schedule_id = #{scheduleId} AND room_id = #{roomId}
+        WHERE schedule_id = #{scheduleId}
+          AND room_id = #{roomId}
     </update>
 
     <delete id="delete">
-        DELETE FROM schedules WHERE schedule_id = #{scheduleId}
+        DELETE FROM schedules
+        WHERE schedule_id = #{scheduleId}
     </delete>
+
+    <select id="findUpcomingSchedules" resultType="com.ssafy.model.entity.Schedule">
+        SELECT
+            schedule_id as scheduleId,
+            room_id as roomId,
+            start_time as startTime,
+            end_time as endTime,
+            content
+        FROM schedules
+        WHERE start_time BETWEEN #{startTime} AND #{endTime}
+    </select>
 </mapper>

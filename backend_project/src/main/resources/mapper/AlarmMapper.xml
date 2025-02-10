@@ -1,27 +1,31 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.model.mapper.fcm.AlarmMapper">
-    <resultMap id="AlarmResultMap" type="com.ssafy.model.entity.Alarm">
-        <id property="alarmId" column="alarm_id"/>
-        <result property="userId" column="user_id"/>
-        <result property="title" column="title"/>
-        <result property="content" column="content"/>
-        <result property="sentTime" column="sent_time"/>
-    </resultMap>
 
-    <insert id="insert" parameterType="com.ssafy.model.entity.Alarm"
-            useGeneratedKeys="true" keyProperty="alarmId">
-        INSERT INTO alarms (user_id, title, content, sent_time)
-        VALUES (#{userId}, #{title}, #{content}, COALESCE(#{sentTime}, CURRENT_TIMESTAMP))
+    <insert id="insert" parameterType="Alarm">
+        INSERT INTO alarms (
+            user_id,
+            title,
+            content,
+            sent_time
+        ) VALUES (
+                     #{userId},
+                     #{title},
+                     #{content},
+                     NOW()
+                 )
     </insert>
 
-    <select id="selectByUserId" parameterType="java.lang.Long"
-            resultMap="AlarmResultMap">
-        SELECT alarm_id, user_id, title, content, sent_time
+    <select id="selectByUserId" resultType="Alarm">
+        SELECT
+            alarm_id as alarmId,
+            user_id as userId,
+            title,
+            content,
+            sent_time as sentTime
         FROM alarms
         WHERE user_id = #{userId}
         ORDER BY sent_time DESC
     </select>
+
 </mapper>

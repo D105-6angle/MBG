@@ -26,7 +26,8 @@ public class TeacherNoticeService {
     private final FirebaseCloudMessageService firebaseCloudMessageService;
 
     @Transactional
-    public void createNoticeAndNotify(Long roomId, Long teacherId, String title, String content) {
+    public void createNoticeAndNotify(Long roomId, Long teacherId, String content) {
+        String title = "공지 알림";
         TeacherNotice notice = TeacherNotice.builder()
                 .roomId(roomId)
                 .title(title)
@@ -66,4 +67,46 @@ public class TeacherNoticeService {
             throw new RuntimeException("모든 FCM 메시지 전송이 실패했습니다.");
         }
     }
+
+//    @Transactional
+//    public void createNoticeAndNotify(Long roomId, Long teacherId, String title, String content) {
+//        TeacherNotice notice = TeacherNotice.builder()
+//                .roomId(roomId)
+//                .title(title)
+//                .content(content)
+//                .build();
+//
+//        teacherNoticeMapper.insertNotice(notice);
+//
+//        // 2. FCM 토큰 조회
+//        List<String> tokens = fcmService.getTokensByRoomId(roomId);
+//
+//        // 3. 학생 ID 조회
+//        List<Long> studentIds = fcmService.getStudentIdsByRoomId(roomId);
+//
+//        // 4. 알람 저장 및 FCM 메시지 전송
+//        boolean allSuccess = true;
+//        List<IOException> errors = new ArrayList<>();
+//
+//        // FCM 메시지 전송
+//        for (String token : tokens) {
+//            try {
+//                firebaseCloudMessageService.sendMessageTo(token, title, content);
+//            } catch (IOException e) {
+//                allSuccess = false;
+//                errors.add(e);
+//                log.error("FCM 메시지 전송 실패 (token: {}): {}", token, e.getMessage());
+//            }
+//        }
+//
+//        // FCM 전송이 성공한 경우에만 알람 저장 및 상태 업데이트
+//        if (allSuccess) {
+//            for (Long studentId : studentIds) {
+//                alarmService.addAlarm(new Alarm(studentId, title, content));
+//            }
+//            teacherNoticeMapper.updateNoticeStatus(notice.getNoticeId(), true);
+//        } else if (errors.size() == tokens.size()) {
+//            throw new RuntimeException("모든 FCM 메시지 전송이 실패했습니다.");
+//        }
+//    }
 }

@@ -4,6 +4,7 @@ import com.ssafy.controller.schedule.ScheduleRequest;
 import com.ssafy.controller.schedule.ScheduleResponse;
 import com.ssafy.model.mapper.schedule.ScheduleMapper;
 import com.ssafy.model.entity.Schedule;
+import com.ssafy.model.service.fcm.ScheduleNotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ScheduleService {
     private final ScheduleMapper scheduleMapper;
+    private final ScheduleNotificationService notificationService;
 
     public ScheduleResponse.ListResponse getSchedulesByRoomId(Long roomId) {
         List<Schedule> schedules = scheduleMapper.findByRoomId(roomId);

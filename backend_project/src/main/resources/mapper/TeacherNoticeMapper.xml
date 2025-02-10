@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.model.mapper.fcm.TeacherNoticeMapper">
-    <insert id="insertNotice" parameterType="TeacherNotice">
-    INSERT INTO teacher_notices (
-        room_id,
-        content,
-        title
-    ) VALUES (
-         #{roomId},
-         #{content},
-         #{title})
+    <insert id="insertNotice" parameterType="TeacherNotice" useGeneratedKeys="true" keyProperty="noticeId">
+        INSERT INTO teacher_notices (
+            room_id,
+            content,
+            title
+        ) VALUES (
+                     #{roomId},
+                     #{content},
+                     #{title}
+                 )
     </insert>
 
     <select id="selectNotice" resultType="TeacherNotice">
@@ -30,5 +31,4 @@
         SET status = #{status}
         WHERE notice_id = #{noticeId}
     </update>
-
 </mapper>
