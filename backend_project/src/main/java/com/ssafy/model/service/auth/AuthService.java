@@ -8,23 +8,31 @@ import com.ssafy.model.entity.User;
 import com.ssafy.model.mapper.auth.AuthMapper;
 import com.ssafy.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
     private final AuthMapper authMapper;
     private final JwtTokenProvider jwtTokenProvider;
 
     public AuthResponse.SuccessDto login(String providerId) throws NotFoundUserException, WithdrawnUserException {
+        log.debug("로그인 프로세스 시작 - Provider ID: {}", providerId);
+
         // 1. 사용자 조회
         User user = findUser(providerId);
+        log.debug("사용자 조회 완료 - User ID: {}", user.getUserId());
+
         // 2. 탈퇴한 사용자인지 확인
         validateUserWithdrawal(user);
         // 3. 조회 성공 시
         String accessToken = jwtTokenProvider.createAccessToken(providerId);
         String refreshToken = jwtTokenProvider.createRefreshToken(providerId);
+        log.info("토큰 발급 완료 - Provider ID: {}, User ID: {}", providerId, user.getUserId());
+
         return AuthResponse.SuccessDto.builder().userId(user.getUserId())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -122,8 +130,11 @@ public class AuthService {
 
     /* 사용자 조회 및 존재 여부 확인 */
     public User findUser(String providerId) throws NotFoundUserException {
+        log.debug("사용자 조회 시도 - Provider ID: {}", providerId);
+
         User user = authMapper.findByProviderId(providerId);
         if (user == null) {
+            log.warn("미가입 사용자 접근 - Provider ID: {}", providerId);
             throw new NotFoundUserException("사용자를 찾을 수 없습니다.");
         }
 

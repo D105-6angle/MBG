@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 @Tag(name = "인증/인가", description = "회원가입, 로그인, 토큰 재발급과 관련된 API")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
     @Value("${app.environment}")
     private String activeProfile;
@@ -25,7 +27,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest.LoginData loginData) {
         String providerId = loginData.getProviderId();
+        log.info("로그인 시도 - Provider ID: {}", providerId);  // 로그인 시도 기록
+
         AuthResponse.SuccessDto response = authService.login(providerId);
+        log.info("로그인 성공 - Provider ID: {}", providerId);  // 로그인 성공 기록
         return ResponseEntity.ok(response);
     }
 
