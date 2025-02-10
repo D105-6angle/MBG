@@ -25,8 +25,8 @@
 
     <!-- 신규 회원 가입(소셜 테이블) -->
     <insert id="insertSocial" parameterType="com.ssafy.model.entity.Social">
-        INSERT INTO social_accounts(user_id, code_id, provider_id, refresh_token)
-        VALUES(#{userId}, #{codeId}, #{providerId}, #{refreshToken})
+        INSERT INTO social_accounts(user_id, provider_id, refresh_token)
+        VALUES(#{userId}, #{providerId}, #{refreshToken})
     </insert>
 
     <!-- 회원 재가입(유저 테이블) -->

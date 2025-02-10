@@ -27,10 +27,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest.LoginData loginData) {
         String providerId = loginData.getProviderId();
-        log.info("로그인 시도 - Provider ID: {}", providerId);  // 로그인 시도 기록
-
         AuthResponse.SuccessDto response = authService.login(providerId);
-        log.info("로그인 성공 - Provider ID: {}", providerId);  // 로그인 성공 기록
         return ResponseEntity.ok(response);
     }
 
@@ -58,6 +55,6 @@ public class AuthController {
             }
             return typeCode;
         }
-        return "TestCode";
+        return "U001";      // 테스트 환경에선 학생으로 회원가입하자.
     }
 }
