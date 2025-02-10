@@ -21,7 +21,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
@@ -178,23 +178,28 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
 
-        // 적용할 맵 스타일: POI(기본 피커) 제거
+        // 적용할 맵 스타일: 기본 POI(경복궁 등) 제거를 위한 스타일 적용
         try {
             val success = googleMap.setMapStyle(
                 MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.map_style)
             )
             if (!success) {
-                // 스타일 적용 실패 로그 처리 (원하는 경우 로그 남김)
+                // 스타일 적용 실패 시 로그 남김
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
 
+        // 지도 유형을 위성/하이브리드로 설정하여 상세한 위성 사진처럼 표시
+//        googleMap.mapType = GoogleMap.MAP_TYPE_HYBRID
+        googleMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
+
+
         setupMap()
         drawPolygons()  // 모든 폴리곤 그리기
         addInitialPickerMarkers()  // 초기 피커들 그리기
 
-        // 기본 모드가 Picker Mode이므로 초기 내 위치를 고정 좌표로 설정하고, 높은 줌(18f)으로 이동
+        // 기본 모드가 Picker Mode이므로 초기 내 위치를 고정 좌표로 설정하고, 상세하게 보이도록 높은 줌(18f)으로 이동
         if (userMarker == null) {
             googleMap.moveCamera(
                 CameraUpdateFactory.newLatLngZoom(INITIAL_PICKER_LATLNG, 18f)
@@ -212,7 +217,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             userMarker = googleMap.addMarker(markerOptions)
         }
 
-        // 지도 클릭 시 – Picker Mode일 때 추가 피커 등록
+        // 지도 클릭 시 – Picker Mode에서 추가 피커 등록
         googleMap.setOnMapClickListener { latLng ->
             if (isPickMode) {
                 isPickMode = false  // 선택 모드 해제
