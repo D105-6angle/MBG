@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="default_donut_size">160dp</dimen>
+    <dimen name="donut_stroke_width">16dp</dimen>
+</resources>

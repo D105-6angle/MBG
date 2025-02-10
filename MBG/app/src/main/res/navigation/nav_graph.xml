@@ -34,6 +34,8 @@
         android:label="BookFragment" />
 
     <!-- 페이지 탭 -->
+
+    <!--            app:exitAnim="@anim/slide_out_left"-->
     <fragment
         android:id="@+id/pageFragment"
         android:name="com.ssafy.mbg.ui.page.PageFragment"
@@ -41,8 +43,6 @@
         <action
             android:id="@+id/action_pageFragment_to_historyDetailFragment"
             app:destination="@id/historyDetailFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
