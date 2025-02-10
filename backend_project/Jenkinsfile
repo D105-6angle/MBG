@@ -46,6 +46,7 @@
                                     --network app-network \
                                     -e MYSQL_ROOT_PASSWORD=${DB_PASSWORD} \
                                     -e MYSQL_DATABASE=${DB_NAME} \
+                                    -e TZ=Asia/Seoul \
                                     -v mysql_data:/var/lib/mysql \
                                     -p ${MYSQL_PORT}:${MYSQL_PORT} \
                                     mysql:8.0.41
@@ -61,6 +62,7 @@
                                 echo "Starting Nginx container..."
                                 docker run -d --name nginx \
                                   --network app-network \
+                                  -e TZ=Asia/Seoul \
                                   -p 80:80 -p 443:443 \
                                   -v /etc/letsencrypt:/etc/letsencrypt:ro \
                                   -v /etc/nginx/conf.d:/etc/nginx/conf.d \
