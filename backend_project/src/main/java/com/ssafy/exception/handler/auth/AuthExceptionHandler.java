@@ -7,6 +7,8 @@ import com.ssafy.exception.auth.NotFoundUserException;
 import com.ssafy.exception.auth.WithdrawnUserException;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,12 +16,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice(basePackages = "com.ssafy.controller.auth")
 @Slf4j
+@Order(Ordered.HIGHEST_PRECEDENCE)
 @Hidden  // Swagger 문서에서 이 클래스 제외
 public class AuthExceptionHandler {
 
     @ExceptionHandler(NotFoundUserException.class)
     public ResponseEntity<FailResponse> handleNotFoundUser(NotFoundUserException e) {
         log.error("User not found: {}", e.getMessage());
+        log.debug("Error details:", e);  // 스택 트레이스도 함께 기록
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(FailResponse.builder()
                 .status(204).message(e.getMessage()).error("No Content").build());
     }
