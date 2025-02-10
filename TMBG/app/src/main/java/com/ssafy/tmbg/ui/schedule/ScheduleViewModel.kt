@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.tmbg.data.schedule.dao.Schedule
 import com.ssafy.tmbg.data.schedule.dao.ScheduleRequest
+import com.ssafy.tmbg.data.schedule.dao.ScheduleUpdateRequest
 import com.ssafy.tmbg.data.schedule.repository.ScheduleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -44,7 +45,7 @@ class ScheduleViewModel @Inject constructor(
      * 4. 실패 시: error LiveData에 에러 메시지 설정
      * 5. 완료 시: 로딩 상태를 false로 설정
      */
-    fun getSchedules(roomId: Long) {
+    fun getSchedules(roomId: Int) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
@@ -57,14 +58,14 @@ class ScheduleViewModel @Inject constructor(
                 Log.d("ScheduleViewModel", "Response raw: ${response.raw()}")
                 
                 if (response.isSuccessful) {
-                    val body = response.body()
-                    Log.d("ScheduleViewModel", "Response body: $body")
+                    val scheduleResponse = response.body()
+                    Log.d("ScheduleViewModel", "Response body: $scheduleResponse")
                     
-                    body?.schedules?.let { schedules ->
-                        Log.d("ScheduleViewModel", "Parsed schedules: $schedules")
-                        _schedules.value = schedules
+                    scheduleResponse?.let {
+                        Log.d("ScheduleViewModel", "Parsed schedules: ${it.schedules}")
+                        _schedules.value = it.schedules
                     } ?: run {
-                        Log.e("ScheduleViewModel", "Response body or schedules is null")
+                        Log.e("ScheduleViewModel", "Response body is null")
                         _schedules.value = emptyList()
                     }
                 } else {
@@ -96,7 +97,7 @@ class ScheduleViewModel @Inject constructor(
      * 4. 실패 시: error LiveData에 에러 메시지 설정
      * 5. 완료 시: 로딩 상태를 false로 설정
      */
-    fun createSchedule(roomId: Long, scheduleRequest: ScheduleRequest) {
+    fun createSchedule(roomId: Int, scheduleRequest: ScheduleRequest) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
@@ -153,14 +154,21 @@ class ScheduleViewModel @Inject constructor(
      * 4. 실패 시: error LiveData에 에러 메시지 설정
      * 5. 완료 시: 로딩 상태를 false로 설정
      */
-    fun updateSchedule(roomId: Long, scheduleId: Long, schedule: Schedule) {
+    fun updateSchedule(roomId: Int, scheduleId: Int, schedule: Schedule) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 Log.d("ScheduleViewModel", "Updating schedule - roomId: $roomId, scheduleId: $scheduleId")
                 Log.d("ScheduleViewModel", "Update request body: $schedule")
                 
-                val response = repository.updateSchedule(roomId, scheduleId, schedule)
+                // Schedule -> ScheduleUpdateRequest로 변환
+                val updateRequest = ScheduleUpdateRequest(
+                    startTime = schedule.startTime,
+                    endTime = schedule.endTime,
+                    content = schedule.content
+                )
+                
+                val response = repository.updateSchedule(roomId, scheduleId, updateRequest)
                 
                 // 응답 상세 로깅
                 Log.d("ScheduleViewModel", "Response code: ${response.code()}")
@@ -208,7 +216,7 @@ class ScheduleViewModel @Inject constructor(
      * 4. 실패 시: error LiveData에 에러 메시지 설정
      * 5. 완료 시: 로딩 상태를 false로 설정
      */
-    fun deleteSchedule(roomId: Long, scheduleId: Long) {
+    fun deleteSchedule(roomId: Int, scheduleId: Int) {
         viewModelScope.launch {
             _isLoading.value = true
             try {

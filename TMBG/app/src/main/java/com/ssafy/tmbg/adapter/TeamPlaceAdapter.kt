@@ -1,9 +1,9 @@
-package com.ssafy.tmbg.ui.adapter
+package com.ssafy.tmbg.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.ssafy.tmbg.data.team.TeamPlace
+import com.ssafy.tmbg.data.team.dao.TeamPlace
 import com.ssafy.tmbg.databinding.ItemTeamPlaceBinding
 
 
