@@ -21,6 +21,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
@@ -68,7 +69,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     // 추가된 피커 리스트 (동적으로 추가됨)
     private val additionalPickerList = mutableListOf<Picker>()
-    // 추가된 피커 마커와 원을 추후 제거하기 위해 저장할 리스트
+    // 추가된 피커 마커와 원을 제거하기 위한 리스트
     private val additionalPickerMarkers = mutableListOf<Marker>()
     private val additionalPickerCircles = mutableListOf<Circle>()
 
@@ -90,8 +91,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     // 가장 가까운 대상으로 사용자 위치와 연결할 선(Polyline)
     private var nearestLine: Polyline? = null
 
-    // Picker Mode 토글: Picker Mode일 때는 자동 위치 갱신 대신 화살표 버튼을 통한 수동 이동 사용
-    private var isPickerModeEnabled = false
+    // 모드 토글: Picker Mode vs. Auto Mode
+    // 기본 모드는 Picker Mode (즉, 수동 이동)로 설정
+    private var isPickerModeEnabled = true
+
+    // Picker Mode의 고정 초기 위치 (경복궁)
+    private val INITIAL_PICKER_LATLNG = LatLng(37.57640594972532, 126.97686654390287)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -111,17 +116,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
 
-        // 기존 "Pick Location" 버튼 (지도 클릭 시 추가 피커 모드 전환)
-        val pickLocationButton: Button = view.findViewById(R.id.btn_pick_location)
-        pickLocationButton.setOnClickListener {
-            isPickMode = true
-            Toast.makeText(requireContext(), "위치를 지정해주세요", Toast.LENGTH_SHORT).show()
-        }
-
-        // 토글 버튼 (Auto Mode / Picker Mode 전환)
+        // Picker Mode가 기본이므로 토글 버튼을 기본 체크 상태로 설정
         val toggleMode: ToggleButton = view.findViewById(R.id.toggle_mode)
+        toggleMode.isChecked = true  // 기본: Picker Mode
         // arrow_container를 GridLayout으로 참조 (XML에 정의된 GridLayout)
         val arrowContainer: GridLayout = view.findViewById(R.id.arrow_container)
+        arrowContainer.visibility = View.VISIBLE
+
         toggleMode.setOnCheckedChangeListener { _, isChecked ->
             isPickerModeEnabled = isChecked
             if (isPickerModeEnabled) {
@@ -176,18 +177,42 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
-        setupMap()
-        drawPolygons()  // 여러 개의 폴리곤 그리기
-        addInitialPickerMarkers()  // 초기 피커 3개와 초록색 원 표시
 
-        // 최초에 내 위치가 파악되지 않았다면 초기 피커("시작점") 위치로 카메라 이동
-        if (userMarker == null) {
-            googleMap.moveCamera(
-                CameraUpdateFactory.newLatLngZoom(initialPickerList[0].location, 15f)
+        // 적용할 맵 스타일: POI(기본 피커) 제거
+        try {
+            val success = googleMap.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.map_style)
             )
+            if (!success) {
+                // 스타일 적용 실패 로그 처리 (원하는 경우 로그 남김)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
 
-        // 지도 클릭 시 – 위치 선택 모드이면 추가 피커 등록
+        setupMap()
+        drawPolygons()  // 모든 폴리곤 그리기
+        addInitialPickerMarkers()  // 초기 피커들 그리기
+
+        // 기본 모드가 Picker Mode이므로 초기 내 위치를 고정 좌표로 설정하고, 높은 줌(18f)으로 이동
+        if (userMarker == null) {
+            googleMap.moveCamera(
+                CameraUpdateFactory.newLatLngZoom(INITIAL_PICKER_LATLNG, 18f)
+            )
+            // Picker Mode에서는 자동 갱신 없이 고정 좌표를 사용하므로, 마커를 직접 생성
+            val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.target_marker)
+            val markerOptions = MarkerOptions().position(INITIAL_PICKER_LATLNG).title("My Location")
+            if (drawable != null) {
+                drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+                val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+                val canvas = Canvas(bitmap)
+                drawable.draw(canvas)
+                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+            }
+            userMarker = googleMap.addMarker(markerOptions)
+        }
+
+        // 지도 클릭 시 – Picker Mode일 때 추가 피커 등록
         googleMap.setOnMapClickListener { latLng ->
             if (isPickMode) {
                 isPickMode = false  // 선택 모드 해제
@@ -236,7 +261,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         startLocationUpdates()
     }
 
-    // 여러 개의 폴리곤을 그리는 함수
+    // 모든 폴리곤을 그리는 함수
     private fun drawPolygons() {
         polygonList.forEach { coordinates ->
             val poly = googleMap.addPolygon(
@@ -279,7 +304,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             override fun onLocationResult(locationResult: LocationResult) {
                 for (location in locationResult.locations) {
                     val userLatLng = LatLng(location.latitude, location.longitude)
-                    // Auto Mode일 때만 자동 업데이트 (Picker Mode에서는 수동 이동)
+                    // Auto Mode일 때만 GPS 기반 자동 업데이트 실행
                     updateUserLocation(userLatLng)
                     checkIfWithinRadius(userLatLng)
                     checkIfInsidePolygon(userLatLng)
@@ -303,7 +328,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         )
     }
 
-    // Auto Mode일 때만 내 위치 업데이트 (Picker Mode에서는 수동 이동)
+    // Auto Mode일 때만 내 위치 업데이트 (Picker Mode에서는 고정된 위치 유지)
     private fun updateUserLocation(userLatLng: LatLng) {
         if (userMarker == null) {
             val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.target_marker)
@@ -316,6 +341,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap))
             }
             userMarker = googleMap.addMarker(markerOptions)
+            // Picker Mode일 때는 초기 위치 고정 및 높은 줌으로 이동
             if (!isUserLocationUpdated && !isPickerModeEnabled) {
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15f))
                 isUserLocationUpdated = true
