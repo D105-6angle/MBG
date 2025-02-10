@@ -17,9 +17,6 @@ class MyPageViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<MyPageState>(MyPageState.Initial)
 
-
-    private val userId: Long
-        get() = userPreferences.userId ?: throw  IllegalArgumentException("유저 ID를 찾을 수 없음")
     /**
      * 사용자의 마이페이지 정보를 조회
      *
@@ -90,27 +87,27 @@ class MyPageViewModel @Inject constructor(
     /**
      * @param userId 사용자 ID
      */
-    suspend fun getUserProfile(userId: String) {
-        _uiState.value = MyPageState.Loading
-        try {
-            val res = repository.getProfile(userId)
-            if (res.isSuccessful) {
-                // 성공 처리
-                res.body()?.data?.let { userProfile ->
-                    _uiState.value = MyPageState.Success(userProfile = userProfile)
-                } ?: run {
-                    _uiState.value = MyPageState.Error("데이터가 비어있습니다.")
-                }
-            } else {
-                // 실패 처리
-                _uiState.value = MyPageState.Error(
-                    message = res.body()?.message ?: "알 수 없는 에러가 발생했습니다"
-                )
-            }
-        } catch (e:Exception) {
-            _uiState.value = MyPageState.Error("네트워크 오류가 발생했습니다.")
-            // 예외 처리
-        }
-    }
+//    suspend fun getUserProfile(userId: String) {
+//        _uiState.value = MyPageState.Loading
+//        try {
+//            val res = repository.getProfile(userId)
+//            if (res.isSuccessful) {
+//                // 성공 처리
+//                res.body()?.data?.let { userProfile ->
+//                    _uiState.value = MyPageState.Success(userProfile = userProfile)
+//                } ?: run {
+//                    _uiState.value = MyPageState.Error("데이터가 비어있습니다.")
+//                }
+//            } else {
+//                // 실패 처리
+//                _uiState.value = MyPageState.Error(
+//                    message = res.body()?.message ?: "알 수 없는 에러가 발생했습니다"
+//                )
+//            }
+//        } catch (e:Exception) {
+//            _uiState.value = MyPageState.Error("네트워크 오류가 발생했습니다.")
+//            // 예외 처리
+//        }
+//    }
 
 }

@@ -18,9 +18,9 @@ class MyPageRepository(
     }
 
     // Profile 정보 가져 오기
-    suspend fun getProfile(userId: String) : Response<ApiResponse<UserProfile>> {
-        return myPageApi.getUserSetting(userId)
-    }
+//    suspend fun getProfile(userId: String) : Response<ApiResponse<UserProfile>> {
+//        return myPageApi.getUserSetting(userId)
+//    }
 
     // User 가 푼 문제 기록 상세
     suspend fun getDetailProblem(userId: String, logId : String) : Response<ApiResponse<ProblemHistory>> {

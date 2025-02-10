@@ -56,18 +56,24 @@ class PageFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentPageBinding.inflate(inflater, container, false)
-        initializeAdapter()
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        initializeAdapter()
+        setupClickListeners()
         setupRecyclerView()
-        setupBackButton()
-        setupSettingButton()
         loadData()
         observeAuthState()
+    }
+
+    private fun setupRecyclerView() {
+        binding.problemHistory.apply {
+            adapter = problemHistoryAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+        }
     }
 
     override fun onDestroyView() {
@@ -75,26 +81,26 @@ class PageFragment : Fragment() {
         _binding = null
     }
 
-    private fun setupRecyclerView() {
-        binding.problemHistory.apply {
-            adapter = problemHistoryAdapter
-            layoutManager = LinearLayoutManager(context)
+    private fun setupClickListeners() {
+        with(binding) {
+            // 뒤로가기 버튼
+            backButton.setOnClickListener {
+                activity?.onBackPressed()
+            }
+
+            // 설정 버튼
+            settingsButton.setOnClickListener {
+                showProfileModal()
+            }
+
+            // 만족도 조사 버튼
+            satisfactionButton.setOnClickListener {
+                findNavController().navigate(
+                    PageFragmentDirections.actionPageFragmentToSatisfactionFragment()
+                )
+            }
         }
     }
-
-    private fun setupBackButton() {
-        binding.backButton.setOnClickListener {
-            // 뒤로가기 처리
-            activity?.onBackPressed()
-        }
-    }
-
-    private fun setupSettingButton() {
-        binding.settingsButton.setOnClickListener {
-            showProfileModal()
-        }
-    }
-
 
     private fun showProfileModal() {
         val profileModal = ProfileModal(
@@ -116,6 +122,7 @@ class PageFragment : Fragment() {
         )
         profileModal.show()
     }
+
     private fun findProblemAll() : List<ProblemHistory> {
         return MyPageDataSource.solvedProblems
     }

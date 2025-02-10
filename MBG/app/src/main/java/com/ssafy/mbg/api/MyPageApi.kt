@@ -26,10 +26,10 @@ interface MyPageApi {
     ): Response<ApiResponse<ProblemHistory>>
 
     // 프로필 정보 가져오기
-    @GET("users/{userId}/setting")
-    suspend fun getUserSetting(
-        @Path("userId") userId: String
-    ) : Response<ApiResponse<UserProfile>>
+//    @GET("users/{userId}/setting")
+//    suspend fun getUserSetting(
+//        @Path("userId") userId: String
+//    ) : Response<ApiResponse<UserProfile>>
 
     // 닉네임 변경
 

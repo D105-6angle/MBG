@@ -45,6 +45,22 @@
             app:destination="@id/historyDetailFragment"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_pageFragment_to_satisfactionFragment"
+            app:destination="@id/satisfactionFragment"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/satisfactionFragment"
+        android:name="com.ssafy.mbg.ui.page.SatisfactionFragment"
+        android:label="SatisfactionFragment">
+        <action
+            android:id="@+id/action_satisfactionFragment_to_pageFragment"
+            app:destination="@id/pageFragment"
+            app:popUpTo="@id/pageFragment"
+            app:popUpToInclusive="true"/>
     </fragment>
 
     <!-- 문제 풀이 기록 상세 보기 -->
