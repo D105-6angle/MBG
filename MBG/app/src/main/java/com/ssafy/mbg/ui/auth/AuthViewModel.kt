@@ -216,6 +216,7 @@ class AuthViewModel @Inject constructor(
                         }
                         // 실패 라면, 에러 메시지 설정
                         .onFailure {
+
                             _authState.value = AuthState.Error("자동 로그인 실패")
                         }
                 } else {
