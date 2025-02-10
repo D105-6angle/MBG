@@ -1,11 +1,9 @@
 package com.ssafy.controller.fcm;
 
 import com.google.firebase.FirebaseApp;
+import com.ssafy.model.entity.Alarm;
 import com.ssafy.model.service.FirebaseCloudMessageService;
-import com.ssafy.model.service.fcm.FCMServiceTest;
-import com.ssafy.model.service.fcm.FcmService;
-import com.ssafy.model.service.fcm.ScheduleNotificationService;
-import com.ssafy.model.service.fcm.TeacherNoticeService;
+import com.ssafy.model.service.fcm.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +28,10 @@ public class FcmApiController {
     private final FCMServiceTest fcmServiceTest;
     private final TeacherNoticeService teacherNoticeService;
     private final ScheduleNotificationService scheduleNotificationService;
+    private final AlarmService alarmService;
 
-//    private AlarmService alarmService;
+
+    //    private AlarmService alarmService;
     private FirebaseCloudMessageService firebaseCloudMessageService;
 
     @Operation(summary = "FCM 설정 테스트")
@@ -61,16 +61,17 @@ public class FcmApiController {
 
     //TODO - 선생님이 글을 작성하면 teacher_notice 등록되어야함과 동시에 해당 방에 있는 모든 학생들에게 푸시 알림이 가야한다.
 
-    @Operation(summary = "교사 공지사항 등록 및 반 학생들엑 알림 전송")
+    @Operation(summary = "교사 공지사항 등록 및 반 학생들에게 알림 전송")
     @PostMapping("/notice")
     public ResponseEntity<?> createNoticeAndNotify(
             @RequestParam Long roomId,
-            @RequestParam Long teacherId,
+//            @RequestParam Long teacherId,
 //            @RequestParam String title,
             @RequestParam String content) {
         try {
 //            teacherNoticeService.createNoticeAndNotify(roomId, teacherId, title, content);
-            teacherNoticeService.createNoticeAndNotify(roomId, teacherId, content);
+//            teacherNoticeService.createNoticeAndNotify(roomId, teacherId, content);
+              teacherNoticeService.createNoticeAndNotify(roomId, content);
             return ResponseEntity.ok("교사 공지사항 등록 및 알림 전송 완료");
         } catch (Exception e) {
             log.error("교사 공지사항 등록 실패: ", e);
@@ -89,6 +90,7 @@ public class FcmApiController {
             List<String> tokens = fcmService.getTokensByRoomId(roomId);
             String title = "만족도 조사 알림";
             String body = "현장 체험 학습 만족도 조사를 진행해주세요.";
+            List<Long> studentIds = fcmService.getStudentIdsByRoomId(roomId);
 
             for (String token : tokens) {
                 try {
@@ -102,6 +104,9 @@ public class FcmApiController {
                 } catch (Exception e) {
                     log.error("Failed to send survey notification to token: " + token, e);
                 }
+            }
+            for (Long studentId : studentIds) {
+                alarmService.addAlarm(new Alarm(studentId, title, body));
             }
             return ResponseEntity.ok("만족도 조사 알림이 전송되었습니다.");
         } catch (Exception e) {
