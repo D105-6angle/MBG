@@ -28,7 +28,7 @@ public class RoomController {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthService authService;
 
-    @Operation(summary = "방 생성 (POST /api/rooms)")
+    @Operation(summary = "방 생성")
     @PostMapping
     public ResponseEntity<RoomResponse.Room> createRoom(
             @RequestBody RoomRequest roomRequest,
@@ -61,7 +61,7 @@ public class RoomController {
         return ResponseEntity.ok(respDto);
     }
 
-    @Operation(summary = "전체 조 및 초대코드 조회 (GET /api/rooms/{roomId})")
+    @Operation(summary = "전체 조 및 초대코드 조회")
     @GetMapping("/{roomId}")
     public ResponseEntity<?> getRoomAndGroups(@PathVariable Long roomId) {
         // 1) 방 조회
@@ -83,4 +83,14 @@ public class RoomController {
 
         return ResponseEntity.ok(Map.of("data", data));
     }
+
+    // 그룹 추가
+    @Operation(summary = "그룹 수 증가")
+    @PutMapping("/{roomId}/groups/increase")
+    public ResponseEntity<?> increaseGroupCount(@PathVariable Long roomId) {
+        Room updatedRoom = roomService.increaseGroupCount(roomId);
+        return ResponseEntity.ok(updatedRoom);
+    }
+
+
 }

@@ -8,4 +8,8 @@ import org.apache.ibatis.annotations.Param;
 public interface RoomMapper {
     int insertRoom(Room room);
     Room selectRoomById(@Param("roomId") Long roomId);
+
+    Room selectRoomByInviteCode(@Param("inviteCode") String inviteCode);
+
+    int updateRoomGroupCount(Room room);
 }
