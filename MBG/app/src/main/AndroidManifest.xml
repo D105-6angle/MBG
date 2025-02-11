@@ -7,6 +7,9 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <!-- notification 전송 permission -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:name="com.ssafy.mbg.MbgApplication"
         android:allowBackup="true"
@@ -21,6 +24,19 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/api_key" />
+        <!-- Firebase 메시지 서비스를 위한 서비스 등록 -->
+        <service
+            android:name=".util.MyFirebaseMessagingService"
+            android:exported="true">
+
+            <intent-filter>
+
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+
+            </intent-filter>
+
+        </service>
+
         <activity
             android:name="com.ssafy.mbg.ui.splash.SplashActivity"
             android:exported="true">
