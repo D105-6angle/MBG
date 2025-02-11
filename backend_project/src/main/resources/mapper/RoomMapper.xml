@@ -67,4 +67,11 @@
         WHERE invite_code = #{inviteCode}
     </select>
 
+    <!-- 그룹 수 증가 -->
+    <update id="updateRoomGroupCount" parameterType="com.ssafy.model.entity.Room">
+        UPDATE rooms
+        SET num_of_groups = #{numOfGroups}
+        WHERE room_id = #{roomId}
+    </update>
+
 </mapper>
