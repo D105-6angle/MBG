@@ -127,7 +127,7 @@ public class FcmApiController {
                     Map<String, String> data = new HashMap<>();
                     data.put("type", "SURVEY");
                     data.put("roomId", roomId.toString());
-                    data.put("route", "/*"); // 프론트엔드의 라우트 경로
+                    data.put("route", "SURVEY"); // 프론트엔드의 라우트 경로
 
                     // 데이터와 함께 알림 전송
                     firebaseCloudMessageService.sendMessageWithData(token, title, body, data);
