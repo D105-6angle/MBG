@@ -14,6 +14,7 @@ import androidx.lifecycle.LiveData
 import com.ssafy.tmbg.data.team.dao.Team
 import kotlinx.coroutines.launch
 import android.util.Log
+import com.ssafy.tmbg.data.team.dao.GroupDetailResponse
 
 
 @HiltViewModel
@@ -33,6 +34,9 @@ class TeamViewModel @Inject constructor(
     // 에러 메시지를 위한 LiveData 추가
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
+
+    private val _groupDetail = MutableLiveData<GroupDetailResponse>()
+    val groupDetail: LiveData<GroupDetailResponse> = _groupDetail
 
     init {
         _hasTeam.value = false
@@ -95,6 +99,7 @@ class TeamViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     response.body()?.let { team ->
                         Log.d("TeamViewModel", "팀 정보 조회 성공: $team")
+                        Log.d("TeamViewModel", "팀 정보 조회 성공: ${response.body()}")
                         _team.value = team
                     } ?: run {
                         Log.e("TeamViewModel", "팀 정보 조회 성공했지만 응답 바디가 null입니다")
@@ -109,6 +114,21 @@ class TeamViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("TeamViewModel", "팀 정보 조회 실패 - 네트워크 에러: ${e.message}", e)
                 _error.value = "네트워크 오류: ${e.message}"
+            }
+        }
+    }
+
+    fun getGroupDetail(roomId: Int, groupNo: Int) {
+        viewModelScope.launch {
+            try {
+                val response = repository.getGroupDetail(roomId, groupNo)
+                if (response.isSuccessful) {
+                    response.body()?.let { detail ->
+                        _groupDetail.value = detail
+                    }
+                }
+            } catch (e: Exception) {
+                // 에러 처리
             }
         }
     }

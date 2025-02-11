@@ -14,6 +14,8 @@ import com.ssafy.tmbg.data.team.dao.TeamRequest
 import com.ssafy.tmbg.ui.main.AdminMainFragment
 import com.ssafy.tmbg.ui.main.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import android.widget.ArrayAdapter
+import com.ssafy.tmbg.R
 
 @AndroidEntryPoint
 class TeamCreateDialog : DialogFragment() {
@@ -62,25 +64,45 @@ class TeamCreateDialog : DialogFragment() {
             }
         }
 
+        // 문화재 목록 설정
+        val locations = arrayOf(
+            "경복궁",
+            "인동향교",
+            // 더 많은 문화재 추가
+        )
+        
+        val adapter = ArrayAdapter(
+            requireContext(),
+            R.layout.dropdown_item,
+            locations
+        ).apply {
+            // 필터 설정
+            setNotifyOnChange(true)
+        }
+        
+        binding.locationDropdown.apply {
+            setAdapter(adapter)
+            threshold = 1  // 1글자 입력부터 필터링 시작
+            setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    showDropDown()  // 포커스 받으면 드롭다운 표시
+                }
+            }
+        }
+
         binding.submitButton.setOnClickListener {
             val teamName = binding.editText2.text.toString()
-            val location = binding.editText1.text.toString()
+            val location = binding.locationDropdown.text.toString()  // 변경된 부분
             val numOfGroups = binding.editText3.text.toString().toIntOrNull() ?: 1
 
-            Log.d("TeamCreateDialog", "버튼 클릭됨")
-            Log.d("TeamCreateDialog", "teamName: $teamName, location: $location, numOfGroups: $numOfGroups")
-
-            if (teamName.isNotEmpty()) {
-                Log.d("TeamCreateDialog", "팀 생성 요청 시작")
-                // 팀 생성 요청
+            if (teamName.isNotEmpty() && location.isNotEmpty()) {
                 teamViewModel.createTeam(TeamRequest(
                     roomName = teamName,
                     location = location,
                     numOfGroups = numOfGroups
                 ))
-                // API 호출이 완료될 때까지 기다림 (dismiss 제거)
             } else {
-                Toast.makeText(context, "팀 이름을 입력해주세요", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "모든 항목을 입력해주세요", Toast.LENGTH_SHORT).show()
             }
         }
     }
