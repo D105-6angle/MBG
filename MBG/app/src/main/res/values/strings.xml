@@ -42,4 +42,6 @@
     <string name="easter_egg_txt">구글 로그인은 나중에..🤪</string>
     <!-- Google Map   -->
     <string name="api_key">AIzaSyCnaS2BwLjhQ5mWZU0U8z4ppydasbHF_Sk</string>
+    <!-- -->
+    <string name="hint_chat_bot">문화재에 대해 물어봐!!</string>
 </resources>

@@ -12,51 +12,53 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ssafy.mbg.adapter.ProblemHistoryAdapter
-import com.ssafy.mbg.data.mypage.dto.MyPageDataSource
-import com.ssafy.mbg.data.mypage.dto.ProblemHistory
 import com.ssafy.mbg.databinding.FragmentPageBinding
+import com.ssafy.mbg.di.UserPreferences
 import com.ssafy.mbg.ui.auth.AuthState
 import com.ssafy.mbg.ui.auth.AuthViewModel
 import com.ssafy.mbg.ui.modal.ProfileModal
 import com.ssafy.mbg.ui.splash.SplashActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class PageFragment : Fragment() {
+class TempPageFragment : Fragment() {
     private var _binding: FragmentPageBinding? = null
     private val binding get() = _binding!!
 
-    private val authViewModel : AuthViewModel by viewModels()
+    @Inject
+    lateinit var userPreferences: UserPreferences
+
+    private val authViewModel: AuthViewModel by viewModels()
+    private val myPageViewModel: MyPageViewModel by viewModels()
 
     private lateinit var problemHistoryAdapter: ProblemHistoryAdapter
 
-    private fun getTitle(solvedCount : Int) : String {
+    private fun getTitle(solvedCount: Int): String {
         return when {
             solvedCount in 0..5 -> "꿈 꾸는 도전자"
             solvedCount in 6..10 -> "꿈 많은 모험가"
             else -> "꿈이룬 탐험가"
         }
-
     }
+
     private fun initializeAdapter() {
         problemHistoryAdapter = ProblemHistoryAdapter { history ->
-            val action = PageFragmentDirections.actionPageFragmentToHistoryDetailFragment(
-                title = history.name,
-//                image = history.imageUrl,
-                description = history.description ?: "",
-                lastSolvedAt = history.lastSolvedAt
-            )
-            findNavController().navigate(action)
+            userPreferences.userId?.let { userId ->
+                viewLifecycleOwner.lifecycleScope.launch {
+                    myPageViewModel.getDetailProblem(userId = userId, logId = history.logId)
+                }
+            }
         }
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentPageBinding.inflate(inflater, container, false)
-
         return binding.root
     }
 
@@ -65,8 +67,9 @@ class PageFragment : Fragment() {
         initializeAdapter()
         setupClickListeners()
         setupRecyclerView()
-        loadData()
+        observeMyPageState()
         observeAuthState()
+        loadData()
     }
 
     private fun setupRecyclerView() {
@@ -76,19 +79,16 @@ class PageFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     private fun setupClickListeners() {
         with(binding) {
-            // 설정 버튼
             settingsButton.setOnClickListener {
-                showProfileModal()
+                userPreferences.userId?.let { userId ->
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        myPageViewModel.getUserInfo(userId)
+                    }
+                }
             }
 
-            // 만족도 조사 버튼
             satisfactionButton.setOnClickListener {
                 findNavController().navigate(
                     PageFragmentDirections.actionPageFragmentToSatisfactionFragment()
@@ -97,15 +97,14 @@ class PageFragment : Fragment() {
         }
     }
 
-    private fun showProfileModal() {
+    private fun showProfileModal(email: String, name: String, nickname: String) {
         val profileModal = ProfileModal(
             context = requireContext(),
-            email = "kimssafy@ssafy.com",
-            name = "김싸피",
-            currentNickname = "김싸피",
+            email = email,
+            name = name,
+            currentNickname = nickname,
             onConfirm = { newNickname ->
-                // 닉네임 변경 처리
-                binding.progressBar.visibility = View.VISIBLE  // 로딩 표시 추가 필요
+                binding.progressBar.visibility = View.VISIBLE
                 authViewModel.updateNickname(newNickname)
             },
             onLogout = {
@@ -118,21 +117,57 @@ class PageFragment : Fragment() {
         profileModal.show()
     }
 
-    private fun findProblemAll() : List<ProblemHistory> {
-        return MyPageDataSource.solvedProblems
+    private fun observeMyPageState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            myPageViewModel.uiState.collect { state ->
+                when (state) {
+                    is MyPageState.Loading -> {
+                        binding.progressBar.visibility = View.VISIBLE
+                    }
+                    is MyPageState.Success -> {
+                        binding.progressBar.visibility = View.GONE
+
+                        state.userResponse?.let { userResponse ->
+                            showProfileModal(
+                                email = userResponse.userInfo.email,
+                                name = userResponse.userInfo.name,
+                                nickname = userResponse.userInfo.nickname
+                            )
+                        }
+
+                        state.problemResponse?.let { problemResponse ->
+                            findNavController().navigate(
+                                PageFragmentDirections.actionPageFragmentToHistoryDetailFragment(
+                                    title = problemResponse.cardName,
+//                                    image = problemResponse.imageUrl,
+                                    description = problemResponse.description,
+                                    lastSolvedAt = problemResponse.lastAttemptedAt
+                                )
+                            )
+                        }
+                    }
+                    is MyPageState.Error -> {
+                        binding.progressBar.visibility = View.GONE
+                        Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                    }
+                    is MyPageState.Initial -> {
+                        binding.progressBar.visibility = View.GONE
+                    }
+                }
+            }
+        }
     }
 
     private fun observeAuthState() {
         viewLifecycleOwner.lifecycleScope.launch {
             authViewModel.authState.collect { state ->
-                binding.progressBar.visibility = View.GONE  // 로딩 표시 제거
+                binding.progressBar.visibility = View.GONE
                 when (state) {
                     is AuthState.Success -> {
                         when (state.message) {
                             "닉네임이 변경되었습니다." -> {
                                 Toast.makeText(context, "닉네임이 성공적으로 변경되었습니다", Toast.LENGTH_SHORT).show()
-                                // UI 업데이트가 필요한 경우 여기서 처리
-                                loadData()  // 데이터 새로고침
+                                loadData()
                             }
                             else -> Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
                         }
@@ -153,11 +188,15 @@ class PageFragment : Fragment() {
     }
 
     private fun loadData() {
-        // 더미 데이터 생성 - 새로운 필드 추가
-        val histories = findProblemAll()
-        problemHistoryAdapter.updateHistories(histories)
+        userPreferences.userId?.let { userId ->
+            viewLifecycleOwner.lifecycleScope.launch {
+                myPageViewModel.getUserInfo(userId)
+            }
+        }
+    }
 
-        val solvedCount = histories.size
-        binding.profileTitle.text = getTitle(solvedCount)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

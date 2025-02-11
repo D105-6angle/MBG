@@ -2,10 +2,12 @@ package com.ssafy.mbg.api
 
 import com.ssafy.mbg.data.auth.dao.UserProfile
 import com.ssafy.mbg.data.auth.common.ApiResponse
+import com.ssafy.mbg.data.auth.response.UserResponse
 import com.ssafy.mbg.data.auth.response.WithdrawResponse
 import com.ssafy.mbg.data.mypage.dto.ProblemHistory
 import com.ssafy.mbg.data.mypage.dto.UpdateNicknameRequest
 import com.ssafy.mbg.data.mypage.dto.UserInfo
+import com.ssafy.mbg.data.mypage.response.ProblemResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -16,14 +18,14 @@ import retrofit2.http.Path
 interface MyPageApi {
     // 마이 페이지 전체 데이터 조회
     @GET("users/{userId}/myPage")
-    suspend fun getUserInfo(@Path("userId") userId: String): Response<ApiResponse<UserInfo>>
+    suspend fun getUserInfo(@Path("userId") userId: Long): Response<UserResponse>
 
     // 내가 푼 문제 상세 조회
     @GET("users/{userId}/log/{logId}")
     suspend fun getDetailProblemHistory(
-        @Path("userId") userId: String,
+        @Path("userId") userId: Long,
         @Path("logId") logId: String,
-    ): Response<ApiResponse<ProblemHistory>>
+    ): Response<ProblemResponse>
 
     // 프로필 정보 가져오기
 //    @GET("users/{userId}/setting")

@@ -10,7 +10,7 @@ object MyPageDataSource {
         ProblemHistory(
             logId = "1",
             cardId = "c-1",
-            imageUrl = R.drawable.cultural_1,
+//            imageUrl = R.drawable.cultural_1,
             name = "철퇴",
             lastSolvedAt = "문제 풀이 날짜 : 2024-01-23",
             result = true,
@@ -22,7 +22,7 @@ object MyPageDataSource {
         ProblemHistory(
             logId = "2",
             cardId = "c-2",
-            imageUrl = R.drawable.sajungjeon,
+//            imageUrl = R.drawable.sajungjeon,
             name = "사정전",
             lastSolvedAt = "문제 풀이 날짜 : 2024-01-20",
             result = true,
@@ -33,7 +33,7 @@ object MyPageDataSource {
         ProblemHistory(
             logId = "3",
             cardId = "c-3",
-            imageUrl = R.drawable.cultural_2,
+//            imageUrl = R.drawable.cultural_2,
             name = "뒤주",
             lastSolvedAt = "문제 풀이 날짜 : 2024-01-19",
             result = false,
@@ -44,7 +44,7 @@ object MyPageDataSource {
         ProblemHistory(
             logId = "4",
             cardId = "c-3",
-            imageUrl = R.drawable.cultural_2,
+//            imageUrl = R.drawable.cultural_2,
             name = "뒤주",
             lastSolvedAt = "문제 풀이 날짜 : 2024-01-19",
             result = false,
@@ -55,7 +55,7 @@ object MyPageDataSource {
         ProblemHistory(
             logId = "5",
             cardId = "c-3",
-            imageUrl = R.drawable.cultural_2,
+//            imageUrl = R.drawable.cultural_2,
             name = "뒤주",
             lastSolvedAt = "문제 풀이 날짜 : 2024-01-19",
             result = false,
@@ -66,7 +66,7 @@ object MyPageDataSource {
         ProblemHistory(
             logId = "6",
             cardId = "c-3",
-            imageUrl = R.drawable.cultural_2,
+//            imageUrl = R.drawable.cultural_2,
             name = "뒤주",
             lastSolvedAt = "문제 풀이 날짜 : 2024-01-19",
             result = false,
