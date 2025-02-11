@@ -6,6 +6,8 @@ import com.kakao.sdk.common.KakaoSdk
 import com.navercorp.nid.NaverIdLoginSDK
 import com.ssafy.mbg.util.KeyHashUtil
 import dagger.hilt.android.HiltAndroidApp
+import com.google.firebase.FirebaseApp
+import com.google.firebase.messaging.FirebaseMessaging
 
 @HiltAndroidApp
 class MbgApplication : Application() {
@@ -30,5 +32,8 @@ class MbgApplication : Application() {
         }
         val key = KeyHashUtil.getKeyHash(this)
         Log.d(SocialTAG, key)
+
+        FirebaseApp.initializeApp(this)
+
     }
 }

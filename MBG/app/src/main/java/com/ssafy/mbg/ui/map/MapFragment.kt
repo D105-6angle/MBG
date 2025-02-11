@@ -192,7 +192,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         // 지도 유형을 위성/하이브리드로 설정하여 상세한 위성 사진처럼 표시
 //        googleMap.mapType = GoogleMap.MAP_TYPE_HYBRID
-        googleMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
+        googleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
 
 
         setupMap()
