@@ -15,4 +15,6 @@
     <color name="team_text_primary">#000000</color>  <!-- 현재 사용 중인 기본 텍스트 색상 -->
     <color name="team_text_secondary">#666666</color>  <!-- 현재 사용 중인 보조 텍스트 색상 -->
     <color name="team_leader_text">@android:color/holo_red_light</color>  <!-- 현재 사용 중인 팀장 텍스트 색상 -->
+    <color name="red">#FF0000</color>
+    <color name="gray">#808080</color>
 </resources>

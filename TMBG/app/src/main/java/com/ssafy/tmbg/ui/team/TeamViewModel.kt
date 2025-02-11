@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import com.ssafy.tmbg.data.team.dao.GroupDetailResponse
 import android.content.SharedPreferences
 import android.content.Intent
+import android.util.Log
 
 @HiltViewModel
 class TeamViewModel @Inject constructor(
@@ -24,8 +25,8 @@ class TeamViewModel @Inject constructor(
     private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
 
-    private val _team = MutableLiveData<Team>()
-    val team: LiveData<Team> = _team
+    private val _team = MutableLiveData<Team?>()
+    val team: LiveData<Team?> = _team
 
     private val _hasTeam = MutableLiveData<Boolean>()
     val hasTeam: LiveData<Boolean> = _hasTeam
@@ -100,7 +101,7 @@ class TeamViewModel @Inject constructor(
 
                 if (response.isSuccessful) {
                     response.body()?.let { teamResponse ->
-                        _team.value = teamResponse.data  // TeamResponse에서 data(Team)를 추출
+                        _team.value = teamResponse
                     } ?: run {
                         _error.value = "팀 정보가 비어있습니다"
                     }
@@ -109,7 +110,7 @@ class TeamViewModel @Inject constructor(
                     _error.value = "팀 정보 조회에 실패했습니다 (${response.code()})"
                 }
             } catch (e: Exception) {
-                _error.value = "네트워크 오류: ${e.message}"
+                _error.value = e.message ?: "알 수 없는 에러가 발생했습니다"
             }
         }
     }
@@ -127,6 +128,52 @@ class TeamViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 _error.value = e.message ?: "알 수 없는 오류가 발생했습니다."
+            }
+        }
+    }
+
+    fun addGroup(roomId: Int) {
+        viewModelScope.launch {
+            try {
+                Log.d("TeamViewModel", "addGroup 호출됨 - roomId: $roomId")
+                val response = repository.addGroup(roomId)
+                Log.d("TeamViewModel", "addGroup API 응답: $response")
+                
+                if (response.isSuccessful) {
+                    Log.d("TeamViewModel", "그룹 추가 성공")
+                    // 그룹 추가 성공 후 팀 정보를 다시 불러옴
+                    getTeam(roomId)
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("TeamViewModel", "그룹 추가 실패 - HTTP ${response.code()}, Error: $errorBody")
+                    _error.value = "그룹 추가에 실패했습니다 (${response.code()})"
+                }
+            } catch (e: Exception) {
+                Log.e("TeamViewModel", "그룹 추가 에러", e)
+                _error.value = "네트워크 오류: ${e.message}"
+            }
+        }
+    }
+
+    fun deleteMember(roomId: Int, groupNo: Int, userId: Long) {
+        viewModelScope.launch {
+            try {
+                Log.d("TeamViewModel", "deleteMember 호출 - roomId: $roomId, groupNo: $groupNo, userId: $userId")
+                val response = repository.deleteMember(roomId, groupNo, userId)
+                Log.d("TeamViewModel", "deleteMember 응답: $response")
+                
+                if (response.isSuccessful) {
+                    Log.d("TeamViewModel", "멤버 삭제 성공")
+                    // 멤버 삭제 성공 후 그룹 상세 정보를 다시 불러옴
+                    getGroupDetail(roomId, groupNo)
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("TeamViewModel", "멤버 삭제 실패 - HTTP ${response.code()}, Error: $errorBody")
+                    _error.value = "멤버 삭제에 실패했습니다 (${response.code()})"
+                }
+            } catch (e: Exception) {
+                Log.e("TeamViewModel", "deleteMember 에러", e)
+                _error.value = "네트워크 오류: ${e.message}"
             }
         }
     }

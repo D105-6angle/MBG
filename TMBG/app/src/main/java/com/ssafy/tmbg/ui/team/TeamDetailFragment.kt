@@ -23,6 +23,7 @@ import com.ssafy.tmbg.ui.team.TeamViewModel
 import com.ssafy.tmbg.data.team.dao.VerificationPhotos
 import com.ssafy.tmbg.data.team.dao.GroupDetailResponse
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.core.content.ContextCompat
 
 @AndroidEntryPoint
 class TeamDetailFragment : Fragment() {
@@ -31,6 +32,8 @@ class TeamDetailFragment : Fragment() {
     private val teamViewModel: TeamViewModel by viewModels()
     private val args: TeamDetailFragmentArgs by navArgs()
     private val mainViewModel: MainViewModel by activityViewModels()
+    private var isDeleteMode = false
+    private lateinit var memberAdapter: TeamMemberAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -81,17 +84,51 @@ class TeamDetailFragment : Fragment() {
                 val members = detail.members.filter { it.codeId != "J001" }
 
                 // 조장 리사이클러뷰 업데이트
-                binding.rvLeader.adapter = TeamMemberAdapter(listOfNotNull(leader))
+                binding.rvLeader.adapter = TeamMemberAdapter(
+                    members = listOfNotNull(leader),
+                    onDeleteClick = { userId ->
+                        mainViewModel.roomId.value?.let { roomId ->
+                            teamViewModel.deleteMember(roomId, args.groupNumber, userId)
+                        }
+                    }
+                )
                 
                 // 조원 리사이클러뷰 업데이트
-                binding.rvMembers.adapter = TeamMemberAdapter(members)
+                memberAdapter = TeamMemberAdapter(
+                    members = detail.members.filter { it.codeId != "J001" },
+                    onDeleteClick = { userId ->
+                        mainViewModel.roomId.value?.let { roomId ->
+                            teamViewModel.deleteMember(roomId, args.groupNumber, userId)
+                        }
+                    }
+                )
+                binding.rvMembers.adapter = memberAdapter
                 
+                // 삭제 모드 상태 유지
+                memberAdapter.setDeleteMode(isDeleteMode)
+                (binding.rvLeader.adapter as? TeamMemberAdapter)?.setDeleteMode(isDeleteMode)
+
                 // 사진 리사이클러뷰 설정
                 setupPhotoRecyclerView(detail.verificationPhotos)
 
                 // 방문 장소 리사이클러뷰 업데이트
                 binding.rvPlaces.adapter = TeamPlaceAdapter(detail.visitedPlaces)
             }
+        }
+
+        // 삭제 버튼 클릭 처리
+        binding.btnDelete.setOnClickListener {
+            isDeleteMode = !isDeleteMode
+            memberAdapter.setDeleteMode(isDeleteMode)
+            (binding.rvLeader.adapter as? TeamMemberAdapter)?.setDeleteMode(isDeleteMode)
+            
+            // 삭제 모드일 때 버튼 색상 변경
+            binding.btnDelete.setColorFilter(
+                if (isDeleteMode) 
+                    ContextCompat.getColor(requireContext(), R.color.red)
+                else 
+                    ContextCompat.getColor(requireContext(), R.color.gray)
+            )
         }
     }
 

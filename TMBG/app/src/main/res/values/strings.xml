@@ -41,6 +41,7 @@
 
     <!-- 팀 상세 페이지 -->
     <string name="team_leader">조장</string>
+    <string name="is_leader">👑</string>
     <string name="team_members">조원</string>
     <string name="progress">진행률</string>
     <string name="team_picture">인증 사진</string>

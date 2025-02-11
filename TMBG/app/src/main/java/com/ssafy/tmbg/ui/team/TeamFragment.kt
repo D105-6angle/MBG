@@ -1,9 +1,11 @@
 package com.ssafy.tmbg.ui.team
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.fragment.app.activityViewModels
@@ -73,19 +75,32 @@ class TeamFragment : Fragment() {
         binding.btnShare.setOnClickListener {
             viewModel.shareInviteCode(requireContext())
         }
+
+        // 그룹 추가 버튼 클릭 리스너에 로그 추가
+        binding.btnAdd.setOnClickListener {
+            Log.d("TeamFragment", "그룹 추가 버튼 클릭")
+            sharedViewModel.roomId.value?.let { roomId ->
+                Log.d("TeamFragment", "그룹 추가 시도 - roomId: $roomId")
+                viewModel.addGroup(roomId)
+            } ?: run {
+                Log.e("TeamFragment", "roomId가 null입니다")
+            }
+        }
     }
 
     private fun setupObservers() {
         viewModel.team.observe(viewLifecycleOwner) { team ->
-            teamAdapter.updateData(team.numOfGroups.toInt())
-            binding.btnShareCode.text = "초대 코드: ${team.inviteCode}"
-            binding.tvRoomName.text = team.roomName
+            team?.let {
+                teamAdapter.updateData(it.numOfGroups.toInt())
+                binding.btnShareCode.text = "초대 코드: ${it.inviteCode}"
+                binding.tvRoomName.text = it.roomName
+            }
         }
 
-        // 에러 메시지 관찰 추가
+        // 에러 메시지 관찰
         viewModel.error.observe(viewLifecycleOwner) { error ->
             if (error.isNotEmpty()) {
-                // 에러 메시지 표시 (Toast 등)
+                Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
             }
         }
     }

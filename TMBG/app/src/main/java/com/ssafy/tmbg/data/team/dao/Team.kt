@@ -1,9 +1,5 @@
 package com.ssafy.tmbg.data.team.dao
 
-data class TeamResponse(
-   val data : Team
-)
-
 // Team 데이터
 data class Team(
     val roomId: Int,
