@@ -54,13 +54,24 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager
             .findFragmentById(binding.navHostFragment.id) as NavHostFragment
         val navController = navHostFragment.navController
+//
+//        // route 값 받기
+//        val route = intent?.getStringExtra("route")
+//        if (route != null && route == "SURVEY") {
+//            // FCM 알림에서 전달된 route 값에 따라 PageFragment로 이동
+//            navController.navigate(R.id.pageFragment)
+//        }
 
         // route 값 받기
         val route = intent?.getStringExtra("route")
         if (route != null && route == "SURVEY") {
             // FCM 알림에서 전달된 route 값에 따라 PageFragment로 이동
             navController.navigate(R.id.pageFragment)
+
+            // PageFragment로 이동 후, SatisfactionFragment로 자동으로 이동
+            navController.navigate(R.id.satisfactionFragment)
         }
+
 
         // BottomNavigationView와 NavController 연동
         binding.bottomNavigation.setupWithNavController(navController)
