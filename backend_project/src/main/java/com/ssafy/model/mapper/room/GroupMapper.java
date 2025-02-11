@@ -1,5 +1,6 @@
 package com.ssafy.model.mapper.room;
 
+import com.ssafy.controller.room.group.GroupDetailResponse.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -20,16 +21,16 @@ public interface GroupMapper {
                                @Param("groupNo") int groupNo);
 
     // 특정 조 멤버 목록
-    List<MemberData> selectMembers(@Param("roomId") Long roomId,
-                                   @Param("groupNo") int groupNo);
+    List<MemberDto> selectMembers(@Param("roomId") Long roomId,
+                                  @Param("groupNo") int groupNo);
 
     // 인증샷 목록 조회
-    List<VerificationPhotoData> selectVerificationPhotos(@Param("roomId") Long roomId,
-                                                         @Param("groupNo") int groupNo);
+    List<VerificationPhotoDto> selectVerificationPhotos(@Param("roomId") Long roomId,
+                                                        @Param("groupNo") int groupNo);
 
     // 방문한 장소 목록 조회
-    List<VisitedPlaceData> selectVisitedPlaces(@Param("roomId") Long roomId,
-                                               @Param("groupNo") int groupNo);
+    List<VisitedPlaceDto> selectVisitedPlaces(@Param("roomId") Long roomId,
+                                              @Param("groupNo") int groupNo);
 
     // 특정 조원 삭제
     int deleteMember(@Param("roomId") long roomId,
@@ -51,25 +52,4 @@ public interface GroupMapper {
     int updateMemberToMember(@Param("roomId") Long roomId,
                              @Param("groupNo") int groupNo,
                              @Param("userId") Long userId);
-
-
-    // 내부 DTO 클래스들
-    public static class MemberData {
-        public long userId;
-        public String nickname;
-        public String codeId; // ex) "J001"=팀장
-    }
-
-    public static class VerificationPhotoData {
-        public long pictureId;
-        public String pictureUrl;
-        public long missionId;
-        public String completionTime;
-    }
-
-    public static class VisitedPlaceData {
-        public long missionId;
-        public String positionName;
-        public String completedAt;
-    }
 }
