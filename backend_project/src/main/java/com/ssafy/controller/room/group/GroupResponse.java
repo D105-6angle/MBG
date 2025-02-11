@@ -12,5 +12,4 @@ import lombok.NoArgsConstructor;
 public class GroupResponse {
     private int groupNo;
     private int memberCount;
-    private double progress;  // 0.0 ~ 1.0
 }

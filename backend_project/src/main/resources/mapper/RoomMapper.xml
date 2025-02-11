@@ -15,18 +15,41 @@
         <result property="status" column="status" />
     </resultMap>
 
-    <!-- 방 생성 (insert) -->
-    <insert id="insertRoom" parameterType="com.ssafy.model.entity.Room" useGeneratedKeys="true" keyProperty="roomId">
-        INSERT INTO rooms (teacher_id, location, room_name, num_of_groups, invite_code, created_at, status)
-        VALUES (#{teacherId}, #{location}, #{roomName}, #{numOfGroups}, #{inviteCode}, #{createdAt}, #{status})
+    <insert id="insertRoom"
+            parameterType="com.ssafy.model.entity.Room"
+            useGeneratedKeys="true"
+            keyProperty="roomId"
+            keyColumn="room_id">
+        INSERT INTO rooms (
+            teacher_id,
+            location,
+            room_name,
+            num_of_groups,
+            invite_code,
+            created_at,
+            status
+        ) VALUES (
+                     #{teacherId},
+                     #{location},
+                     #{roomName},
+                     #{numOfGroups},
+                     #{inviteCode},
+                     #{createdAt},
+                     #{status}
+                 )
     </insert>
 
-    <!-- 방 정보 조회 (select) -->
     <select id="selectRoomById" parameterType="long" resultMap="RoomResultMap">
-        SELECT room_id, teacher_id, location, room_name, num_of_groups, invite_code, created_at, status
+        SELECT
+            room_id,
+            teacher_id,
+            location,
+            room_name,
+            num_of_groups,
+            invite_code,
+            created_at,
+            status
         FROM rooms
         WHERE room_id = #{roomId}
     </select>
-
 </mapper>
-

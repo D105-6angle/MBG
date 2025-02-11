@@ -2,39 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
 <mapper namespace="com.ssafy.model.mapper.room.GroupMapper">
 
-    <resultMap id="MemberResultMap" type="com.ssafy.controller.room.member.MemberResponse">
-        <result property="userId"   column="user_id"/>
-        <result property="name"     column="name"/>
-        <result property="nickname" column="nickname"/>
-        <result property="email"    column="email"/>
-    </resultMap>
-
-    <!-- num_of_groups -->
-    <select id="selectNumOfGroupsByRoomId" parameterType="long" resultType="int">
-        SELECT num_of_groups
-        FROM rooms
-        WHERE room_id = #{roomId}
-    </select>
-
-    <!-- 조원 목록 조회 -->
-    <select id="selectMembersByRoomAndGroup"
-            parameterType="map"
-            resultMap="MemberResultMap">
-        SELECT
-            u.user_id    AS user_id,
-            u.name       AS name,
-            u.nickname   AS nickname,
-            u.email      AS email
-        FROM memberships m
-                 JOIN users u ON m.user_id = u.user_id
-        WHERE m.room_id = #{roomId}
-          AND m.group_no = #{groupNo}
-    </select>
-
-    <!-- 특정 방/조에 속한 멤버 수 -->
+    <!-- 조에 속한 멤버 수 -->
     <select id="countMembers" parameterType="map" resultType="int">
         SELECT COUNT(*)
         FROM memberships
@@ -42,23 +12,67 @@
           AND group_no = #{groupNo}
     </select>
 
-    <!-- 전체 미션 수 -->
-    <select id="countTotalMissions" parameterType="long" resultType="int">
-        <!-- 수정됨: 예시로 상수값 10을 반환하도록 변경 (실제 미션 테이블이 없으므로) -->
-        SELECT 10
+    <!-- 전체 인증샷 미션의 총 개수 -->
+    <select id="countTotalMissions" resultType="int">
+        SELECT COUNT(*)
+        FROM mission_positions
+        WHERE code_id = 'M003'
     </select>
 
-    <!-- 현재 조가 완료한 미션 수 -->
+    <!-- 조가 완료한 인증샷 미션 수 -->
     <select id="countCompletedMissions" parameterType="map" resultType="int">
-        <!-- 수정됨: tmission_completions -> pmission_completions, join 조건 수정 및 DISTINCT 사용 -->
-        SELECT COUNT(DISTINCT tc.mission_id)
-        FROM pmission_completions tc
-        JOIN memberships m ON tc.user_id = m.user_id
+        SELECT COUNT(DISTINCT p.mission_id)
+        FROM pictures p
+                 JOIN memberships m ON p.user_id = m.user_id
+                 JOIN mission_positions mp ON p.mission_id = mp.mission_id
         WHERE m.room_id = #{roomId}
-        AND m.group_no = #{groupNo}
+          AND m.group_no = #{groupNo}
+          AND mp.code_id = 'M003'
     </select>
 
-    <!-- 특정 방, 특정 조의 특정 멤버를 삭제 -->
+    <!-- 특정 조 멤버 목록 -->
+    <select id="selectMembers" parameterType="map"
+            resultType="com.ssafy.model.mapper.room.GroupMapper$MemberData">
+        SELECT
+            u.user_id     AS userId,
+            u.nickname    AS nickname,
+            m.code_id     AS codeId
+        FROM memberships m
+                 JOIN users u ON m.user_id = u.user_id
+        WHERE m.room_id = #{roomId}
+          AND m.group_no = #{groupNo}
+    </select>
+
+    <!-- 인증샷(VerificationPhotos) 조회 -->
+    <select id="selectVerificationPhotos" parameterType="map"
+            resultType="com.ssafy.model.mapper.room.GroupMapper$VerificationPhotoData">
+        SELECT
+            p.picture_id     AS pictureId,
+            p.picture_url    AS pictureUrl,
+            p.mission_id     AS missionId,
+            DATE_FORMAT(p.completion_time, '%Y-%m-%d %H:%i:%s') AS completionTime
+        FROM pictures p
+                 JOIN memberships m ON p.user_id = m.user_id
+        WHERE m.room_id = #{roomId}
+          AND m.group_no = #{groupNo}
+    </select>
+
+    <!-- 방문한 장소(VisitedPlace) 조회 -->
+    <select id="selectVisitedPlaces" parameterType="map"
+            resultType="com.ssafy.model.mapper.room.GroupMapper$VisitedPlaceData">
+        SELECT
+            p.mission_id AS missionId,
+            mp.position_name AS positionName,
+            DATE_FORMAT(p.completion_time, '%Y-%m-%d %H:%i:%s') AS completedAt
+        FROM pictures p
+                 JOIN memberships m ON p.user_id = m.user_id
+                 JOIN mission_positions mp ON p.mission_id = mp.mission_id
+        WHERE m.room_id = #{roomId}
+          AND m.group_no = #{groupNo}
+          AND mp.code_id = 'M003'
+    </select>
+
+    <!-- 특정 조의 특정 유저 DELETE (조원 삭제) -->
     <delete id="deleteMember" parameterType="map">
         DELETE FROM memberships
         WHERE room_id = #{roomId}
@@ -66,4 +80,41 @@
           AND user_id = #{userId}
     </delete>
 
+    <!-- 리더 찾기 -->
+    <select id="findLeaderInGroup" parameterType="map" resultType="long">
+        SELECT user_id
+        FROM memberships
+        WHERE room_id = #{roomId}
+          AND group_no = #{groupNo}
+          AND code_id = 'J001'
+    </select>
+
+    <!-- 새 리더 후보 찾기 -->
+    <select id="findNewLeaderCandidate" parameterType="map" resultType="long">
+        SELECT user_id
+        FROM memberships
+        WHERE room_id = #{roomId}
+          AND group_no = #{groupNo}
+          AND user_id != #{excludeUserId}
+        ORDER BY user_id DESC
+            LIMIT 1
+    </select>
+
+    <!-- 해당 멤버를 리더(J001)로 업데이트 -->
+    <update id="updateMemberToLeader" parameterType="map">
+        UPDATE memberships
+        SET code_id = 'J001'
+        WHERE room_id = #{roomId}
+          AND group_no = #{groupNo}
+          AND user_id = #{userId}
+    </update>
+
+    <!-- 해당 멤버를 일반(J002)으로 업데이트 -->
+    <update id="updateMemberToMember" parameterType="map">
+        UPDATE memberships
+        SET code_id = 'J002'
+        WHERE room_id = #{roomId}
+          AND group_no = #{groupNo}
+          AND user_id = #{userId}
+    </update>
 </mapper>

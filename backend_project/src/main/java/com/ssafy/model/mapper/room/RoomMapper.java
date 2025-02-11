@@ -2,9 +2,10 @@ package com.ssafy.model.mapper.room;
 
 import com.ssafy.model.entity.Room;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface RoomMapper {
-    void insertRoom(Room room);
-    Room selectRoomById(long roomId);
+    int insertRoom(Room room);
+    Room selectRoomById(@Param("roomId") Long roomId);
 }
