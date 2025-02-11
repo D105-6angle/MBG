@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/team_leader"
                 android:textColor="#000000"
-                android:textSize="16sp"
+                android:textSize="24sp"
                 android:textStyle="bold"/>
 
             <androidx.recyclerview.widget.RecyclerView
@@ -79,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/team_members"
                 android:textColor="#000000"
-                android:textSize="16sp"
+                android:textSize="24sp"
                 android:textStyle="bold"
                 android:layout_marginTop="16dp"/>
 
@@ -104,7 +104,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/progress"
                     android:textColor="#000000"
-                    android:textSize="16sp"
+                    android:textSize="24sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"/>
@@ -125,7 +125,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:progressTint="#F3D4B0"
+                    android:progressTint="#83fc95"
                     android:max="100"
                     app:layout_constraintTop_toBottomOf="@id/progressLabel"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -136,7 +136,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/team_picture"
                 android:textColor="#000000"
-                android:textSize="16sp"
+                android:textSize="24sp"
                 android:textStyle="bold"
                 android:layout_marginTop="24dp"/>
 
@@ -155,7 +155,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/never_visit_again"
                 android:textColor="#000000"
-                android:textSize="16sp"
+                android:textSize="24sp"
                 android:textStyle="bold"
                 android:layout_marginTop="24dp"/>
 

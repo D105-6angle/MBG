@@ -1,10 +1,10 @@
 package com.ssafy.tmbg.data.team.repository
 
 import com.ssafy.tmbg.api.TeamApi
-import com.ssafy.tmbg.data.team.dao.GroupDetailResponse
-import com.ssafy.tmbg.data.team.dao.Team
 import com.ssafy.tmbg.data.team.dao.TeamCreateResponse
 import com.ssafy.tmbg.data.team.dao.TeamRequest
+import com.ssafy.tmbg.data.team.dao.GroupDetailResponse
+import com.ssafy.tmbg.data.team.dao.TeamResponse
 import retrofit2.Response
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -14,7 +14,7 @@ class TeamRepository @Inject constructor(
     private val teamApi: TeamApi
 ) {
     /** 팀 정보 조회 */
-    suspend fun getTeam(roomId: Int): Response<Team> {
+    suspend fun getTeam(roomId: Int): Response<TeamResponse> {
         return teamApi.getTeam(roomId)
     }
 

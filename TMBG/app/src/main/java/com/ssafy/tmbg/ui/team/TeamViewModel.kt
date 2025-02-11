@@ -7,21 +7,23 @@ import androidx.lifecycle.viewModelScope
 import com.ssafy.tmbg.data.team.dao.TeamRequest
 import com.ssafy.tmbg.data.team.repository.TeamRepository
 import android.content.Context
-import android.content.Intent
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.LiveData
 import com.ssafy.tmbg.data.team.dao.Team
 import kotlinx.coroutines.launch
-import android.util.Log
 import com.ssafy.tmbg.data.team.dao.GroupDetailResponse
-
+import android.content.SharedPreferences
+import android.content.Intent
 
 @HiltViewModel
 class TeamViewModel @Inject constructor(
-    private val repository: TeamRepository
+    private val repository: TeamRepository,
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
-    
+
     private val _team = MutableLiveData<Team>()
     val team: LiveData<Team> = _team
 
@@ -31,7 +33,6 @@ class TeamViewModel @Inject constructor(
     private val _roomId = MutableLiveData<Int>()
     val roomId: LiveData<Int> = _roomId
 
-    // 에러 메시지를 위한 LiveData 추가
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
 
@@ -42,36 +43,37 @@ class TeamViewModel @Inject constructor(
         _hasTeam.value = false
         _roomId.value = -1
         _error.value = ""
+
+        val savedRoomId = sharedPreferences.getInt("room_id", -1)
+        if (savedRoomId != -1) {
+            _roomId.value = savedRoomId
+            getTeam(savedRoomId)
+        }
     }
 
     fun createTeam(teamRequest: TeamRequest) {
         viewModelScope.launch {
-            Log.d("TeamViewModel", "팀 생성 시작 - 요청 데이터: $teamRequest")
             try {
                 val response = repository.createTeam(teamRequest)
-                Log.d("TeamViewModel", "createTeam 응답 코드: ${response.code()}")
-                
+
                 if (response.isSuccessful) {
                     response.body()?.let { teamCreateResponse ->
-                        val roomId = teamCreateResponse.roomId.toInt()
-                        _roomId.value = roomId
-                        Log.d("TeamViewModel", "팀 생성 성공 - roomId: $roomId")
-                        Log.d("TeamViewModel", "getTeam 호출 직전")
-                        getTeam(roomId)
-                        Log.d("TeamViewModel", "getTeam 호출 직후")
+                        val newRoomId = teamCreateResponse.roomId.toInt()
+                        _roomId.value = newRoomId
+                        // roomId를 SharedPreferences에 저장
+                        sharedPreferences.edit().putInt("room_id", newRoomId).apply()
+                        getTeam(newRoomId)
                     } ?: run {
-                        Log.e("TeamViewModel", "팀 생성 성공했지만 응답 바디가 null입니다")
                         _error.value = "팀 생성 응답이 비어있습니다"
                     }
                 } else {
                     val errorBody = response.errorBody()?.string()
-                    Log.e("TeamViewModel", "팀 생성 실패 - HTTP 에러: $errorBody")
                     _error.value = "팀 생성에 실패했습니다 (${response.code()})"
                 }
             } catch (e: Exception) {
-                Log.e("TeamViewModel", "팀 생성 실패 - 네트워크 에러: ${e.message}", e)
                 _error.value = "네트워크 오류: ${e.message}"
             }
+
         }
     }
 
@@ -80,39 +82,33 @@ class TeamViewModel @Inject constructor(
             val shareIntent = Intent().apply {
                 action = Intent.ACTION_SEND
                 type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, "초대 코드: ${team.inviteCode}")
+                putExtra(Intent.EXTRA_TEXT, team.inviteCode)
             }
-            context.startActivity(Intent.createChooser(shareIntent, "초대 코드 공유"))
+            
+            try {
+                context.startActivity(Intent.createChooser(shareIntent, "초대 코드 공유하기"))
+            } catch (e: Exception) {
+                Toast.makeText(context, "공유하기를 실행할 수 없습니다.", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
     fun getTeam(roomId: Int) {
         viewModelScope.launch {
-            Log.d("TeamViewModel", "getTeam 함수 시작 - roomId: $roomId")
             try {
-                Log.d("TeamViewModel", "getTeam API 호출 직전 - URL: /api/rooms/$roomId")
                 val response = repository.getTeam(roomId)
-                Log.d("TeamViewModel", "getTeam API 호출 직후")
-                Log.d("TeamViewModel", "팀 정보 조회 응답: ${response.raw()}")
-                Log.d("TeamViewModel", "응답 헤더: ${response.headers()}")
-                
+
                 if (response.isSuccessful) {
-                    response.body()?.let { team ->
-                        Log.d("TeamViewModel", "팀 정보 조회 성공: $team")
-                        Log.d("TeamViewModel", "팀 정보 조회 성공: ${response.body()}")
-                        _team.value = team
+                    response.body()?.let { teamResponse ->
+                        _team.value = teamResponse.data  // TeamResponse에서 data(Team)를 추출
                     } ?: run {
-                        Log.e("TeamViewModel", "팀 정보 조회 성공했지만 응답 바디가 null입니다")
                         _error.value = "팀 정보가 비어있습니다"
                     }
                 } else {
                     val errorBody = response.errorBody()?.string()
-                    Log.e("TeamViewModel", "팀 정보 조회 실패 - HTTP 에러: $errorBody")
-                    Log.e("TeamViewModel", "에러 응답 코드: ${response.code()}")
                     _error.value = "팀 정보 조회에 실패했습니다 (${response.code()})"
                 }
             } catch (e: Exception) {
-                Log.e("TeamViewModel", "팀 정보 조회 실패 - 네트워크 에러: ${e.message}", e)
                 _error.value = "네트워크 오류: ${e.message}"
             }
         }
@@ -126,9 +122,11 @@ class TeamViewModel @Inject constructor(
                     response.body()?.let { detail ->
                         _groupDetail.value = detail
                     }
+                } else {
+                    _error.value = "그룹 상세 정보를 불러오는데 실패했습니다."
                 }
             } catch (e: Exception) {
-                // 에러 처리
+                _error.value = e.message ?: "알 수 없는 오류가 발생했습니다."
             }
         }
     }

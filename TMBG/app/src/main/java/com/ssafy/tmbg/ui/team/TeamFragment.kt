@@ -38,17 +38,24 @@ class TeamFragment : Fragment() {
         initRecyclerView()
         setupObservers()
         setupClickListeners()
+        
+        // MainViewModel의 roomId 관찰
+        sharedViewModel.roomId.observe(viewLifecycleOwner) { roomId ->
+            if (roomId != -1) {
+                viewModel.getTeam(roomId)
+            }
+        }
     }
 
     private fun initRecyclerView() {
         teamAdapter = TeamAdapter(
             onTeamClick = { groupNumber ->
                 viewModel.team.value?.let { team ->
-                    // team.teacher.groups에서 해당 그룹 정보를 찾아서 전달
-                    val group = team.groups.find { it.groupNo.toInt() == groupNumber }
+                    // groups 리스트에서 해당 그룹 찾기
+                    val group = team.groups.find { it.groupNo == groupNumber }
                     val action = TeamFragmentDirections.actionTeamToTeamDetail(
                         groupNumber = groupNumber,
-                        memberCount = group?.memberCount?.toInt() ?: 0
+                        memberCount = group?.memberCount ?: 0
                     )
                     findNavController().navigate(action)
                 }
@@ -71,8 +78,15 @@ class TeamFragment : Fragment() {
     private fun setupObservers() {
         viewModel.team.observe(viewLifecycleOwner) { team ->
             teamAdapter.updateData(team.numOfGroups.toInt())
-            // fragment_team.xml의 btnShareCode에 초대 코드 표시
             binding.btnShareCode.text = "초대 코드: ${team.inviteCode}"
+            binding.tvRoomName.text = team.roomName
+        }
+
+        // 에러 메시지 관찰 추가
+        viewModel.error.observe(viewLifecycleOwner) { error ->
+            if (error.isNotEmpty()) {
+                // 에러 메시지 표시 (Toast 등)
+            }
         }
     }
 
