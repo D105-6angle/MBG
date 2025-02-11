@@ -78,6 +78,8 @@ public class FirebaseCloudMessageService {
 
     public void sendMessageWithData(String targetToken, String title, String body, Map<String, String> data) throws IOException {
         String message = makeMessageWithData(targetToken, title, body, data);
+        System.out.println("Sending FCM message: " + message);
+
         OkHttpClient client = new OkHttpClient();
         RequestBody requestBody = RequestBody.create(message, MediaType.get("application/json; charset=utf-8"));
         Request request = new Request.Builder()
@@ -87,8 +89,20 @@ public class FirebaseCloudMessageService {
                 .addHeader(HttpHeaders.CONTENT_TYPE, "application/json; UTF-8")
                 .build();
 
-        Response response = client.newCall(request).execute();
-        System.out.println(response.body().string());
+        try (Response response = client.newCall(request).execute()) {
+            int responseCode = response.code();
+            String responseBody = response.body().string();  // 한 번만 호출
+
+            if (response.isSuccessful()) {
+                System.out.println("FCM 메시지 전송 성공!");
+                System.out.println("Response code: " + responseCode);
+                System.out.println("Response body: " + responseBody);
+            } else {
+                System.out.println("FCM 메시지 전송 실패!");
+                System.out.println("Response code: " + responseCode);
+                System.out.println("Error message: " + responseBody);
+            }
+        }
     }
 
 }
