@@ -7,10 +7,4 @@ data class TeamCreateResponse(
     val inviteCode: String,
     val numOfGroups: Int,
     val createdAt: String,
-    val teacher:Teacher
-    ) {
-    data class Teacher(
-        val teacherId: Int,
-        val name: String
-    )
-}
+)
