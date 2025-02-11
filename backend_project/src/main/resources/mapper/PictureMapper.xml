@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.model.mapper.mission.photo.PictureMapper">
+
+    <insert id="insertPicture" parameterType="com.ssafy.model.entity.Picture"
+            useGeneratedKeys="true" keyProperty="pictureId" keyColumn="picture_id">
+        INSERT INTO pictures (room_id, user_id, mission_id, picture_url, completion_time)
+        VALUES (#{roomId}, #{userId}, #{missionId}, #{pictureUrl}, #{completionTime})
+    </insert>
+</mapper>
