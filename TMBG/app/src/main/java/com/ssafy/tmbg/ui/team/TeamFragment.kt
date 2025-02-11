@@ -45,7 +45,7 @@ class TeamFragment : Fragment() {
             onTeamClick = { groupNumber ->
                 viewModel.team.value?.let { team ->
                     // team.teacher.groups에서 해당 그룹 정보를 찾아서 전달
-                    val group = team.teacher.groups.find { it.groupNo.toInt() == groupNumber }
+                    val group = team.groups.find { it.groupNo.toInt() == groupNumber }
                     val action = TeamFragmentDirections.actionTeamToTeamDetail(
                         groupNumber = groupNumber,
                         memberCount = group?.memberCount?.toInt() ?: 0

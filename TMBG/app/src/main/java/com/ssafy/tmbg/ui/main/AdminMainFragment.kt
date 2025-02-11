@@ -1,6 +1,7 @@
 package com.ssafy.tmbg.ui.main
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -51,11 +52,28 @@ class AdminMainFragment : Fragment() {
             // Team 버튼 클릭 시 roomId 체크
             btnTeam.setOnClickListener {
                 if (mainViewModel.roomId.value != -1) {
-                    // 이미 생성된 방이 있으면 바로 TeamFragment로 이동
-                    findNavController().navigate(R.id.action_adminMain_to_team)
+                    mainViewModel.roomId.value?.let { roomId ->
+                        Log.d("AdminMainFragment", "팀 관리 버튼 클릭 - roomId: $roomId")
+                        // 팀 정보 로드 결과 관찰
+                        teamViewModel.team.observe(viewLifecycleOwner) { team ->
+                            team?.let {
+                                findNavController().navigate(R.id.action_adminMain_to_team)
+                            }
+                        }
+                        // 에러 처리 추가
+                        teamViewModel.error.observe(viewLifecycleOwner) { error ->
+                            if (error.isNotEmpty()) {
+                                Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        teamViewModel.getTeam(roomId)
+                    }
                 } else {
-                    // 생성된 방이 없으면 TeamCreateDialog 표시
-                    TeamCreateDialog().show(childFragmentManager, "TeamCreateDialog")
+                    // childFragmentManager 대신 parentFragmentManager 사용
+                    TeamCreateDialog().show(
+                        requireActivity().supportFragmentManager,  // 또는 parentFragmentManager
+                        "TeamCreateDialog"
+                    )
                 }
             }
             // 공지사항 클릭 시 실행될 액션
@@ -83,7 +101,9 @@ class AdminMainFragment : Fragment() {
             btnSetting.setOnClickListener{
                 showProfileModal()
             }
-
+            clearTeam.setOnClickListener{
+                mainViewModel.clearRoomId()
+            }
         }
     }
 

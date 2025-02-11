@@ -4,6 +4,12 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/homeFragment">
 
+    <action
+        android:id="@+id/action_global_chatBotFragment"
+        app:destination="@id/chatBotFragment"
+        app:enterAnim="@anim/slide_up_dialog"
+        app:exitAnim="@anim/fade_out" />
+
     <!-- 홈 탭 -->
     <fragment
         android:id="@+id/homeFragment"
@@ -45,7 +51,41 @@
             app:destination="@id/historyDetailFragment"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_pageFragment_to_satisfactionFragment"
+            app:destination="@id/satisfactionFragment"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
+
+    <!-- FAQ 아이콘 -->
+    <fragment
+        android:id="@+id/chatBotFragment"
+        android:name="com.ssafy.mbg.ui.chatbot.ChatBotFragment"
+        android:label="ChatBotFragment">
+        <action
+            android:id="@+id/action_chatBotFragment_pop"
+            app:destination="@id/homeFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/slide_down_dialog"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_down_dialog" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/satisfactionFragment"
+        android:name="com.ssafy.mbg.ui.page.SatisfactionFragment"
+        android:label="SatisfactionFragment">
+        <action
+            android:id="@+id/action_satisfactionFragment_to_pageFragment"
+            app:destination="@id/pageFragment"
+            app:popUpTo="@id/pageFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
+
+<!--    <argument-->
+<!--        android:name="image"-->
+<!--        app:argType="string"/>-->
 
     <!-- 문제 풀이 기록 상세 보기 -->
     <fragment
@@ -55,9 +95,7 @@
         <argument
             android:name="title"
             app:argType="string"/>
-        <argument
-            android:name="image"
-            app:argType="integer"/>
+
         <argument
             android:name="description"
             app:argType="string"/>

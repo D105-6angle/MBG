@@ -18,7 +18,7 @@ class ProblemHistoryAdapter(
         fun bind(history: ProblemHistory) {
             binding.apply {
                 // 아이콘 설정
-                itemIcon.setImageResource(history.imageUrl)
+//                itemIcon.setImagehistory.imageUrl)
 
                 // 제목 설정
                 itemTitle.text = history.name

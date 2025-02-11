@@ -3,25 +3,29 @@ package com.ssafy.tmbg.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.ssafy.tmbg.data.team.dao.TeamPhoto
+import com.bumptech.glide.Glide
+import com.ssafy.tmbg.data.team.dao.VerificationPhotos
 import com.ssafy.tmbg.databinding.ItemTeamPhotoBinding
 
 class TeamPhotoAdapter(
-    private val photos: List<TeamPhoto>,
-    private val onPhotoClick: (TeamPhoto) -> Unit  // 사진 클릭 시 처리를 위한 콜백
+    private val photos: List<VerificationPhotos>,
+    private val onPhotoClick: (VerificationPhotos) -> Unit
 ) : RecyclerView.Adapter<TeamPhotoAdapter.PhotoViewHolder>() {
 
     inner class PhotoViewHolder(private val binding: ItemTeamPhotoBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(photo: TeamPhoto) {
+        fun bind(photo: VerificationPhotos) {
             binding.imageView.apply {
-                // 실제 이미지 로딩 (여기서는 임시로 drawable 리소스 사용)
-                setImageResource(photo.photoUrl.toInt())  // 현재는 R.drawable 리소스를 직접 사용
+                // Glide를 사용하여 이미지 로딩
+                Glide.with(context)
+                    .load(photo.pictureUrl)
+                    .centerCrop()
+                    .into(this)
 
                 // 클릭 리스너 설정
                 setOnClickListener {
-                    onPhotoClick(photo)
+                    onPhotoClick.invoke(photo)
                 }
             }
         }

@@ -6,12 +6,6 @@ data class Team(
     val roomName: String,
     val inviteCode: String,
     val numOfGroups: Number,
-    val teacher: Teacher,
-)
-
-data class Teacher(
-    val teacherId: Number,
-    val name: String,
     val groups: List<Group>
 )
 

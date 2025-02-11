@@ -1,6 +1,7 @@
 package com.ssafy.tmbg.data.team.repository
 
 import com.ssafy.tmbg.api.TeamApi
+import com.ssafy.tmbg.data.team.dao.GroupDetailResponse
 import com.ssafy.tmbg.data.team.dao.Team
 import com.ssafy.tmbg.data.team.dao.TeamCreateResponse
 import com.ssafy.tmbg.data.team.dao.TeamRequest
@@ -20,5 +21,10 @@ class TeamRepository @Inject constructor(
     /** 팀 생성 */
     suspend fun createTeam(teamRequest: TeamRequest): Response<TeamCreateResponse> {
         return teamApi.createTeam(teamRequest)
+    }
+
+    /** 그룹 상세 정보 조회 */
+    suspend fun getGroupDetail(roomId: Int, groupNo: Int): Response<GroupDetailResponse> {
+        return teamApi.getGroupDetail(roomId, groupNo)
     }
 }

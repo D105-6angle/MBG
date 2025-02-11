@@ -15,7 +15,7 @@ data class ProblemHistory(
     val logId: String,
     val cardId: String,
     val name: String,
-    val imageUrl: Int,
+//    val imageUrl: String,
     val lastSolvedAt: String,
     val result: Boolean,
     val description: String? = null

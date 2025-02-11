@@ -3,22 +3,24 @@ package com.ssafy.tmbg.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.ssafy.tmbg.data.team.dao.TeamPlace
+import com.ssafy.tmbg.data.team.dao.VisitedPlace
 import com.ssafy.tmbg.databinding.ItemTeamPlaceBinding
 
 
 // Team이 다녀간 장소에 대한 어뎁터
 class TeamPlaceAdapter(
-    private val places: List<TeamPlace>
+    private val places: List<VisitedPlace>
 ) : RecyclerView.Adapter<TeamPlaceAdapter.PlaceViewHolder>() {
 
     inner class PlaceViewHolder(private val binding: ItemTeamPlaceBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(place: TeamPlace) {
+        fun bind(place: VisitedPlace) {
             binding.apply {
-                placeName.text = place.name
-                visitTime.text = "오후 ${place.visitedTime.split(" ")[1]}"  // "2024-02-03 10:30" -> "오후 10:30"
+                // 장소 이름
+                tvPlaceName.text = place.positionName
+                // 방문 시간
+                tvVisitTime.text = place.completedAt
             }
         }
     }
