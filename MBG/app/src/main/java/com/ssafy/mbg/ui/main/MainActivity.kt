@@ -55,6 +55,13 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(binding.navHostFragment.id) as NavHostFragment
         val navController = navHostFragment.navController
 
+        // route 값 받기
+        val route = intent?.getStringExtra("route")
+        if (route != null && route == "SURVEY") {
+            // FCM 알림에서 전달된 route 값에 따라 PageFragment로 이동
+            navController.navigate(R.id.pageFragment)
+        }
+
         // BottomNavigationView와 NavController 연동
         binding.bottomNavigation.setupWithNavController(navController)
 
