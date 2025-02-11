@@ -21,8 +21,12 @@ public class ScheduleController {
 
     @Operation(summary = "일정 전체 조회")
     @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "일정 조회 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "존재하지 않는 방",
+            @ApiResponse(responseCode = "200", description = "일정 조회 성공",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ScheduleResponse.ListResponse.class)
+                    )),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 방",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
     @GetMapping
