@@ -51,4 +51,16 @@ public class RoomService {
     public Room findRoomById(Long roomId) {
         return roomMapper.selectRoomById(roomId);
     }
+
+
+    // 초대코드로 방 입장
+    public Room joinRoom(String inviteCode) {
+        Room room = roomMapper.selectRoomByInviteCode(inviteCode);
+        if (room == null) {
+            throw new InvalidRequestException("유효하지 않은 초대코드입니다.");
+        }
+        return room;
+    }
+
+
 }
