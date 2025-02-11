@@ -12,7 +12,6 @@ public class RoomResponse {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    @ToString
     public static class Room {
         private Long roomId;
         private String roomName;

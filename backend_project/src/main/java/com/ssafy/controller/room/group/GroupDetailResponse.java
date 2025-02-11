@@ -1,9 +1,6 @@
 package com.ssafy.controller.room.group;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -13,29 +10,44 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GroupDetailResponse {
-    private int groupNo;
-    private double progress;                // (완료 미션 수 / 전체 미션 수)
-    private List<MemberDto> members;        // 조에 속한 멤버 목록
-    private List<VisitedPlace> visitedPlaces;  // 조가 방문한 장소 목록
 
+    private int groupNo;
+    private double progress;
+    private List<MemberDto> members;
+    private List<VerificationPhotoDto> verificationPhotos;
+    private List<VisitedPlaceDto> visitedPlaces;
+
+    // 조원 정보
     @Data
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MemberDto {
         private long userId;
-        private String name;
         private String nickname;
-        private String email;
+        private String codeId;  // "J001"=팀장, "J002"=팀원
     }
 
+    // 인증샷
     @Data
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class VisitedPlace {
+    public static class VerificationPhotoDto {
+        private long pictureId;
+        private String pictureUrl;
         private long missionId;
-        private String missionTitle;
+        private String completionTime; // "2025-02-12 10:00:00"
+    }
+
+    // 방문한 장소
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class VisitedPlaceDto {
+        private long missionId;
+        private String positionName;
         private String completedAt; // "yyyy-MM-dd HH:mm:ss"
     }
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.model.mapper.member.MemberMapper">
+
+    <resultMap id="MemberResultMap" type="com.ssafy.controller.room.member.MemberResponse">
+        <id property="userId" column="user_id" />
+        <result property="name" column="name" />
+        <result property="nickname" column="nickname" />
+        <result property="email" column="email" />
+        <result property="codeId" column="code_id" />
+    </resultMap>
+
+    <!-- 특정 유저 조회 -->
+    <select id="findMemberById" parameterType="long" resultMap="MemberResultMap">
+        SELECT user_id, name, nickname, email, code_id
+        FROM users
+        WHERE user_id = #{userId}
+    </select>
+
+</mapper>

@@ -12,4 +12,5 @@ public class MemberResponse {
     private String name;
     private String nickname;
     private String email;
+    private String codeId;
 }
