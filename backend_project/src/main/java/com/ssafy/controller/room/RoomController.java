@@ -28,7 +28,7 @@ public class RoomController {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthService authService;
 
-    @Operation(summary = "방 생성 (POST /api/rooms)")
+    @Operation(summary = "방 생성")
     @PostMapping
     public ResponseEntity<RoomResponse.Room> createRoom(
             @RequestBody RoomRequest roomRequest,
