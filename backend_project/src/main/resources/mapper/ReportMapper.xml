@@ -11,14 +11,14 @@
     </select>
 
     <select id="findAllStudentsByRoomId" resultType="com.ssafy.controller.report.StudentDto">
-        SELECT u.name
+        SELECT u.nickname
         FROM users u
                  JOIN memberships m ON u.user_id = m.user_id
         WHERE m.room_id = #{roomId}
     </select>
 
     <select id="findSubmittedStudentsByRoomId" resultType="com.ssafy.controller.report.StudentDto">
-        SELECT DISTINCT u.name
+        SELECT DISTINCT u.nickname
         FROM users u
                  JOIN reports r ON u.user_id = r.user_id
         WHERE r.room_id = #{roomId}
