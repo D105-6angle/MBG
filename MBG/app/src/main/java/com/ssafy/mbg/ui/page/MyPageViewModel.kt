@@ -2,115 +2,110 @@ package com.ssafy.mbg.ui.page
 
 import androidx.lifecycle.ViewModel
 import com.ssafy.mbg.data.mypage.repository.MyPageRepository
+import com.ssafy.mbg.data.mypage.repository.MyPageRepositoryImpl
 import com.ssafy.mbg.di.UserPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 /**
  * 마이페이지 화면의 UI 상태를 관리하는 ViewModel
+ *
+ * @property userPreferences 사용자 설정 정보를 관리하는 클래스
+ * @property repository 마이페이지 관련 데이터 처리를 담당하는 Repository
  */
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
     private val userPreferences: UserPreferences,
-    private val repository : MyPageRepository
+    private val repository: MyPageRepositoryImpl
 ) : ViewModel() {
+
+    /**
+     * UI 상태를 저장하는 private MutableStateFlow
+     * Initial 상태로 초기화됨
+     */
     private val _uiState = MutableStateFlow<MyPageState>(MyPageState.Initial)
 
-
-    private val userId: Long
-        get() = userPreferences.userId ?: throw  IllegalArgumentException("유저 ID를 찾을 수 없음")
     /**
-     * 사용자의 마이페이지 정보를 조회
+     * UI 레이어에서 관찰할 수 있는 읽기 전용 StateFlow
+     */
+    val uiState = _uiState.asStateFlow()
+
+    /**
+     * 사용자의 마이페이지 정보를 조회하는 함수
      *
      * @param userId 조회할 사용자의 ID
-     * @throws Exception 네트워크 요청 실패 시 발생
+     *
+     * Flow:
+     * 1. Loading 상태로 변경
+     * 2. Repository를 통해 사용자 정보 요청
+     * 3. 성공/실패에 따라 적절한 상태로 변경
+     *
+     * @throws Exception 네트워크 요청 실패 시 발생 가능
      */
-    suspend fun getUserInfo(userId: String) {
+    suspend fun getUserInfo(userId: Long) {
         _uiState.value = MyPageState.Loading
         try {
-            // response 받아오기
-            val res = repository.getUserInfo(userId)
-            // 성공 적으로 받아오면
-            if (res.isSuccessful) {
-                // 데이터가 비어 있지 않을 경우
-                res.body()?.data?.let { userInfo ->
-                    // State 값 변경
-                    _uiState.value = MyPageState.Success(userInfo = userInfo)
-                // 데이터가 비어있다면
+            val response = repository.getUserInfo(userId)
+            if (response.isSuccessful) {
+                response.body()?.let { userResponse ->
+                    _uiState.value = MyPageState.Success(userResponse = userResponse)
                 } ?: run {
-                    // State 값 변경
                     _uiState.value = MyPageState.Error("데이터가 비어있습니다")
                 }
-            // 서버 에러 응답 받았을 시
             } else {
-                // TODO: 서버 에러 응답 처리
-                // status, message, error code에 따른 처리
                 _uiState.value = MyPageState.Error(
-                    // 에러 메시지가 있다면 바로 에러메시지를 보여주고, 아니라면 "알 수 없는 에러 발생 메시지"
-                    message = res.body()?.message ?: "알 수 없는 에러가 발생했습니다"
+                    message = "서버 오류가 발생했습니다"
                 )
             }
-        // 네트워크 오류 시
         } catch (e: Exception) {
-            // 네트워크 연결 실패 등의 예외 상황 처리
-            _uiState.value = MyPageState.Error("네트워크 오류가 발생 했습니다.")
+            _uiState.value = MyPageState.Error("네트워크 오류가 발생했습니다")
         }
     }
 
     /**
-     * 특정 문제 풀이 기록의 상세 정보를 조회
+     * 특정 문제 풀이 기록의 상세 정보를 조회하는 함수
      *
      * @param userId 사용자 ID
      * @param logId 조회할 문제 풀이 기록의 ID
-     * @throws Exception 네트워크 요청 실패 시 발생
+     *
+     * Flow:
+     * 1. Loading 상태로 변경
+     * 2. Repository를 통해 문제 상세 정보 요청
+     * 3. 성공/실패에 따라 적절한 상태로 변경
+     *
+     * @throws Exception 네트워크 요청 실패 시 발생 가능
      */
-    suspend fun getDetailProblem(userId: String, logId: String) {
+    suspend fun getDetailProblem(userId: Long, logId: String) {
         _uiState.value = MyPageState.Loading
         try {
-            val res = repository.getDetailProblem(userId, logId)
-            if (res.isSuccessful) {
-                res.body()?.data?.let {problemHistory ->
-                    _uiState.value = MyPageState.Success(problemHistory = problemHistory)
+            val response = repository.getDetailProblem(userId, logId)
+            if (response.isSuccessful) {
+                response.body()?.let { problemResponse ->
+                    _uiState.value = MyPageState.Success(problemResponse = problemResponse)
                 } ?: run {
-                    _uiState.value = MyPageState.Error("데이터가 비어있습니다.")
+                    _uiState.value = MyPageState.Error("데이터가 비어있습니다")
                 }
             } else {
-                // status, message, error code에 따른 처리
                 _uiState.value = MyPageState.Error(
-                    message = res.body()?.message ?: "알 수 없는 에러가 발생했습니다"
+                    message = "서버 오류가 발생했습니다"
                 )
             }
         } catch (e: Exception) {
-            // 네트워크 연결 실패 등의 예외 상황 처리
-            _uiState.value = MyPageState.Error("네트워크 오류가 발생했습니다.")
+            _uiState.value = MyPageState.Error("네트워크 오류가 발생했습니다")
         }
     }
 
     /**
-     * @param userId 사용자 ID
+     * ViewModel의 상태를 초기 상태로 리셋하는 함수
+     *
+     * 사용 사례:
+     * - 화면 전환 시 상태 초기화
+     * - 에러 상태에서 복구
+     * - 새로운 데이터 로딩 전 이전 상태 클리어
      */
-    suspend fun getUserProfile(userId: String) {
-        _uiState.value = MyPageState.Loading
-        try {
-            val res = repository.getProfile(userId)
-            if (res.isSuccessful) {
-                // 성공 처리
-                res.body()?.data?.let { userProfile ->
-                    _uiState.value = MyPageState.Success(userProfile = userProfile)
-                } ?: run {
-                    _uiState.value = MyPageState.Error("데이터가 비어있습니다.")
-                }
-            } else {
-                // 실패 처리
-                _uiState.value = MyPageState.Error(
-                    message = res.body()?.message ?: "알 수 없는 에러가 발생했습니다"
-                )
-            }
-        } catch (e:Exception) {
-            _uiState.value = MyPageState.Error("네트워크 오류가 발생했습니다.")
-            // 예외 처리
-        }
+    fun resetState() {
+        _uiState.value = MyPageState.Initial
     }
-
 }

@@ -41,7 +41,7 @@ class HistoryDetailFragment : Fragment() {
         binding.apply {
             titleText.text = args.title
             dateText.text = args.lastSolvedAt
-            culturalImage.setImageResource(args.image)
+//            culturalImage.setImageResource(args.image)
             descriptionText.text = args.description
         }
     }

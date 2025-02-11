@@ -1,30 +1,21 @@
 package com.ssafy.mbg.data.mypage.repository
 
 import com.ssafy.mbg.api.MyPageApi
-import com.ssafy.mbg.data.auth.dao.UserProfile
-import com.ssafy.mbg.data.auth.common.ApiResponse
-import com.ssafy.mbg.data.mypage.dto.ProblemHistory
-import com.ssafy.mbg.data.mypage.dto.UserInfo
+import com.ssafy.mbg.data.auth.response.UserResponse
+import com.ssafy.mbg.data.mypage.response.ProblemResponse
 import retrofit2.Response
+import javax.inject.Inject
 
-class MyPageRepository(
+
+class MyPageRepositoryImpl @Inject constructor(
     private val myPageApi: MyPageApi
-) {
+) : MyPageRepository {
 
-
-    // User 정보 가져 오기
-    suspend fun getUserInfo(userId: String) : Response<ApiResponse<UserInfo>> {
+    override suspend fun getUserInfo(userId: Long): Response<UserResponse> {
         return myPageApi.getUserInfo(userId)
     }
 
-    // Profile 정보 가져 오기
-    suspend fun getProfile(userId: String) : Response<ApiResponse<UserProfile>> {
-        return myPageApi.getUserSetting(userId)
-    }
-
-    // User 가 푼 문제 기록 상세
-    suspend fun getDetailProblem(userId: String, logId : String) : Response<ApiResponse<ProblemHistory>> {
+    override suspend fun getDetailProblem(userId: Long, logId: String): Response<ProblemResponse> {
         return myPageApi.getDetailProblemHistory(userId, logId)
     }
-
 }

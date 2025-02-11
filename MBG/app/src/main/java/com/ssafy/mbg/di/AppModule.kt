@@ -9,6 +9,7 @@ import com.ssafy.mbg.api.ScheduleApi
 import com.ssafy.mbg.data.auth.repository.KakaoLoginRepositoryImpl
 import com.ssafy.mbg.data.auth.repository.SocialLoginRepository
 import com.ssafy.mbg.data.mypage.repository.MyPageRepository
+import com.ssafy.mbg.data.mypage.repository.MyPageRepositoryImpl
 import com.ssafy.mbg.data.task.repository.ScheduleRepository
 import dagger.Module
 import dagger.Provides
@@ -44,7 +45,7 @@ object AppModule {
     fun providerMyPageRepository(
         myPageApi: MyPageApi
     ) : MyPageRepository {
-        return MyPageRepository(myPageApi)
+        return MyPageRepositoryImpl(myPageApi)
     }
 
     @Provides

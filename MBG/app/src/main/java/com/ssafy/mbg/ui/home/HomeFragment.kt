@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.ssafy.mbg.R
 import com.ssafy.mbg.databinding.FragmentHomeBinding
+import com.ssafy.mbg.ui.chatbot.ChatBotDialogFragment
 
 class HomeFragment : Fragment() {
 
@@ -50,7 +52,17 @@ class HomeFragment : Fragment() {
         binding.teamIcon.setOnClickListener {
             InviteCodeFragment().show(parentFragmentManager, "InviteCodeFragment")
         }
+        binding.questionIcon.setOnClickListener {
+            ChatBotDialogFragment().show(childFragmentManager, "chatbot")
+        }
+
+
+//        binding.questionIcon.setOnClickListener {
+//            ChatBotFragment().view
+
     }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()

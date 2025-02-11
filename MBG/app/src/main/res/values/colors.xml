@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="primary_color">#2196F3</color>
+    <color name="primary_dark">#1976D2</color>
+    <color name="primary_light">#BBDEFB</color>
+
+    <color name="light_gray">#F1F1F1</color>
+    <color name="medium_gray">#9E9E9E</color>
+    <color name="dark_gray">#616161</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-
+    <!-- 채팅 관련 색상 -->
+    <color name="chat_background">#FAFAFA</color>
+    <color name="message_time">#757575</color>
+    <color name="input_text">#212121</color>
+    <color name="hint_text">#BDBDBD</color>
 </resources>
