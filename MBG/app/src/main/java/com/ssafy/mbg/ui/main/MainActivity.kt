@@ -10,7 +10,21 @@ import androidx.navigation.ui.setupWithNavController
 import com.ssafy.mbg.R
 import com.ssafy.mbg.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
-
+import com.google.firebase.messaging.FirebaseMessaging
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.util.Log
+import com.google.firebase.FirebaseApp
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.*
+import java.io.IOException
+import javax.inject.Inject
+import com.ssafy.mbg.di.ServerTokenManager
+import com.ssafy.mbg.di.UserPreferences
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
@@ -24,6 +38,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
 
         // NavHostFragment와 NavController 연결
         val navHostFragment = supportFragmentManager
@@ -79,10 +94,86 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+
+        createNotificationChannel("ssafy_channel", "ssafy")
+        // FCM 초기화
+        initFCM()
     }
 
     // 툴바 업 버튼 동작 시 NavController에 위임
     override fun onSupportNavigateUp(): Boolean {
         return findNavController(binding.navHostFragment.id).navigateUp() || super.onSupportNavigateUp()
+    }
+
+    @Inject
+    lateinit var userPreferences: UserPreferences
+    // FCM 토큰을 받아오는 메서드
+    fun initFCM() {
+        val userId = userPreferences.userId // userId 가져오기
+        Log.d("initFCM", "토큰 요청 시작, userId: $userId")
+
+        try {
+            FirebaseMessaging.getInstance().token
+                .addOnSuccessListener { token ->
+                    Log.d("initFCM", "토큰 성공: $token")
+                    // null 체크 후 uploadFcmToken 호출
+                    userId?.let { id ->
+                        uploadFcmToken(userId = id, fcmToken = token)
+                    } ?: Log.e("initFCM", "userId가 null입니다")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("initFCM", "토큰 실패: ${e.message}")
+                }
+                .addOnCanceledListener {
+                    Log.d("initFCM", "토큰 요청 취소됨")
+                }
+        } catch (e: Exception) {
+            Log.e("initFCM", "토큰 요청 예외 발생: ${e.message}")
+            e.printStackTrace()
+        }
+    }
+    @Inject
+    lateinit var client: OkHttpClient  // Hilt로 주입받은 OkHttpClient 사용
+
+    fun uploadFcmToken(userId: Long, fcmToken: String) {
+        val url = HttpUrl.Builder()
+            .scheme("https")
+            .host("i12d106.p.ssafy.io")
+            .addPathSegment("api")
+            .addPathSegment("fcm")
+            .addPathSegment("add")
+            .addQueryParameter("userId", userId.toString())
+            .addQueryParameter("fcmToken", fcmToken)
+            .build()
+
+        val request = Request.Builder()
+            .url(url)
+            .post("".toRequestBody("application/json".toMediaType()))
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("FCM", "토큰 업로드 실패", e)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                response.use {
+                    if (response.isSuccessful) {
+                        Log.d("FCM", "토큰 업로드 성공: ${response.body?.string()}")
+                    } else {
+                        Log.e("FCM", "토큰 업로드 실패: ${response.code} - ${response.message}")
+                    }
+                }
+            }
+        })
+    }
+
+    private fun createNotificationChannel(id: String, name: String) {
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel(id, name, importance)
+
+        val notificationManager: NotificationManager =
+            getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 }
