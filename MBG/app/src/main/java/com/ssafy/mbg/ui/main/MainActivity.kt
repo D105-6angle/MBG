@@ -25,6 +25,11 @@ import java.io.IOException
 import javax.inject.Inject
 import com.ssafy.mbg.di.ServerTokenManager
 import com.ssafy.mbg.di.UserPreferences
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import android.content.pm.PackageManager
+import android.os.Build
+
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
@@ -38,6 +43,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // 권한 요청 추가
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPostNotificationPermission()
+        }
 
 
         // NavHostFragment와 NavController 연결
@@ -103,6 +113,38 @@ class MainActivity : AppCompatActivity() {
     // 툴바 업 버튼 동작 시 NavController에 위임
     override fun onSupportNavigateUp(): Boolean {
         return findNavController(binding.navHostFragment.id).navigateUp() || super.onSupportNavigateUp()
+    }
+    // 권한 요청 함수
+    private fun requestPostNotificationPermission() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // 권한이 없는 경우 권한 요청
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                1
+            )
+        } else {
+            // 권한이 이미 허용된 경우
+            Log.d("Permission", "Notification permission already granted")
+        }
+    }
+
+    // 권한 요청 결과 처리 함수
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<String>, grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("Permission", "Notification permission granted")
+            } else {
+                Log.d("Permission", "Notification permission denied")
+            }
+        }
     }
 
     @Inject
