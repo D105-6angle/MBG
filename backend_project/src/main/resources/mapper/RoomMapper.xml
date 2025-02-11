@@ -53,6 +53,20 @@
         WHERE room_id = #{roomId}
     </select>
 
+    <select id="selectRoomByInviteCode" parameterType="string" resultMap="RoomResultMap">
+        SELECT
+            room_id,
+            teacher_id,
+            location,
+            room_name,
+            num_of_groups,
+            invite_code,
+            created_at,
+            status
+        FROM rooms
+        WHERE invite_code = #{inviteCode}
+    </select>
+
     <!-- 그룹 수 증가 -->
     <update id="updateRoomGroupCount" parameterType="com.ssafy.model.entity.Room">
         UPDATE rooms

@@ -81,16 +81,15 @@ public class RoomController {
         data.put("numOfGroups", room.getNumOfGroups());
         data.put("groups", groups);
 
-        return ResponseEntity.ok(Map.of("data", data));
+        return ResponseEntity.ok(data);
     }
 
     // 그룹 추가
-    @Operation(summary = "그룹 수 증가")
+    @Operation(summary = "그룹 추가")
     @PutMapping("/{roomId}/groups/increase")
     public ResponseEntity<?> increaseGroupCount(@PathVariable Long roomId) {
         Room updatedRoom = roomService.increaseGroupCount(roomId);
         return ResponseEntity.ok(updatedRoom);
     }
-
 
 }

@@ -32,7 +32,7 @@ public class FcmApiController {
 
 
     //    private AlarmService alarmService;
-    private FirebaseCloudMessageService firebaseCloudMessageService;
+    private final FirebaseCloudMessageService firebaseCloudMessageService;
 
     @Operation(summary = "FCM 설정 테스트")
     @GetMapping("/test")
@@ -61,19 +61,49 @@ public class FcmApiController {
 
     //TODO - 선생님이 글을 작성하면 teacher_notice 등록되어야함과 동시에 해당 방에 있는 모든 학생들에게 푸시 알림이 가야한다.
 
-    @Operation(summary = "교사 공지사항 등록 및 반 학생들에게 알림 전송")
+//    @Operation(summary = "교사 공지사항 등록 및 반 학생들에게 알림 전송")
+//    @PostMapping("/notice")
+//    public ResponseEntity<?> createNoticeAndNotify(
+//            @RequestParam Long roomId,
+////            @RequestParam Long teacherId,
+////            @RequestParam String title,
+//            @RequestParam String content) {
+//        try {
+////            teacherNoticeService.createNoticeAndNotify(roomId, teacherId, title, content);
+////            teacherNoticeService.createNoticeAndNotify(roomId, teacherId, content);
+//              teacherNoticeService.createNoticeAndNotify(roomId, content);
+//            return ResponseEntity.ok("교사 공지사항 등록 및 알림 전송 완료");
+//        } catch (Exception e) {
+//            log.error("교사 공지사항 등록 실패: ", e);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("교사 공지사항 등록 실패: " + e.getMessage());
+//        }
+//    }
+
     @PostMapping("/notice")
     public ResponseEntity<?> createNoticeAndNotify(
             @RequestParam Long roomId,
-//            @RequestParam Long teacherId,
-//            @RequestParam String title,
             @RequestParam String content) {
         try {
-//            teacherNoticeService.createNoticeAndNotify(roomId, teacherId, title, content);
-//            teacherNoticeService.createNoticeAndNotify(roomId, teacherId, content);
-              teacherNoticeService.createNoticeAndNotify(roomId, content);
+            // 파라미터 값 로깅
+            System.out.println("=== Notice Parameters ===");
+            System.out.println("roomId: " + roomId);
+            System.out.println("content: " + content);
+            // 또는 로거 사용
+            log.info("Notice Parameters - roomId: {}, content: {}", roomId, content);
+
+            teacherNoticeService.createNoticeAndNotify(roomId, content);
+
+            // 성공 로깅
+            System.out.println("=== Notice Creation Success ===");
             return ResponseEntity.ok("교사 공지사항 등록 및 알림 전송 완료");
         } catch (Exception e) {
+            // 실패 상세 로깅
+            System.out.println("=== Notice Creation Failed ===");
+            System.out.println("Error message: " + e.getMessage());
+            System.out.println("Error cause: " + e.getCause());
+            e.printStackTrace(); // 스택 트레이스 전체 출력
+
             log.error("교사 공지사항 등록 실패: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("교사 공지사항 등록 실패: " + e.getMessage());
@@ -97,7 +127,7 @@ public class FcmApiController {
                     Map<String, String> data = new HashMap<>();
                     data.put("type", "SURVEY");
                     data.put("roomId", roomId.toString());
-                    data.put("route", "/*"); // 프론트엔드의 라우트 경로
+                    data.put("route", "SURVEY"); // 프론트엔드의 라우트 경로
 
                     // 데이터와 함께 알림 전송
                     firebaseCloudMessageService.sendMessageWithData(token, title, body, data);

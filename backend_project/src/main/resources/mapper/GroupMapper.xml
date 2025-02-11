@@ -83,6 +83,12 @@
           AND user_id = #{userId}
     </delete>
 
+    <!-- 학생의 조 선택 후  소속(Membership) 추가 -->
+    <insert id="insertMembership" parameterType="com.ssafy.model.entity.Membership">
+        INSERT INTO memberships (user_id, room_id, code_id, group_no)
+        VALUES (#{membership.userId}, #{membership.roomId}, #{membership.codeId}, #{membership.groupNo})
+    </insert>
+
     <!-- 리더 찾기 -->
     <select id="findLeaderInGroup" parameterType="map" resultType="long">
         SELECT user_id

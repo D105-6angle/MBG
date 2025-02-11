@@ -51,4 +51,30 @@ public class RoomService {
     public Room findRoomById(Long roomId) {
         return roomMapper.selectRoomById(roomId);
     }
+
+
+    // 초대코드로 방 입장
+    public Room joinRoom(String inviteCode) {
+        Room room = roomMapper.selectRoomByInviteCode(inviteCode);
+        if (room == null) {
+            throw new InvalidRequestException("유효하지 않은 초대코드입니다.");
+        }
+        return room;
+    }
+
+    // 그룹 수 추가
+    public Room increaseGroupCount(Long roomId) {
+        Room room = roomMapper.selectRoomById(roomId);
+        if (room == null) {
+            throw new InvalidRequestException("방이 존재하지 않습니다.");
+        }
+        int newGroupCount = room.getNumOfGroups() + 1;
+        room.setNumOfGroups(newGroupCount);
+        int rows = roomMapper.updateRoomGroupCount(room);
+        if (rows == 0) {
+            throw new DatabaseOperationException("그룹 수 업데이트 실패");
+        }
+        return room;
+    }
+
 }

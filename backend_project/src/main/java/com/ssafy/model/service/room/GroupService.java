@@ -1,7 +1,9 @@
 package com.ssafy.model.service.room;
 
+import com.ssafy.exception.common.DatabaseOperationException;
 import com.ssafy.controller.room.group.GroupDetailResponse;
 import com.ssafy.exception.room.GroupNotFoundException;
+import com.ssafy.model.entity.Membership;
 import com.ssafy.model.entity.Room;
 import com.ssafy.model.mapper.room.GroupMapper;
 import com.ssafy.model.mapper.room.RoomMapper;
@@ -107,6 +109,24 @@ public class GroupService {
         }
     }
 
+    // 학생의 조 선택 및 소속 저장
+    public Membership joinGroup(long roomId, int groupNo, long userId) {
+        // 기본 코드: "J002" (팀원)
+        Membership membership = Membership.builder()
+                .userId(userId)
+                .roomId(roomId)
+                .groupNo(groupNo)
+                .codeId("J002")
+                .build();
+        int rows = groupMapper.insertMembership(membership);
+        if (rows == 0) {
+            throw new DatabaseOperationException("조 선택에 실패했습니다.");
+        }
+        return membership;
+    }
+
+
+
     // 사진 제출 후 조장 재배정
 //    public void reassignLeader(long roomId, int groupNo, long userId) {
 //        Long currentLeader = groupMapper.findLeaderInGroup(roomId, groupNo);
@@ -122,4 +142,7 @@ public class GroupService {
 //            groupMapper.updateMemberToLeader(roomId, groupNo, newLeader);
 //        }
 //    }
+
+    // joinGroup(long roomId, int groupNo, long userId)
+
 }

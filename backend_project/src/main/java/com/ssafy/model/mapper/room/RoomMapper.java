@@ -12,4 +12,5 @@ public interface RoomMapper {
     Room selectRoomByInviteCode(@Param("inviteCode") String inviteCode);
 
     int updateRoomGroupCount(Room room);
+
 }
