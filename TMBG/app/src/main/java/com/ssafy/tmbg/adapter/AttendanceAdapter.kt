@@ -14,7 +14,7 @@ class AttendanceAdapter : RecyclerView.Adapter<AttendanceAdapter.ViewHolder>() {
             RecyclerView.ViewHolder(binding.root) {
 
                 fun bind(data: Attendance) {
-                    binding.studentName.text = data.studentName
+                    binding.studentName.text = data.name
                 }
             }
 
