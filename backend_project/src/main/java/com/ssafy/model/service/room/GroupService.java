@@ -58,9 +58,9 @@ public class GroupService {
         List<GroupDetailResponse.MemberDto> members = new ArrayList<>();
         for (var md : memberDataList) {
             GroupDetailResponse.MemberDto dto = GroupDetailResponse.MemberDto.builder()
-                    .userId(md.userId)
-                    .nickname(md.nickname)
-                    .codeId(md.codeId)   // "J001"=팀장, "J002"=팀원
+                    .userId(md.getUserId())
+                    .nickname(md.getNickname())
+                    .codeId(md.getCodeId())   // "J001"=팀장, "J002"=팀원
                     .build();
             members.add(dto);
         }
@@ -70,10 +70,10 @@ public class GroupService {
         List<GroupDetailResponse.VerificationPhotoDto> verificationPhotos = new ArrayList<>();
         for (var pd : photoDataList) {
             GroupDetailResponse.VerificationPhotoDto dto = GroupDetailResponse.VerificationPhotoDto.builder()
-                    .pictureId(pd.pictureId)
-                    .pictureUrl(pd.pictureUrl)
-                    .missionId(pd.missionId)
-                    .completionTime(pd.completionTime)
+                    .pictureId(pd.getPictureId())
+                    .pictureUrl(pd.getPictureUrl())
+                    .missionId(pd.getMissionId())
+                    .completionTime(pd.getCompletionTime())
                     .build();
             verificationPhotos.add(dto);
         }
@@ -83,9 +83,9 @@ public class GroupService {
         List<GroupDetailResponse.VisitedPlaceDto> visitedPlaces = new ArrayList<>();
         for (var vd : placeDataList) {
             GroupDetailResponse.VisitedPlaceDto dto = GroupDetailResponse.VisitedPlaceDto.builder()
-                    .missionId(vd.missionId)
-                    .positionName(vd.positionName)
-                    .completedAt(vd.completedAt)
+                    .missionId(vd.getMissionId())
+                    .positionName(vd.getPositionName())
+                    .completedAt(vd.getCompletedAt())
                     .build();
             visitedPlaces.add(dto);
         }

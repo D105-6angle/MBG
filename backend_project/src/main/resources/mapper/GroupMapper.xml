@@ -32,7 +32,8 @@
 
     <!-- 특정 조 멤버 목록 -->
     <select id="selectMembers" parameterType="map"
-            resultType="com.ssafy.model.mapper.room.GroupMapper$MemberData">
+            resultType="com.ssafy.controller.room.group.GroupDetailResponse$MemberDto">
+
         SELECT
             u.user_id     AS userId,
             u.nickname    AS nickname,
@@ -45,7 +46,8 @@
 
     <!-- 인증샷(VerificationPhotos) 조회 -->
     <select id="selectVerificationPhotos" parameterType="map"
-            resultType="com.ssafy.model.mapper.room.GroupMapper$VerificationPhotoData">
+            resultType="com.ssafy.controller.room.group.GroupDetailResponse$VerificationPhotoDto">
+
         SELECT
             p.picture_id     AS pictureId,
             p.picture_url    AS pictureUrl,
@@ -59,7 +61,8 @@
 
     <!-- 방문한 장소(VisitedPlace) 조회 -->
     <select id="selectVisitedPlaces" parameterType="map"
-            resultType="com.ssafy.model.mapper.room.GroupMapper$VisitedPlaceData">
+            resultType="com.ssafy.controller.room.group.GroupDetailResponse$VisitedPlaceDto">
+
         SELECT
             p.mission_id AS missionId,
             mp.position_name AS positionName,

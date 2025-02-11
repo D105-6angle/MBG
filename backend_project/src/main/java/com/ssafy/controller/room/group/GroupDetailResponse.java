@@ -50,4 +50,5 @@ public class GroupDetailResponse {
         private String positionName;
         private String completedAt; // "yyyy-MM-dd HH:mm:ss"
     }
+
 }
