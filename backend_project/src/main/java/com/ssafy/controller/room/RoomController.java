@@ -61,7 +61,7 @@ public class RoomController {
         return ResponseEntity.ok(respDto);
     }
 
-    @Operation(summary = "전체 조 및 초대코드 조회 (GET /api/rooms/{roomId})")
+    @Operation(summary = "전체 조 및 초대코드 조회")
     @GetMapping("/{roomId}")
     public ResponseEntity<?> getRoomAndGroups(@PathVariable Long roomId) {
         // 1) 방 조회
