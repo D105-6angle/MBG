@@ -81,6 +81,6 @@ public class RoomController {
         data.put("numOfGroups", room.getNumOfGroups());
         data.put("groups", groups);
 
-        return ResponseEntity.ok(Map.of("data", data));
+        return ResponseEntity.ok(data);
     }
 }
