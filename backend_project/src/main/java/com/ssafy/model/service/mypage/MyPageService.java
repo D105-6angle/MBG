@@ -1,5 +1,6 @@
 package com.ssafy.model.service.mypage;
 
+import com.ssafy.controller.mypage.MyPageResponse;
 import com.ssafy.exception.auth.NotFoundUserException;
 import com.ssafy.exception.auth.WithdrawnUserException;
 import com.ssafy.exception.common.DatabaseOperationException;
@@ -16,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MyPageService {
     private final AuthService authService;
-//    private final AuthMapper authMapper;
     private final MypageMapper mypageMapper;
 
     @Transactional
@@ -35,5 +35,14 @@ public class MyPageService {
         authService.validateResourceOwnership(user, userId);                        // 3. 본인인지 확인
         int result = mypageMapper.withdrawUser(userId);                             // 4. 회원 탈퇴
         authService.validateDatabaseOperation(result, "회원 탈퇴");  // 5. DB에 잘 반영됐는지 확인
+    }
+
+    public MyPageResponse.MyPageInfo getMyPageInfo(String providerId, Long userId) {
+        User user = authService.findUser(providerId);           // 1. 사용자 찾기
+        authService.validateUserWithdrawal(user);               // 2. 탈퇴한 유저인지 확인
+        authService.validateResourceOwnership(user, userId);    // 3. 본인 확인
+
+        // TODO: 풀이기록 및 유저 정보 가져오기
+        return null;
     }
 }

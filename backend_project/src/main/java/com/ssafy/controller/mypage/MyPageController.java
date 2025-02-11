@@ -30,11 +30,17 @@ public class MyPageController {
         return ResponseEntity.ok().build();
     }
 
-
     @Operation(summary = "회원 탈퇴")
     @DeleteMapping("{userId}")
     public ResponseEntity<?> withdrawUser(@AuthenticationPrincipal String providerId, @PathVariable Long userId) {
         myPageService.withdrawUser(providerId, userId);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "마이페이지 정보 조회", description = "마이페이지로 이동했을 때 보여지는 정보들")
+    @GetMapping("{userId}")
+    public ResponseEntity<?> getMyPageInformations(@AuthenticationPrincipal String providerId, @PathVariable Long userId) {
+        MyPageResponse.MyPageInfo response = myPageService.getMyPageInfo(providerId, userId);
+        return ResponseEntity.ok(response);
     }
 }

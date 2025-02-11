@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.model.mapper.mission.MissionMapper">
+
+    <!-- TODO:DB가 바껴서 이것도 바꿔야 함-->
     <select id="getMissionsByRoomId" parameterType="Long" resultMap="missionMap">
         SELECT DISTINCT
         mp.mission_id,
@@ -48,9 +50,28 @@
     </resultMap>
 
 
-
-
-
-
+    <select id="getMissionInfoByPlace" resultType="com.ssafy.model.entity.MissionPosition">
+        SELECT mp.mission_id, mp.place_id, mp.code_id, mp.card_id, mp.position_name, ST_AsText(mp.center_point) as center_point, ST_AsText(mp.edge_points) as edge_points,
+        CASE
+            WHEN mp.code_id IN ('M001', 'M002') THEN
+                CASE
+                    WHEN EXISTS (SELECT 1 FROM logs l WHERE l.card_id = mp.card_id AND l.user_id = #{userId} AND l.result = true) THEN true ELSE false END
+                    WHEN mp.code_id = 'M003' AND #{roomId} IS NOT NULL THEN
+                    CASE
+                        WHEN EXISTS (SELECT 1 FROM pictures p INNER JOIN memberships m ON m.room_id = p.room_id AND m.code_id = 'J001'
+                                     WHERE p.mission_id = mp.mission_id AND p.room_id = #{roomId} AND p.user_id = m.user_id) THEN true ELSE false END
+            ELSE false
+        END as is_correct, true as is_visible
+        FROM mission_positions mp INNER JOIN heritage_places hp ON mp.place_id = hp.place_id
+        WHERE hp.place_name = #{placeName}
+        <choose>
+            <when test="roomId != null">
+                AND mp.code_id IN ('M001', 'M002', 'M003')
+            </when>
+            <otherwise>
+                AND mp.code_id IN ('M001', 'M002')
+            </otherwise>
+        </choose>
+    </select>
 
 </mapper>
