@@ -14,6 +14,4 @@ public class Report {
     private String no2;
     private String no3;
     private String no4;
-    private String no5;
-
 }
