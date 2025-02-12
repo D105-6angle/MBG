@@ -55,7 +55,7 @@ object PolygonData {
         ),
         Mission(
             missionId = 5,
-            positionName = null,
+            positionName = "랜덤 미션",
             codeId = "M002",
             centerPoint = LatLng(37.577551, 126.976469),
             edgePoints = listOf(
@@ -71,7 +71,7 @@ object PolygonData {
             missionId = 8,
             positionName = "자경전",
             codeId = "M003",
-            centerPoint = LatLng(37.58031, 126.987154),
+            centerPoint = LatLng(37.580314, 126.978127),
             edgePoints = listOf(
                 LatLng(37.580595, 126.977787),
                 LatLng(37.580555, 126.978552),
