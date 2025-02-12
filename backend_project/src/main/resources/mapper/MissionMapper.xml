@@ -115,7 +115,10 @@
         WHEN mp.code_id = 'M002' THEN tm.card_id
         ELSE mp.card_id
         END as card_id,
-        mp.position_name,
+        CASE
+        WHEN mp.code_id = 'M002' THEN '랜덤 미션'
+        ELSE mp.position_name
+        END as position_name,
         ST_AsText(mp.center_point) as center_point,
         ST_AsText(mp.edge_points) as edge_points,
         CASE
