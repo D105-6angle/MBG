@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 public class MissionService {
     private final MissionMapper missionMapper;
 
+    // Legacy: 안쓰는 API일 확률 높음
     public List<MissionResponse> getMissionsByRoomId(Long roomId){
         return missionMapper.getMissionsByRoomId(roomId);
     }

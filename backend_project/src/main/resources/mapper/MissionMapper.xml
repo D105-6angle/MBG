@@ -2,6 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.model.mapper.mission.MissionMapper">
 
+    <!-- 일단은 사용 안한다고 알고 있는 내용
+        바뀐 Mission_positions 테이블에 맞게 SQL 변경해야 함
+    -->
     <select id="getMissionsByRoomId" parameterType="Long" resultMap="missionMap">
         SELECT DISTINCT
         mp.mission_id,

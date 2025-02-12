@@ -9,7 +9,6 @@ import java.util.List;
 
 @Mapper
 public interface MissionMapper {
-    // Room 쪽으로 옮기기
-    List<MissionResponse> getMissionsByRoomId(Long roomId);
+    List<MissionResponse> getMissionsByRoomId(Long roomId);     // 안 쓰는 API 확률 높음
     List<MissionPosition> getMissionInfoByPlace(@Param("userId") Long userId, @Param("roomId") Long roomId, @Param("placeName") String placeName);
 }

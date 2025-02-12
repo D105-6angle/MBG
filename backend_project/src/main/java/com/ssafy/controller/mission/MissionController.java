@@ -17,21 +17,21 @@ import java.util.Map;
 public class MissionController {
     private final MissionService missionService;
 
-
-    @Operation(summary = "관리자가 특정 방의 전체 미션 조회 API")
-    @GetMapping("/{roomId}/missions")
-    public ResponseEntity<?> getRoomMissions(@PathVariable Long roomId) {
-        try {
-            List<MissionResponse> missions = missionService.getMissionsByRoomId(roomId);
-            return ResponseEntity.ok(Map.of("missions", missions));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of(
-                            "message", "Failed to fetch missions",
-                            "error", e.getMessage()
-                    ));
-        }
-    }
+    // 안 쓰는 API 확률 높음
+//    @Operation(summary = "관리자가 특정 방의 전체 미션 조회 API", description = "안 쓰는 API일 확률이 높다고 하심")
+//    @GetMapping("/{roomId}/missions")
+//    public ResponseEntity<?> getRoomMissions(@PathVariable Long roomId) {
+//        try {
+//            List<MissionResponse> missions = missionService.getMissionsByRoomId(roomId);
+//            return ResponseEntity.ok(Map.of("missions", missions));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body(Map.of(
+//                            "message", "Failed to fetch missions",
+//                            "error", e.getMessage()
+//                    ));
+//        }
+//    }
 
     @Operation(summary = "특정 문화유산장소명에 해당하는 모든 미션 정보 가져오기")
     @PostMapping("/pickers")
