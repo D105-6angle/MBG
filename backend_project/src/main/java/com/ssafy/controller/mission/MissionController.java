@@ -3,6 +3,7 @@ package com.ssafy.controller.mission;
 
 import com.ssafy.model.service.mission.MissionService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/mission")
 @RequiredArgsConstructor
+@Tag(name = "미션 지역과 관련된 컨트롤러")
 public class MissionController {
     private final MissionService missionService;
 
@@ -37,6 +39,13 @@ public class MissionController {
     @PostMapping("/pickers")
     public ResponseEntity<?> getMissionInfoByPlace(@RequestBody MissionRequest.MissionsByHeritagePlace request) {
         List<MissionResponse.MissionInfo> response = missionService.getMisionInfoByPlace(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "특정 문화유산장소명에 해당하는 모든 미션 정보 상태만 주기적으로 가져오기")
+    @PostMapping("/states")
+    public ResponseEntity<?> getMissionStatesByPlace(@RequestBody MissionRequest.MissionsByHeritagePlace request) {
+        List<MissionResponse.MissionState> response = missionService.getMissionStatesByPlace(request);
         return ResponseEntity.ok(response);
     }
 }

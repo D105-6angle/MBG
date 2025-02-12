@@ -22,6 +22,11 @@ public class MissionService {
         return missionMapper.getMissionsByRoomId(roomId);
     }
 
+    public List<MissionResponse.MissionState> getMissionStatesByPlace(MissionRequest.MissionsByHeritagePlace request) {
+        List<MissionResponse.MissionState> states = missionMapper.getMissionStatesByPlace(request.getUserId(), request.getRoomId(), request.getPlaceName());
+        return states;
+    }
+
     public List<MissionResponse.MissionInfo> getMisionInfoByPlace(MissionRequest.MissionsByHeritagePlace request) {
         List<MissionPosition> info = missionMapper.getMissionInfoByPlace(request.getUserId(), request.getRoomId(), request.getPlaceName());
         List<MissionResponse.MissionInfo> response = new ArrayList<>();

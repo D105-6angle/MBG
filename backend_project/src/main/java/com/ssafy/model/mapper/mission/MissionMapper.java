@@ -11,4 +11,6 @@ import java.util.List;
 public interface MissionMapper {
     List<MissionResponse> getMissionsByRoomId(Long roomId);     // 안 쓰는 API 확률 높음
     List<MissionPosition> getMissionInfoByPlace(@Param("userId") Long userId, @Param("roomId") Long roomId, @Param("placeName") String placeName);
+
+    List<MissionResponse.MissionState> getMissionStatesByPlace(@Param("userId") Long userId, @Param("roomId") Long roomId, @Param("placeName") String placeName);
 }
