@@ -12,6 +12,7 @@ import com.ssafy.mbg.data.auth.repository.SocialLoginRepository
 import com.ssafy.mbg.data.mypage.repository.MyPageRepository
 import com.ssafy.mbg.data.mypage.repository.MyPageRepositoryImpl
 import com.ssafy.mbg.data.task.repository.ScheduleRepository
+import com.ssafy.mbg.di.UserPreferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -37,9 +38,9 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideUserPreferences(@ApplicationContext context: Context): UserPreferences {
-        return UserPreferences(context)
-    }
+    fun provideUserPreferences(
+        @ApplicationContext context: Context
+    ): UserPreferences = UserPreferences(context)
 
     @Provides
     @Singleton
