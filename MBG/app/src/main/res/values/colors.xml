@@ -14,4 +14,14 @@
     <color name="message_time">#757575</color>
     <color name="input_text">#212121</color>
     <color name="hint_text">#BDBDBD</color>
+
+    <color name="correct_color">#4CAF50</color>          <!-- 정답 - 밝은 초록색 -->
+    <color name="correct_color_dark">#388E3C</color>     <!-- 정답 (어두운 버전) -->
+    <color name="wrong_color">#F44336</color>            <!-- 오답 - 밝은 빨간색 -->
+    <color name="wrong_color_dark">#D32F2F</color>       <!-- 오답 (어두운 버전) -->
+    <color name="quiz_text_primary">#424242</color>      <!-- 주요 텍스트 색상 -->
+    <color name="quiz_text_secondary">#757575</color>    <!-- 부가 텍스트 색상 -->
+
+
+    <color name="group_info">#AFDBDA</color>
 </resources>

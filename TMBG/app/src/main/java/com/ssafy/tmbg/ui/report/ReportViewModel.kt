@@ -26,11 +26,12 @@ class ReportViewModel @Inject constructor(
     val state: StateFlow<ReportState> = _state.asStateFlow()
 
     private var updateJob: Job? = null
-//    private val _roomId = MutableStateFlow<Int>(-1)
-//
-//    fun setRoomId(id: Int) {
-//        _roomId.value = id
-//    }
+    private val _roomId = MutableStateFlow<Int>(-1)
+    val roomId = _roomId.asStateFlow()
+
+    fun setRoomId(id: Int) {
+        _roomId.value = id
+    }
 
     fun startAutoUpdate() {
         updateJob?.cancel()
@@ -49,8 +50,10 @@ class ReportViewModel @Inject constructor(
 
     private suspend fun fetchReport(): Boolean {
         try {
-//            val currentRoomId = _roomId.value
-            val result = reportRepositoryImpl.getReport(7)
+            val currentRoomId = _roomId.value
+            if (currentRoomId == -1) return false
+
+            val result = reportRepositoryImpl.getReport(currentRoomId)
 
             result.onSuccess { response ->
                 _state.value = ReportState.Success(

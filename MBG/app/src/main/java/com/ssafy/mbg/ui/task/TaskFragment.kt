@@ -9,12 +9,16 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ssafy.mbg.adapter.ScheduleAdapter
 import com.ssafy.mbg.adapter.TeamMemberAdapter
 import com.ssafy.mbg.data.mypage.dto.Schedule
 import com.ssafy.mbg.databinding.FragmentTaskBinding
+import com.ssafy.mbg.di.UserPreferences
+import com.ssafy.mbg.ui.home.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class TaskFragment : Fragment() {
@@ -22,31 +26,24 @@ class TaskFragment : Fragment() {
     private var _binding: FragmentTaskBinding? = null
     private val binding get() = _binding!! // null이 아님을 보장하는 getter
 
+    private var roomId: Long = -1L
     // 팀 멤버와 일정 목록을 표시할 어댑터 선언
     private val teamMemberAdapter = TeamMemberAdapter()
     private val scheduleAdapter = ScheduleAdapter()
-    private var roomId : Long = 1L
+
+    @Inject
+    lateinit var userPreferences: UserPreferences
 
     private val viewModel : TaskViewModel by viewModels()
 
-    companion object {
-        private const val ARG_ROOM_ID = "room_id"
-
-        fun newInstance(roomId : Long) : TaskFragment {
-            return TaskFragment().apply {
-                arguments = Bundle().apply {
-                    putLong(ARG_ROOM_ID, roomId)
-                }
-            }
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // roomId 초기화 시 예외 처리
+
         try {
             arguments?.let {
-                roomId = it.getLong(ARG_ROOM_ID)
+               roomId = userPreferences.roomId ?: -1L
             }
         } catch (e: Exception) {
             Log.e("TaskFragment", "Failed to get roomId from arguments: ${e.message}")

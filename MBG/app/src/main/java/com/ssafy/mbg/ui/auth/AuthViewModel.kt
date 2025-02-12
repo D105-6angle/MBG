@@ -11,9 +11,11 @@ import com.ssafy.mbg.data.auth.request.RegisterRequest
 import com.ssafy.mbg.data.auth.repository.AuthRepository
 import com.ssafy.mbg.data.auth.repository.KakaoLoginRepositoryImpl
 import com.ssafy.mbg.data.auth.repository.NaverLoginRepositoryImpl
+import com.ssafy.mbg.di.QuizPreferences
 import com.ssafy.mbg.di.ServerTokenManager
 import com.ssafy.mbg.di.UserPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,7 +28,8 @@ class AuthViewModel @Inject constructor(
     private val naverLoginRepositoryImpl: NaverLoginRepositoryImpl,
     private val authRepository: AuthRepository,
     private val serverTokenManager: ServerTokenManager,
-    private val userPreferences: UserPreferences
+    private val userPreferences: UserPreferences,
+    @ApplicationContext private val context: Context
 
 ) : ViewModel() {
 
@@ -183,6 +186,8 @@ class AuthViewModel @Inject constructor(
                         serverTokenManager.saveToken(refreshToken = response.refreshToken, accessToken = response.accessToken)
                         serverTokenManager.saveProviderId(socialId)  // providerId 저장
                         userPreferences.userId = response.userId
+
+                        QuizPreferences.setQuizCompleted(context , false)
                         _authState.value = AuthState.NavigateToMain  // 바로 메인으로 이동
                     }
                     // 실패했다면 실페 에러 메시지 설정
@@ -253,6 +258,8 @@ class AuthViewModel @Inject constructor(
                             Log.d("AuthViewModel", "토큰 삭제 완료")
                             userPreferences.userId = null
                             Log.d("AuthViewModel", "사용자 정보 삭제 완료")
+
+                            QuizPreferences.setQuizCompleted(context , false)
                             _authState.value = AuthState.NavigateToLogin
                         }
                         .onFailure { exception ->

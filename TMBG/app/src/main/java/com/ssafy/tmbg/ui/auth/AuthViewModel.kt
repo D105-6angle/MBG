@@ -14,6 +14,7 @@ import com.ssafy.tmbg.data.auth.request.RegisterRequest
 import com.ssafy.tmbg.di.ServerTokenManager
 import com.ssafy.tmbg.di.UserPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,7 +28,8 @@ class AuthViewModel @Inject constructor(
     private val naverLoginRepositoryImpl: NaverLoginRepositoryImpl,
     private val authRepository: AuthRepository,
     private val serverTokenManager: ServerTokenManager,
-    private val userPreferences: UserPreferences
+    private val userPreferences: UserPreferences,
+    @ApplicationContext private val context: Context
 
 ) : ViewModel() {
 
@@ -142,7 +144,9 @@ class AuthViewModel @Inject constructor(
                 .onFailure { exception ->
                     Log.e(TAG, exception.message?:"")
                     // 만약 204 에러를 반환했다면
-                    if (exception.message?.contains("회원가입이 필요합니다") == true) {
+                    if (exception.message?.contains("회원가입이 필요합니다") == true ||
+                        exception.message?.contains("로그인 실패") == true ||
+                        exception.message?.contains("탈퇴한 회원") == true) {
                         // 회원가입으로 이동 이때 소셜 로그인에서 받은 정보를 들고감
                         _authState.value = AuthState.NeedSignUp(
                             email = email,
@@ -182,6 +186,7 @@ class AuthViewModel @Inject constructor(
                         serverTokenManager.saveToken(refreshToken = response.refreshToken, accessToken = response.accessToken)
                         serverTokenManager.saveProviderId(socialId)  // providerId 저장
                         userPreferences.userId = response.userId
+
                         _authState.value = AuthState.NavigateToMain  // 바로 메인으로 이동
                     }
                     // 실패했다면 실페 에러 메시지 설정
@@ -215,6 +220,7 @@ class AuthViewModel @Inject constructor(
                         }
                         // 실패 라면, 에러 메시지 설정
                         .onFailure {
+
                             _authState.value = AuthState.Error("자동 로그인 실패")
                         }
                 } else {
@@ -235,21 +241,34 @@ class AuthViewModel @Inject constructor(
 
     fun withDraw() {
         viewModelScope.launch {
+            Log.d("AuthViewModel", "회원 탈퇴 시작")
             _authState.value = AuthState.Loading
+
             try {
                 val userId = userPreferences.userId
+                Log.d("AuthViewModel", "회원 탈퇴 - userId: $userId")
+
                 if(userId != null) {
+                    Log.d("AuthViewModel", "회원 탈퇴 API 호출 시작")
                     authRepository.withDraw(userId)
                         .onSuccess {
-                            serverTokenManager.clearToken()
+                            Log.d("AuthViewModel", "회원 탈퇴 API 호출 성공")
+                            serverTokenManager.clearAll()
+                            Log.d("AuthViewModel", "토큰 삭제 완료")
                             userPreferences.userId = null
+                            Log.d("AuthViewModel", "사용자 정보 삭제 완료")
+
                             _authState.value = AuthState.NavigateToLogin
                         }
                         .onFailure { exception ->
+                            Log.e("AuthViewModel", "회원 탈퇴 실패", exception)
                             _authState.value = AuthState.Error(exception.message ?: "회원 탈퇴 실패")
                         }
+                } else {
+                    Log.e("AuthViewModel", "회원 탈퇴 실패 - userId가 null")
                 }
             } catch (e: Exception) {
+                Log.e("AuthViewModel", "회원 탈퇴 중 예외 발생", e)
                 _authState.value = AuthState.Error("회원 탈퇴")
             }
         }

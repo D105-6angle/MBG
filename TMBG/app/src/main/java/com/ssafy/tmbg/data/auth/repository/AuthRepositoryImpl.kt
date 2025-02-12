@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.ssafy.tmbg.api.AuthApi
 import com.ssafy.tmbg.data.auth.request.LoginRequest
 import com.ssafy.tmbg.data.auth.request.RegisterRequest
+import com.ssafy.tmbg.data.auth.request.UpdateUserRequest
 import com.ssafy.tmbg.data.auth.response.ErrorResponse
 import com.ssafy.tmbg.data.auth.response.LoginResponse
 import com.ssafy.tmbg.data.auth.response.RegisterResponse
@@ -13,7 +14,6 @@ import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val authApi : AuthApi,
-//    private val myPageApi: MyPageApi
 ) : AuthRepository {
 
     companion object {
@@ -146,73 +146,65 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun withDraw(userId: Long): Result<WithdrawResponse> {
-        TODO("Not yet implemented")
-    }
-
     override suspend fun updateNickname(userId: Long, nickname: String): Result<Unit> {
-        TODO("Not yet implemented")
+        Log.d("MyPageRepository", "닉네임 변경 시도 - userId: $userId, nickname: $nickname")
+
+        return handleApiCall(
+            apiCall = {
+                Log.d("MyPageRepository", "API 호출 시작")
+                try {
+                    val response = authApi.updateUserNickname(
+                        userId = userId,
+                        request = UpdateUserRequest(nickname = nickname)
+                    )
+                    Log.d("MyPageRepository", "API 응답 성공: $response")
+                    response
+                } catch (e: Exception) {
+                    Log.e("MyPageRepository", "API 호출 실패", e)
+                    Log.e("MyPageRepository", "에러 메시지: ${e.message}")
+                    Log.e("MyPageRepository", "상세 스택트레이스: ${e.stackTraceToString()}")
+                    throw e
+                }
+            },
+            noDataError = "닉네임 변경 데이터가 없습니다.",
+            defaultError = "닉네임 변경 실패",
+            handleErrorCode = { code ->
+                Log.d("MyPageRepository", "에러 코드 처리: $code")
+                when (code) {
+                    STATUS_BAD_REQUEST -> {
+                        Log.e("MyPageRepository", "잘못된 닉네임 형식 (400)")
+                        "잘못된 닉네임 형식입니다."
+                    }
+                    STATUS_UNAUTHORIZED -> {
+                        Log.e("MyPageRepository", "인증 실패 (401)")
+                        "인증에 실패했습니다."
+                    }
+                    else -> {
+                        Log.e("MyPageRepository", "알 수 없는 에러 코드: $code")
+                        null
+                    }
+                }
+            }
+        ).also { result ->
+            when {
+                result.isSuccess -> Log.d("MyPageRepository", "닉네임 변경 성공: ${result.getOrNull()}")
+                result.isFailure -> Log.e("MyPageRepository", "닉네임 변경 최종 실패", result.exceptionOrNull())
+            }
+        }
     }
 
-//    override suspend fun updateNickname(userId: Long, nickname: String): Result<Unit> {
-//        Log.d("MyPageRepository", "닉네임 변경 시도 - userId: $userId, nickname: $nickname")
-//
-//        return handleApiCall(
-//            apiCall = {
-//                Log.d("MyPageRepository", "API 호출 시작")
-//                try {
-//                    val response = myPageApi.updateUserNickname(
-//                        userId = userId,
-//                        request = UpdateNicknameRequest(nickname = nickname)
-//                    )
-//                    Log.d("MyPageRepository", "API 응답 성공: $response")
-//                    response
-//                } catch (e: Exception) {
-//                    Log.e("MyPageRepository", "API 호출 실패", e)
-//                    Log.e("MyPageRepository", "에러 메시지: ${e.message}")
-//                    Log.e("MyPageRepository", "상세 스택트레이스: ${e.stackTraceToString()}")
-//                    throw e
-//                }
-//            },
-//            noDataError = "닉네임 변경 데이터가 없습니다.",
-//            defaultError = "닉네임 변경 실패",
-//            handleErrorCode = { code ->
-//                Log.d("MyPageRepository", "에러 코드 처리: $code")
-//                when (code) {
-//                    STATUS_BAD_REQUEST -> {
-//                        Log.e("MyPageRepository", "잘못된 닉네임 형식 (400)")
-//                        "잘못된 닉네임 형식입니다."
-//                    }
-//                    STATUS_UNAUTHORIZED -> {
-//                        Log.e("MyPageRepository", "인증 실패 (401)")
-//                        "인증에 실패했습니다."
-//                    }
-//                    else -> {
-//                        Log.e("MyPageRepository", "알 수 없는 에러 코드: $code")
-//                        null
-//                    }
-//                }
-//            }
-//        ).also { result ->
-//            when {
-//                result.isSuccess -> Log.d("MyPageRepository", "닉네임 변경 성공: ${result.getOrNull()}")
-//                result.isFailure -> Log.e("MyPageRepository", "닉네임 변경 최종 실패", result.exceptionOrNull())
-//            }
-//        }
-//    }
-//
-//    override suspend fun withDraw(userId: Long): Result<WithdrawResponse> {
-//        return handleApiCall(
-//            apiCall = { myPageApi.withDraw(userId) },
-//            noDataError = "회원 탈퇴 데이터가 없습니다.",
-//            defaultError = "회원 탈퇴 실패",
-//            handleErrorCode = { code ->
-//                when (code) {
-//                    STATUS_UNAUTHORIZED -> "인증에 실패했습니다."
-//                    else -> null
-//                }
-//            }
-//        )
-//    }
+    override suspend fun withDraw(userId: Long): Result<Unit> {
+        return handleApiCall(
+            apiCall = { authApi.withDraw(userId) },
+            noDataError = "회원 탈퇴 데이터가 없습니다.",
+            defaultError = "회원 탈퇴 실패",
+            handleErrorCode = { code ->
+                when (code) {
+                    STATUS_UNAUTHORIZED -> "인증에 실패했습니다."
+                    else -> null
+                }
+            }
+        )
+    }
 
 }

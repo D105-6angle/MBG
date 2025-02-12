@@ -1,5 +1,6 @@
 package com.ssafy.tmbg.ui.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,14 +10,18 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.ssafy.mbg.ui.modal.ProfileModal
 import com.ssafy.tmbg.R
 import com.ssafy.tmbg.databinding.FragmentAdminMainBinding
+import com.ssafy.tmbg.ui.auth.AuthState
 import com.ssafy.tmbg.ui.auth.AuthViewModel
+import com.ssafy.tmbg.ui.splash.SplashActivity
 import com.ssafy.tmbg.ui.team.TeamCreateDialog
 import com.ssafy.tmbg.ui.team.TeamViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AdminMainFragment : Fragment() {
@@ -38,6 +43,7 @@ class AdminMainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupClickListeners()
+        observeAuthState()
 
         // TeamViewModel의 roomId 변경을 관찰하여 MainViewModel과 동기화
         teamViewModel.roomId.observe(viewLifecycleOwner) { roomId ->
@@ -145,6 +151,36 @@ class AdminMainFragment : Fragment() {
     fun navigateToTeam() {
         // 모달창에서 쓸 액션 이 곳에서 정의(메인 화면이 가장 최상단이기 때문)
         findNavController().navigate(R.id.action_adminMain_to_team)
+    }
+
+    private fun observeAuthState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            authViewModel.authState.collect { state ->
+                binding.progressBar.visibility = View.GONE  // 로딩 표시 제거
+                when (state) {
+                    is AuthState.Success -> {
+                        when (state.message) {
+                            "닉네임이 변경되었습니다." -> {
+                                Toast.makeText(context, "닉네임이 성공적으로 변경되었습니다", Toast.LENGTH_SHORT).show()
+                                // UI 업데이트가 필요한 경우 여기서 처리
+//                                loadData()  // 데이터 새로고침
+                            }
+                            else -> Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    is AuthState.Error -> {
+                        Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                    }
+                    is AuthState.NavigateToLogin -> {
+                        Intent(requireContext(), SplashActivity::class.java).apply {
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(this)
+                        }
+                    }
+                    else -> {}
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {

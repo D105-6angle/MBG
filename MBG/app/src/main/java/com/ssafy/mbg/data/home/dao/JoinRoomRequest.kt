@@ -1,5 +1,5 @@
 package com.ssafy.mbg.data.home.dao
 
-data class JoinRequest (
+data class JoinRoomRequest (
     val inviteCode : String
 )

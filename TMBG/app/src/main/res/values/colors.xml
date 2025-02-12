@@ -17,4 +17,16 @@
     <color name="team_leader_text">@android:color/holo_red_light</color>  <!-- 현재 사용 중인 팀장 텍스트 색상 -->
     <color name="red">#FF0000</color>
     <color name="gray">#808080</color>
+
+    <color name="primary">#1565C0</color>              <!-- 앱의 주요 색상 -->
+    <color name="primary_dark">#0D47A1</color>         <!-- 상태바 등에 사용될 어두운 버전 -->
+    <color name="accent">#2196F3</color>               <!-- 강조 색상 -->
+
+    <!-- 퀴즈 결과 다이얼로그 색상 -->
+    <color name="correct_color">#4CAF50</color>        <!-- 정답 색상 -->
+    <color name="correct_color_dark">#388E3C</color>   <!-- 정답 (어두운 버전) -->
+    <color name="wrong_color">#F44336</color>          <!-- 오답 색상 -->
+    <color name="wrong_color_dark">#D32F2F</color>     <!-- 오답 (어두운 버전) -->
+    <color name="quiz_text_primary">#424242</color>    <!-- 주요 텍스트 색상 -->
+    <color name="quiz_text_secondary">#757575</color>  <!-- 부가 텍스트 색상 -->
 </resources>
