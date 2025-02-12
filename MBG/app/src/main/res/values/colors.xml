@@ -14,4 +14,7 @@
     <color name="message_time">#757575</color>
     <color name="input_text">#212121</color>
     <color name="hint_text">#BDBDBD</color>
+
+
+    <color name="group_info">#AFDBDA</color>
 </resources>
