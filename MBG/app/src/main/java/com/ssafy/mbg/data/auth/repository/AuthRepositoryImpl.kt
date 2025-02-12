@@ -9,8 +9,7 @@ import com.ssafy.mbg.data.auth.request.LoginRequest
 import com.ssafy.mbg.data.auth.response.LoginResponse
 import com.ssafy.mbg.data.auth.request.RegisterRequest
 import com.ssafy.mbg.data.auth.response.RegisterResponse
-import com.ssafy.mbg.data.auth.response.WithdrawResponse
-import com.ssafy.mbg.data.mypage.dto.UpdateNicknameRequest
+import com.ssafy.mbg.data.mypage.dao.UpdateNicknameRequest
 import javax.inject.Inject
 
 /**

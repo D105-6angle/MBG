@@ -1,4 +1,4 @@
-package com.ssafy.mbg.data.mypage.dto
+package com.ssafy.mbg.data.mypage.dao
 
 /**
  * API 에러 상세 정보를 담는 클래스

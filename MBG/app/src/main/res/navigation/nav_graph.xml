@@ -83,9 +83,7 @@
             app:popUpToInclusive="true"/>
     </fragment>
 
-<!--    <argument-->
-<!--        android:name="image"-->
-<!--        app:argType="string"/>-->
+
 
     <!-- 문제 풀이 기록 상세 보기 -->
     <fragment
@@ -93,15 +91,8 @@
         android:name="com.ssafy.mbg.ui.page.HistoryDetailFragment"
         android:label="HistoryDetailFragment">
         <argument
-            android:name="title"
-            app:argType="string"/>
-
-        <argument
-            android:name="description"
-            app:argType="string"/>
-        <argument
-            android:name="lastSolvedAt"
-            app:argType="string"/>
+            android:name="cardId"
+            app:argType="long"/>
         <!-- 뒤로가기 action 추가 (PageFragment로 복귀) -->
         <action
             android:id="@+id/action_historyDetailFragment_to_pageFragment"
