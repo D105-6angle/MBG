@@ -9,4 +9,15 @@
     <color name="schedule_text_secondary">#757575</color>
     <color name="schedule_accent">#FF9800</color>
     <color name="schedule_divider">#EEEEEE</color>
+
+    <color name="primary">#1976D2</color>
+    <color name="primary_dark">#1565C0</color>
+    <color name="accent">#FFC107</color>
+    <color name="very_good">#4CAF50</color>
+    <color name="good">#8BC34A</color>
+    <color name="normal">#FFC107</color>
+    <color name="bad">#FF9800</color>
+    <color name="very_bad">#F44336</color>
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
 </resources>

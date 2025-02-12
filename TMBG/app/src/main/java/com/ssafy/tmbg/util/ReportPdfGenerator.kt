@@ -22,12 +22,12 @@ class ReportPdfGenerator(private val context: Context) {
 
     fun generatePdf(
         className: String,
-        location: String,
         question1Data: List<SatisfactionData>,
         question2Data: List<SatisfactionData>,
         question3Data: List<SatisfactionData>,
         studentList: List<String>,
-        charts: List<View>
+        charts: List<View>,
+        comments: List<String>
     ): File {
         val pdfDocument = PdfDocument()
 
@@ -53,8 +53,8 @@ class ReportPdfGenerator(private val context: Context) {
         }
         canvas.drawText("학급: $className", margin, yPosition + 24f, paint)
         yPosition += 30f
-        canvas.drawText("장소: $location", margin, yPosition + 24f, paint)
-        yPosition += 30f
+//        canvas.drawText("장소: $location", margin, yPosition + 24f, paint)
+//        yPosition += 30f
         canvas.drawText("날짜: ${getCurrentDate()}", margin, yPosition + 24f, paint)
         yPosition += 50f
 
@@ -121,6 +121,70 @@ class ReportPdfGenerator(private val context: Context) {
             canvas.drawText(row, margin, yPosition, paint)
             yPosition += 25f
         }
+
+        // 건의 사항
+        yPosition += 30f  // 간격 추가
+
+// 건의사항 및 기타 의견 섹션
+        if (yPosition + 50 > pageHeight - margin) {
+            pdfDocument.finishPage(page)
+            pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pdfDocument.pages.size + 1).create()
+            page = pdfDocument.startPage(pageInfo)
+            canvas = page.canvas
+            yPosition = margin
+        }
+
+        paint.textSize = 18f
+        canvas.drawText("건의사항 및 기타 의견", margin, yPosition + 24f, paint)
+        yPosition += 40f
+
+        paint.textSize = 14f
+        comments.forEach { comment ->
+            // 긴 댓글 처리를 위한 줄바꿈 로직
+            val maxWidth = pageWidth - (margin * 2)
+            val words = comment.split(" ")
+            var currentLine = ""
+
+            words.forEach { word ->
+                val testLine = if (currentLine.isEmpty()) word else "$currentLine $word"
+                val measureWidth = paint.measureText(testLine)
+
+                if (measureWidth > maxWidth) {
+                    // 현재 줄 그리기
+                    canvas.drawText(currentLine, margin, yPosition, paint)
+                    yPosition += 20f
+                    currentLine = word
+
+                    // 페이지 넘김 체크
+                    if (yPosition + 20f > pageHeight - margin) {
+                        pdfDocument.finishPage(page)
+                        pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pdfDocument.pages.size + 1).create()
+                        page = pdfDocument.startPage(pageInfo)
+                        canvas = page.canvas
+                        yPosition = margin
+                    }
+                } else {
+                    currentLine = testLine
+                }
+            }
+
+            // 마지막 줄 그리기
+            if (currentLine.isNotEmpty()) {
+                canvas.drawText(currentLine, margin, yPosition, paint)
+                yPosition += 30f  // 댓글 간 간격
+            }
+
+            // 페이지 넘김 체크
+            if (yPosition + 30f > pageHeight - margin) {
+                pdfDocument.finishPage(page)
+                pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pdfDocument.pages.size + 1).create()
+                page = pdfDocument.startPage(pageInfo)
+                canvas = page.canvas
+                yPosition = margin
+            }
+        }
+
+
 
         pdfDocument.finishPage(page)
 

@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.DecelerateInterpolator
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
@@ -13,6 +14,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.ssafy.tmbg.adapter.AttendanceAdapter
 import com.ssafy.tmbg.adapter.CommentAdapter
 import com.ssafy.tmbg.data.report.Attendance
@@ -44,7 +46,7 @@ class ReportFragment : Fragment() {
     private lateinit var question2Data: List<SatisfactionData>
     private lateinit var question3Data: List<SatisfactionData>
     private lateinit var roomName: String
-//    private val mainViewModel: MainViewModel by activityViewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -103,7 +105,18 @@ class ReportFragment : Fragment() {
      */
     private fun setupDownloadButton() {
         binding.downloadButton.setOnClickListener {
-            downloadReport()
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("체험학습 종료")
+                .setMessage("보고서를 저장하고 체험학습을 종료하시겠습니까?")
+                .setPositiveButton("확인") { dialog, _ ->
+                    downloadReport()
+                    mainViewModel.clearRoomId() // 룸 아이디 초기화
+                    dialog.dismiss()
+                }
+                .setNegativeButton("취소") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
         }
     }
 
@@ -168,32 +181,57 @@ class ReportFragment : Fragment() {
             studentListContainer.visibility = View.GONE
             reportContainer.visibility = View.VISIBLE
 
-            // 방 이름 설정
-            titlteText.text = reportData.reports.roomName
-            roomName = reportData.reports.roomName // PDF 생성용 변수 저장
+            // 초기 상태 설정 - 모든 요소 투명하게
+            classInfoCard.alpha = 0f
+            titlteText.alpha = 0f
+            downloadButton.alpha = 0f
+            attendanceRecyclerView.alpha = 0f
+            Question1donutChart.alpha = 0f
+            Question2donutChart.alpha = 0f
+            Question3donutChart.alpha = 0f
+            commentRecyclerView.alpha = 0f
 
-            val students = reportData.reports.students ?: emptyList()
-            Log.d(
-                "ReportFragment",
-                "Mapping students to attendance: ${students.map { Attendance(it.name) }}"
+            // 기본 데이터 설정
+            titlteText.text = reportData.reports.roomName
+            roomName = reportData.reports.roomName
+
+            // 카드 페이드인 애니메이션
+            classInfoCard.animate()
+                .alpha(1f)
+                .setDuration(500)
+                .setInterpolator(DecelerateInterpolator())
+                .start()
+
+            // 각 요소 순차적 애니메이션
+            val elements = listOf(
+                titlteText,
+                downloadButton,
+                attendanceRecyclerView,
+                Question1donutChart,
+                Question2donutChart,
+                Question3donutChart,
+                commentRecyclerView
             )
+
+            elements.forEachIndexed { index, view ->
+                view.translationY = 50f
+                view.animate()
+                    .alpha(1f)
+                    .translationY(0f)
+                    .setDuration(400)
+                    .setStartDelay(100L * index)
+                    .setInterpolator(DecelerateInterpolator())
+                    .start()
+            }
+
+            // 데이터 설정
+            val students = reportData.reports.students ?: emptyList()
 
             attendanceRecyclerView.apply {
                 adapter = attendanceAdapter
                 layoutManager = LinearLayoutManager(context)
             }
-            attendanceAdapter.updateAttendance(
-                students.map { Attendance(it.name) }
-            )
-
-            // RecyclerView 설정 확인
-            studentListRecyclerView.visibility = View.VISIBLE
-            Log.d("ReportFragment", "RecyclerView visibility set to VISIBLE")
-            Log.d("ReportFragment", "RecyclerView adapter: $attendanceAdapter")
-            Log.d(
-                "ReportFragment",
-                "RecyclerView layoutManager: ${studentListRecyclerView.layoutManager}"
-            )
+            attendanceAdapter.updateAttendance(students.map { Attendance(it.name) })
 
             // 만족도 차트와 출석 데이터 설정
             setupSatisfactionCharts(reportData.reports.reportData.satisfaction)
@@ -309,7 +347,6 @@ class ReportFragment : Fragment() {
 
             val file = pdfGenerator.generatePdf(
                 className = roomName,
-                location = "경복궁",  // 임시 하드코딩 값
                 question1Data = question1Data,
                 question2Data = question2Data,
                 question3Data = question3Data,
@@ -318,7 +355,8 @@ class ReportFragment : Fragment() {
                     binding.Question1donutChart,
                     binding.Question2donutChart,
                     binding.Question3donutChart
-                )
+                ),
+                comments = commentAdapter.getCurrentList()
             )
 
             // PDF 파일을 공유하기 위한 FileProvider URI 생성

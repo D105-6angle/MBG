@@ -35,4 +35,6 @@ class CommentAdapter : RecyclerView.Adapter<CommentAdapter.ViewHolder>() {
         commentList = newList
         notifyDataSetChanged()
     }
+
+    fun getCurrentList(): List<String> = commentList
 }

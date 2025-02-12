@@ -50,7 +50,7 @@ class ReportViewModel @Inject constructor(
     private suspend fun fetchReport(): Boolean {
         try {
 //            val currentRoomId = _roomId.value
-            val result = reportRepositoryImpl.getReport(1)
+            val result = reportRepositoryImpl.getReport(7)
 
             result.onSuccess { response ->
                 _state.value = ReportState.Success(
