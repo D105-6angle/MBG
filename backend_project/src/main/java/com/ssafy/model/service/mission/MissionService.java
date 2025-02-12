@@ -17,10 +17,9 @@ import java.util.stream.Collectors;
 public class MissionService {
     private final MissionMapper missionMapper;
 
-    // TODO: 옮기기
-//    public List<MissionResponse> getMissionsByRoomId(Long roomId){
-//        return missionMapper.getMissionsByRoomId(roomId);
-//    }
+    public List<MissionResponse> getMissionsByRoomId(Long roomId){
+        return missionMapper.getMissionsByRoomId(roomId);
+    }
 
     public List<MissionResponse.MissionInfo> getMisionInfoByPlace(MissionRequest.MissionsByHeritagePlace request) {
         List<MissionPosition> info = missionMapper.getMissionInfoByPlace(request.getUserId(), request.getRoomId(), request.getPlaceName());
@@ -30,7 +29,7 @@ public class MissionService {
         for (MissionPosition i : info) {
             MissionResponse.MissionInfo mission = MissionResponse.MissionInfo.builder().missionId(i.getMissionId())
                     .positionName(i.getPositionName()).centerPoint(paresPoint(i.getCenterPoint()))
-                    .edgePoints(parsePolygon(i.getEdgePoints())).codeId(i.getCodeId()).isCorrect(i.isCorrect()).isVisible(i.isVisible()).build();
+                    .edgePoints(parsePolygon(i.getEdgePoints())).codeId(i.getCodeId()).isCorrect(i.isCorrect()).build();
             response.add(mission);
         }
 

@@ -17,5 +17,4 @@ public class MissionPosition {
 
     // 원래 Entity에 없지만 파싱 과정을 위해 어쩔 수 없이 가져오기
     private boolean isCorrect;
-    private boolean isVisible;
 }

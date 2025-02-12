@@ -17,6 +17,5 @@ public class MissionResponse {
         private Double[] centerPoint;
         private List<Double[]> edgePoints;
         private boolean isCorrect;
-        private boolean isVisible;
     }
 }
