@@ -22,4 +22,9 @@ class HomeRepository @Inject constructor(
     ): Response<JoinGroupResponse> {
         return _home.joinGroups(roomId, joinGroupRequest)
     }
+
+    /** 조원 삭제 */
+    suspend fun deleteMember(roomId: Int, groupNo: Int, userId: Long): Response<Unit> {
+        return _home.deleteMember(roomId, groupNo, userId)
+    }
 }

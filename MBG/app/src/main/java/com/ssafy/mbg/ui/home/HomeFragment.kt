@@ -105,13 +105,19 @@ class HomeFragment : Fragment() {
             questionIcon.setOnClickListener {
                 ChatBotDialogFragment().show(childFragmentManager, "chatbot")
             }
+
+            // 나가기 아이콘 클릭 리스너 추가
+            exitIcon.setOnClickListener {
+                showExitConfirmationDialog()
+            }
         }
     }
 
     private fun showJoinedGroupUI() {
         with(binding) {
-            // 팀 아이콘 숨기기
+            // 팀 아이콘 숨기고 나가기 아이콘 표시
             teamIcon.visibility = View.GONE
+            exitIcon.visibility = View.VISIBLE
             
             // 위치 정보 표시
             locationText.apply {
@@ -151,7 +157,8 @@ class HomeFragment : Fragment() {
 
     private fun showNotJoinedGroupUI() {
         with(binding) {
-            // 팀 선택 아이콘 표시
+            // 나가기 아이콘 숨기고 팀 아이콘 표시
+            exitIcon.visibility = View.GONE
             teamIcon.visibility = View.VISIBLE
             
             // 위치 정보 표시 (숨기지 않고 표시)
@@ -205,6 +212,23 @@ class HomeFragment : Fragment() {
                 Log.d("HomeFragment", "Location selected from dialog: $selectedLocation")
                 // UserPreferences 업데이트
                 viewModel.updateLocation(selectedLocation)
+            }
+            .show()
+    }
+
+    private fun showExitConfirmationDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("그룹 나가기")
+            .setMessage("정말로 그룹에서 나가시겠습니까?")
+            .setPositiveButton("나가기") { dialog, _ ->
+                // userPreferences의 roomId와 groupNo를 사용하여 deleteMember 호출
+                userPreferences.roomId?.toInt()?.let { roomId ->
+                    viewModel.deleteMember(roomId, userPreferences.groupNo)
+                }
+                dialog.dismiss()
+            }
+            .setNegativeButton("취소") { dialog, _ ->
+                dialog.dismiss()
             }
             .show()
     }
