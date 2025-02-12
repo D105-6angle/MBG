@@ -24,8 +24,9 @@
 
     <!-- 팀 모달 -->
     <string name="team_count">조 갯수</string>
-    <string name="team_destination">위치</string>
-    <string name="team_name">조 이름</string>
+    <string name="team_destination">문화재</string>
+    <string name="team_location_dropdown">문화재 이름을 입력하세요</string>
+    <string name="team_name">반 이름</string>
     <string name="hint_team_count">4</string>
     <string name="hint_team_destination">수원 화성</string>
     <string name="hint_team_name">싸피 초등학교 1학년 1반</string>
@@ -33,12 +34,15 @@
 
     <!-- 팀 관리 페이지 -->
     <string name="manage_team">팀 관리 페이지</string>
+    <string name="room_name">방 이름</string>
     <string name="team_num">1조</string>
     <string name="invite_code">초대 코드</string>
     <string name="end_experience">채점 종료 및 만족도 조사하기</string>
 
     <!-- 팀 상세 페이지 -->
-    <string name="team_mem_cnt">조 인원</string>
+    <string name="team_leader">조장</string>
+    <string name="is_leader">👑</string>
+    <string name="team_members">조원</string>
     <string name="progress">진행률</string>
     <string name="team_picture">인증 사진</string>
     <string name="never_visit_again">다녀간 장소</string>

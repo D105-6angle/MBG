@@ -1,9 +1,11 @@
 package com.ssafy.tmbg.ui.team
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.fragment.app.activityViewModels
@@ -38,17 +40,24 @@ class TeamFragment : Fragment() {
         initRecyclerView()
         setupObservers()
         setupClickListeners()
+        
+        // MainViewModel의 roomId 관찰
+        sharedViewModel.roomId.observe(viewLifecycleOwner) { roomId ->
+            if (roomId != -1) {
+                viewModel.getTeam(roomId)
+            }
+        }
     }
 
     private fun initRecyclerView() {
         teamAdapter = TeamAdapter(
             onTeamClick = { groupNumber ->
                 viewModel.team.value?.let { team ->
-                    // team.teacher.groups에서 해당 그룹 정보를 찾아서 전달
-                    val group = team.teacher.groups.find { it.groupNo.toInt() == groupNumber }
+                    // groups 리스트에서 해당 그룹 찾기
+                    val group = team.groups.find { it.groupNo == groupNumber }
                     val action = TeamFragmentDirections.actionTeamToTeamDetail(
                         groupNumber = groupNumber,
-                        memberCount = group?.memberCount?.toInt() ?: 0
+                        memberCount = group?.memberCount ?: 0
                     )
                     findNavController().navigate(action)
                 }
@@ -66,13 +75,33 @@ class TeamFragment : Fragment() {
         binding.btnShare.setOnClickListener {
             viewModel.shareInviteCode(requireContext())
         }
+
+        // 그룹 추가 버튼 클릭 리스너에 로그 추가
+        binding.btnAdd.setOnClickListener {
+            Log.d("TeamFragment", "그룹 추가 버튼 클릭")
+            sharedViewModel.roomId.value?.let { roomId ->
+                Log.d("TeamFragment", "그룹 추가 시도 - roomId: $roomId")
+                viewModel.addGroup(roomId)
+            } ?: run {
+                Log.e("TeamFragment", "roomId가 null입니다")
+            }
+        }
     }
 
     private fun setupObservers() {
         viewModel.team.observe(viewLifecycleOwner) { team ->
-            teamAdapter.updateData(team.numOfGroups.toInt())
-            // fragment_team.xml의 btnShareCode에 초대 코드 표시
-            binding.btnShareCode.text = "초대 코드: ${team.inviteCode}"
+            team?.let {
+                teamAdapter.updateData(it.numOfGroups.toInt())
+                binding.btnShareCode.text = "초대 코드: ${it.inviteCode}"
+                binding.tvRoomName.text = it.roomName
+            }
+        }
+
+        // 에러 메시지 관찰
+        viewModel.error.observe(viewLifecycleOwner) { error ->
+            if (error.isNotEmpty()) {
+                Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

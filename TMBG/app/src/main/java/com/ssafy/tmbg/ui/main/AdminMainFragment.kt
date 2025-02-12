@@ -1,6 +1,7 @@
 package com.ssafy.tmbg.ui.main
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -51,11 +52,43 @@ class AdminMainFragment : Fragment() {
             // Team 버튼 클릭 시 roomId 체크
             btnTeam.setOnClickListener {
                 if (mainViewModel.roomId.value != -1) {
-                    // 이미 생성된 방이 있으면 바로 TeamFragment로 이동
-                    findNavController().navigate(R.id.action_adminMain_to_team)
+                    mainViewModel.roomId.value?.let { roomId ->
+                        Log.d("AdminMainFragment", "팀 관리 버튼 클릭 - roomId: $roomId")
+                        
+                        // Observer를 한 번만 설정하도록 수정
+                        teamViewModel.team.removeObservers(viewLifecycleOwner)
+                        teamViewModel.team.observe(viewLifecycleOwner) { team ->
+                            Log.d("AdminMainFragment", "팀 정보 로드 결과: $team")
+                            if (team != null) {  // null 체크를 명시적으로
+                                Log.d("AdminMainFragment", "네비게이션 시도")
+                                try {
+                                    findNavController().navigate(R.id.action_adminMain_to_team)
+                                    Log.d("AdminMainFragment", "네비게이션 성공")
+                                } catch (e: Exception) {
+                                    Log.e("AdminMainFragment", "네비게이션 실패: ${e.message}", e)
+                                }
+                            }
+                        }
+                        
+                        // 에러 처리도 Observer 중복 제거
+                        teamViewModel.error.removeObservers(viewLifecycleOwner)
+                        teamViewModel.error.observe(viewLifecycleOwner) { error ->
+                            Log.e("AdminMainFragment", "팀 정보 로드 에러: $error")
+                            if (error.isNotEmpty()) {
+                                Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        
+                        Log.d("AdminMainFragment", "getTeam 호출 시도")
+                        teamViewModel.getTeam(roomId)
+                    }
                 } else {
-                    // 생성된 방이 없으면 TeamCreateDialog 표시
-                    TeamCreateDialog().show(childFragmentManager, "TeamCreateDialog")
+                    Log.d("AdminMainFragment", "팀 생성 다이얼로그 표시")
+                    // childFragmentManager 대신 parentFragmentManager 사용
+                    TeamCreateDialog().show(
+                        requireActivity().supportFragmentManager,  // 또는 parentFragmentManager
+                        "TeamCreateDialog"
+                    )
                 }
             }
             // 공지사항 클릭 시 실행될 액션
@@ -83,7 +116,9 @@ class AdminMainFragment : Fragment() {
             btnSetting.setOnClickListener{
                 showProfileModal()
             }
-
+            clearTeam.setOnClickListener{
+                mainViewModel.clearRoomId()
+            }
         }
     }
 
