@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,15 +22,17 @@ import androidx.fragment.app.Fragment
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.CustomCap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.*
 import com.google.maps.android.PolyUtil
 import com.google.maps.android.SphericalUtil
 import com.ssafy.mbg.R
 import com.ssafy.mbg.util.PolygonData
 import com.ssafy.mbg.util.PolygonUtils
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 
 class MapFragment : Fragment(), OnMapReadyCallback {
 
@@ -193,7 +196,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         // 지도 유형을 위성/하이브리드로 설정하여 상세한 위성 사진처럼 표시
 //        googleMap.mapType = GoogleMap.MAP_TYPE_HYBRID
         googleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
-
 
         setupMap()
         drawPolygons()  // 모든 폴리곤 그리기
@@ -426,6 +428,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         bottomSheetTextView.text = sb.toString().trim()
     }
 
+    /**
+     * 기존에는 userLatLng와 targetPoint를 단순히 선으로 연결하여 polyline을 그렸었다.
+     * 아래는 대상까지의 전체 선 대신, 사용자 위치에서 대상 방향으로 일정 길이(예, 30m)만큼 오프셋한 선을 그리고,
+     * 화살표 모양의 CustomCap을 적용하여 방향을 표시하는 코드입니다.
+     */
     private fun drawLineToNearestTarget(userLatLng: LatLng) {
         var nearestDistance = Double.MAX_VALUE
         var nearestTargetPoint: LatLng? = null
@@ -455,21 +462,49 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
         nearestTargetPoint?.let { targetPoint ->
             nearestLine?.remove()
+
+            // **변경된 부분:** 사용자 위치에서 대상 방향으로 일정 길이만큼의 선(예, 30m)을 그리도록 함.
+            val arrowLineLength = 30.0  // 표시할 선의 길이 (미터)
+            val actualDistance = SphericalUtil.computeDistanceBetween(userLatLng, targetPoint)
+            val heading = SphericalUtil.computeHeading(userLatLng, targetPoint)
+            // 실제 거리가 arrowLineLength보다 크면 arrowLineLength만큼 떨어진 점, 아니면 실제 대상 지점을 사용
+            val lineEndPoint = if (actualDistance > arrowLineLength) {
+                SphericalUtil.computeOffset(userLatLng, arrowLineLength, heading)
+            } else {
+                targetPoint
+            }
+
+            val arrowBitmapDescriptor = getArrowBitmap()
+            // CustomCap 생성 시 두 번째 파라미터(여기서는 10f)는 기준 너비 (픽셀) – 필요에 따라 조정
+            val arrowCap = CustomCap(arrowBitmapDescriptor, 15f)
             nearestLine = googleMap.addPolyline(
                 PolylineOptions()
-                    .add(userLatLng, targetPoint)
-                    .color(Color.RED)
-                    .width(5f)
+                    .add(userLatLng, lineEndPoint)
+                    .color(Color.YELLOW)
+                    .width(15f)
+                    .endCap(arrowCap).color(Color.YELLOW)
             )
-            // 가장 가까운 대상 Toast 메시지는 주석 처리
-            /*
-            Toast.makeText(
-                requireContext(),
-                "가장 가까운 대상: $nearestTargetName (${if (nearestDistance < 1000) String.format("%.0f m", nearestDistance) else String.format("%.2f km", nearestDistance / 1000)})",
-                Toast.LENGTH_SHORT
-            ).show()
-            */
+            // 기존 Toast 메시지 등은 주석 처리
+            // Toast.makeText(requireContext(), "가장 가까운 대상: $nearestTargetName (${if (nearestDistance < 1000) String.format("%.0f m", nearestDistance) else String.format("%.2f km", nearestDistance / 1000)})", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    /**
+     * userMarker와 targetPoint를 잇는 polyline의 끝에 사용할 화살표 아이콘을 BitmapDescriptor로 반환
+     */
+    private fun getArrowBitmap(): BitmapDescriptor {
+        // 시스템 기본 화살표 아이콘 사용 (필요에 따라 커스텀 drawable로 교체)
+        val drawable: Drawable = ContextCompat.getDrawable(requireContext(), android.R.drawable.arrow_up_float)
+            ?: throw IllegalArgumentException("Arrow drawable not found")
+
+        // 원하는 색 (예: 노란색)으로 색상 필터 적용
+        drawable.setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_ATOP)
+
+        val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.draw(canvas)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
     override fun onRequestPermissionsResult(
