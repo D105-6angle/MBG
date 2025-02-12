@@ -1,7 +1,7 @@
 package com.ssafy.mbg.data.home.dao
 
-data class JoinResponse (
+data class JoinRoomResponse (
     val roomId: Long,
-    val numOfGroup: Long,
+    val numOfGroups: Long,
     val location : String,
 )

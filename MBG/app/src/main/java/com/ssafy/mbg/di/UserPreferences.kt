@@ -2,14 +2,23 @@ package com.ssafy.mbg.di
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 @Singleton
-class UserPreferences @Inject constructor(
+class UserPreferences(
     @ApplicationContext private val context: Context
 ) {
+    companion object {
+        private const val LOCATION_KEY = "location"
+    }
+
     private val prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+
+    private val _locationFlow = MutableStateFlow("")
+    val locationFlow: StateFlow<String> = _locationFlow.asStateFlow()
 
     var userId: Long?
         get() = prefs.getLong("user_id", -1).let { if (it == -1L) null else it }
@@ -21,9 +30,12 @@ class UserPreferences @Inject constructor(
             }
         }.apply()
 
-    var location: String?
-        get() = prefs.getString("location", null)
-        set(value) = prefs.edit().putString("location", value).apply()
+    var location: String
+        get() = prefs.getString(LOCATION_KEY, "") ?: ""
+        set(value) {
+            prefs.edit().putString(LOCATION_KEY, value).apply()
+            _locationFlow.value = value
+        }
 
     var roomId: Long?
         get() = prefs.getLong("room_id", -1).let { if (it == -1L) null else it }
@@ -34,4 +46,12 @@ class UserPreferences @Inject constructor(
                 remove("room_id")
             }
         }.apply()
+
+    var groupNo: Int
+        get() = prefs.getInt("group_no", 0)
+        set(value) = prefs.edit().putInt("group_no", value).apply()
+
+    var codeId: String
+        get() = prefs.getString("code_id", "") ?: ""
+        set(value) = prefs.edit().putString("code_id", value).apply()
 }

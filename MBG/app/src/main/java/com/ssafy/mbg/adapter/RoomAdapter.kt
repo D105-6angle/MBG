@@ -6,15 +6,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ssafy.mbg.databinding.ItemRoomBinding
 
 class RoomAdapter(
-    private val rooms: List<Int>,
-    private val onRoomClick: (Int) -> Unit
+    private val items: List<Int>,
+    private val onItemClick: (Int) -> Unit
 ) : RecyclerView.Adapter<RoomAdapter.RoomViewHolder>() {
 
     inner class RoomViewHolder(private val binding: ItemRoomBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(roomNumber: Int) {
             binding.btnRoom.text = roomNumber.toString()
             binding.btnRoom.setOnClickListener {
-                onRoomClick(roomNumber)
+                onItemClick(roomNumber)
             }
         }
     }
@@ -25,8 +25,8 @@ class RoomAdapter(
     }
 
     override fun onBindViewHolder(holder: RoomViewHolder, position: Int) {
-        holder.bind(rooms[position])
+        holder.bind(items[position])
     }
 
-    override fun getItemCount() = rooms.size
+    override fun getItemCount() = items.size
 } 
