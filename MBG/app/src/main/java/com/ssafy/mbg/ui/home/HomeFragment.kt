@@ -50,16 +50,10 @@ class HomeFragment : Fragment() {
         setupClickListeners()
 
         // isJoinedGroup 상태 관찰
-        viewModel.isJoinedGroup.observe(viewLifecycleOwner) { isJoined ->
-            if (isJoined) {
-                showJoinedGroupUI()
-            } else {
-                showNotJoinedGroupUI()
-            }
-        }
+        observeViewModel()
 
         // userPreferences의 location 변경 감지
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             userPreferences.locationFlow.collect { location ->
                 Log.d("HomeFragment", "Location flow updated: $location")
                 _binding?.let {
@@ -113,9 +107,29 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun observeViewModel() {
+        viewModel.isJoinedGroup.observe(viewLifecycleOwner) { isJoined ->
+            Log.d("HomeFragment", "isJoinedGroup changed to: $isJoined")
+            if (userPreferences.roomId != null) {  // roomId가 있을 때만 UI 업데이트
+                updateUI(isJoined)
+            } else {
+                updateUI(false)  // roomId가 없으면 무조건 false로 처리
+            }
+        }
+    }
+
+    private fun updateUI(isJoined: Boolean) {
+        if (isJoined && userPreferences.roomId != null) {  // roomId 체크 추가
+            showJoinedGroupUI()
+        } else {
+            showNotJoinedGroupUI()
+        }
+    }
+
     private fun showJoinedGroupUI() {
+        Log.d("HomeFragment", "Showing joined group UI")
         with(binding) {
-            // 팀 아이콘 숨기고 나가기 아이콘 표시
+            // 먼저 모든 아이콘의 visibility를 설정
             teamIcon.visibility = View.GONE
             exitIcon.visibility = View.VISIBLE
             
@@ -156,8 +170,9 @@ class HomeFragment : Fragment() {
     }
 
     private fun showNotJoinedGroupUI() {
+        Log.d("HomeFragment", "Showing not joined group UI")
         with(binding) {
-            // 나가기 아이콘 숨기고 팀 아이콘 표시
+            // 먼저 모든 아이콘의 visibility를 설정
             exitIcon.visibility = View.GONE
             teamIcon.visibility = View.VISIBLE
             

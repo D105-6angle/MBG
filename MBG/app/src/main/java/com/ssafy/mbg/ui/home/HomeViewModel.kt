@@ -40,14 +40,21 @@ class HomeViewModel @Inject constructor(
     private val _isJoinedGroup = MutableLiveData<Boolean>()
     val isJoinedGroup: LiveData<Boolean> = _isJoinedGroup
 
-    init {
-        _roomId.value = 0L
-        _location.value = ""
-        _error.value = ""
-        _numOfGroups.value = 0L
-        _isJoinedGroup.value = userPreferences.roomId != 0L && userPreferences.groupNo != 0
-    }
+    private var isClearing = false  // clearGroup 작업 중인지 추적하는 플래그 추가
 
+    init {
+        if (!isClearing) {  // clearGroup 작업 중이 아닐 때만 초기화
+            _roomId.value = userPreferences.roomId ?: 0L
+            _location.value = userPreferences.location
+            _error.value = ""
+            _numOfGroups.value = 0L
+            
+            // roomId가 null이면 무조건 false
+            _isJoinedGroup.value = userPreferences.roomId != null && userPreferences.groupNo > 0
+            
+            Log.d("HomeViewModel", "Initialized with groupNo: ${userPreferences.groupNo}, roomId: ${userPreferences.roomId}, isJoinedGroup: ${_isJoinedGroup.value}")
+        }
+    }
 
     fun joinRoom(joinRoomRequest: JoinRoomRequest) {
         viewModelScope.launch {
@@ -83,6 +90,7 @@ class HomeViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     response.body()?.let { joinGroupResponse ->
                         _joinGroupResult.value = joinGroupResponse
+                        // 그룹 참여 성공 시 상태 업데이트
                         _isJoinedGroup.value = true
                     }
                 } else {
@@ -96,18 +104,27 @@ class HomeViewModel @Inject constructor(
 
     fun clearGroup() {
         viewModelScope.launch {
+            isClearing = true  // clearGroup 작업 시작
+            Log.d("HomeViewModel", "Clearing group data, before - groupNo: ${userPreferences.groupNo}, roomId: ${userPreferences.roomId}")
+            
+            // UserPreferences 초기화
             userPreferences.apply {
                 roomId = null
                 location = ""
                 groupNo = 0
                 codeId = ""
             }
-            // LiveData 값들도 초기화
-            _roomId.value = 0L
-            _location.value = ""
-            _numOfGroups.value = 0L
-            _error.value = ""
-            _isJoinedGroup.value = false
+            
+            // LiveData 값들 초기화
+            _isJoinedGroup.postValue(false)  // postValue 사용
+            _roomId.postValue(0L)
+            _location.postValue("")
+            _numOfGroups.postValue(0L)
+            _error.postValue("")
+            
+            // 상태가 제대로 업데이트되었는지 확인
+            Log.d("HomeViewModel", "Group data cleared - isJoinedGroup: ${_isJoinedGroup.value}, groupNo: ${userPreferences.groupNo}, roomId: ${userPreferences.roomId}")
+            isClearing = false  // clearGroup 작업 완료
         }
     }
 
