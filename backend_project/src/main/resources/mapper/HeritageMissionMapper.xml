@@ -10,7 +10,7 @@
         <result property="cardId" column="card_id" />
         <result property="heritageName" column="heritage_name" />
         <result property="imageUrl" column="image_url" />
-        <result property="description" column="description" />
+        <result property="description" column="description" jdbcType="VARCHAR"/>
         <result property="content" column="content" />
         <result property="objectImageUrl" column="object_image_url" />
         <result property="example1" column="example1" />
@@ -25,20 +25,21 @@
         SELECT
             hp.problem_id,
             hp.card_id,
-            COALESCE(hp.heritage_name, '알 수 없음') AS heritage_name,
-            COALESCE(hp.image_url, '/static/images/cards/heritage/default.png') AS image_url,
-            COALESCE(hp.description, '설명 없음') AS description,
-            COALESCE(hp.content, '정보 없음') AS content,
-            COALESCE(hp.object_image_url, '/static/images/cards/heritage_objects/default.png') AS object_image_url,
+            hp.heritage_name,
+            hp.image_url,
+            CAST(hp.description AS CHAR) AS description,
+            hp.content,
+            hp.object_image_url,
             hp.example1,
             hp.example2,
             hp.example3,
             hp.example4,
             hp.answer
         FROM heritage_problems hp
-                 INNER JOIN mission_positions mp ON hp.card_id = mp.card_id
+            INNER JOIN mission_positions mp ON hp.card_id = mp.card_id
         WHERE mp.mission_id = #{missionId}
-            LIMIT 1
+        LIMIT 1
+
     </select>
 
 </mapper>
