@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
+import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -16,19 +16,18 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PhotoMissionService {
 
     private final PictureMapper pictureMapper;
 
     // 파일 저장 경로
-    // application.properties에서 주입
-    @Value("${file.upload-dir}")
-    private String IMAGE_SAVE_DIR;
-//    private final String IMAGE_SAVE_DIR = "src/main/resources/static/images/pictures";
+    private final String IMAGE_SAVE_DIR = System.getProperty("user.dir") + "/src/main/resources/static/images/pictures";
 
-    public PhotoUploadResponse uploadPhoto(Long roomId, Long missionId, MultipartFile photo, Long userId) {
-        // 저장할 디렉터리가 존재하는지 확인
-        File dir = new File(IMAGE_SAVE_DIR);
+    public PhotoUploadResponse uploadPhoto(Long roomId, Long missionId, int groupNo, MultipartFile photo, Long userId) {
+
+        String targetDirPath = IMAGE_SAVE_DIR + "/" + roomId + "_" + groupNo;
+        File dir = new File(targetDirPath);
         if (!dir.exists()) {
             boolean created = dir.mkdirs();
             if (!created) {
@@ -42,8 +41,11 @@ public class PhotoMissionService {
         if (originalFilename != null && originalFilename.contains(".")) {
             fileExtension = originalFilename.substring(originalFilename.lastIndexOf('.'));
         }
+
         String uniqueFilename = UUID.randomUUID().toString() + fileExtension;
         File destination = new File(dir, uniqueFilename);
+
+        log.info("Saving file to: {}", destination.getAbsolutePath());
 
         try {
             // 파일 저장
@@ -53,7 +55,7 @@ public class PhotoMissionService {
         }
 
         // 상대 경로 생성
-        String relativePath = "images/pictures/" + uniqueFilename;
+        String relativePath = "images/pictures/" + roomId + "_" + groupNo + "/" + uniqueFilename;
 
         // Picture 엔티티 생성 및 DB 저장
         Picture picture = Picture.builder()

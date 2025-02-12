@@ -11,5 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class JoinRoomResponse {
     private Long roomId;
-    private String inviteCode;
+    private String location;
+    private int numOfGroups;
+
 }

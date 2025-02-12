@@ -31,6 +31,7 @@ public class PhotoMissionController {
     public ResponseEntity<?> uploadPhoto(
             @PathVariable Long roomId,
             @PathVariable Long missionId,
+            @RequestParam("groupNo") int groupNo,
             @Parameter(
                     description = "업로드할 사진 파일",
                     required = true,
@@ -51,7 +52,7 @@ public class PhotoMissionController {
         Long userId = user.getUserId();
 
         // 파일 저장 및 Picture 엔티티 등록
-        var response = photoMissionService.uploadPhoto(roomId, missionId, photo, userId);
+        var response = photoMissionService.uploadPhoto(roomId, missionId, groupNo, photo, userId);
 
         return ResponseEntity.ok(response);
     }

@@ -29,7 +29,8 @@ public class JoinRoomController {
         Room room = roomService.joinRoom(request.getInviteCode());
         JoinRoomResponse response = JoinRoomResponse.builder()
                 .roomId(room.getRoomId())
-                .inviteCode(room.getInviteCode())
+                .location(room.getLocation())
+                .numOfGroups(room.getNumOfGroups())
                 .build();
         return ResponseEntity.ok(response);
     }
