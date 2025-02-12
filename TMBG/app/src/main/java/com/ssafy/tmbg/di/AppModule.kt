@@ -3,12 +3,14 @@ package com.ssafy.tmbg.di
 import android.content.Context
 import android.content.SharedPreferences
 import com.ssafy.tmbg.api.AuthApi
+import com.ssafy.tmbg.api.ReportApi
 import com.ssafy.tmbg.api.ScheduleApi
 import com.ssafy.tmbg.data.auth.repository.AuthRepository
 import com.ssafy.tmbg.data.auth.repository.AuthRepositoryImpl
 import com.ssafy.tmbg.data.auth.repository.KakaoLoginRepositoryImpl
-import com.ssafy.tmbg.data.auth.repository.NaverLoginRepositoryImpl
 import com.ssafy.tmbg.data.auth.repository.SocialLoginRepository
+import com.ssafy.tmbg.data.report.repositoy.ReportRepository
+import com.ssafy.tmbg.data.report.repositoy.ReportRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -41,6 +43,12 @@ object AppModule {
     fun provideAuthApi(retrofit: Retrofit) : AuthApi {
         return retrofit.create(AuthApi::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideReportApi(retrofit: Retrofit) : ReportApi {
+        return retrofit.create(ReportApi::class.java)
+    }
     /**
      * ScheduleApi 인터페이스의 구현체를 제공합니다.
      * @param retrofit Retrofit 인스턴스
@@ -64,6 +72,14 @@ object AppModule {
         authApi: AuthApi
     ): AuthRepository {
         return AuthRepositoryImpl(authApi)
+    }
+
+    @Provides
+    @Singleton
+    fun providerReportRepository(
+        reportApi: ReportApi
+    ) : ReportRepository {
+        return ReportRepositoryImpl(reportApi)
     }
 
     @Provides
