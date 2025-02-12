@@ -20,4 +20,18 @@ class UserPreferences @Inject constructor(
                 remove("user_id")
             }
         }.apply()
+
+    var location: String?
+        get() = prefs.getString("location", null)
+        set(value) = prefs.edit().putString("location", value).apply()
+
+    var roomId: Long?
+        get() = prefs.getLong("room_id", -1).let { if (it == -1L) null else it }
+        set(value) = prefs.edit().apply {
+            if (value != null) {
+                putLong("room_id", value)
+            } else {
+                remove("room_id")
+            }
+        }.apply()
 }
