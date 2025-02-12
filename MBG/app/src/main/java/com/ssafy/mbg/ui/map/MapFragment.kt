@@ -50,9 +50,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private val LOCATION_PERMISSION_REQUEST_CODE = 100
 
-    // 여러 개의 폴리곤 좌표 집합을 참조
-    private val polygonList: List<List<LatLng>> = PolygonData.polygonList
-    // 그려진 폴리곤들을 저장할 리스트
+    // 미션 리스트 (새로운 데이터 구조에서 읽어옴)
+    private val missionList: List<PolygonData.Mission> = PolygonData.missionList
+    // 미션의 그리드(폴리곤)들을 저장할 리스트
     private val drawnPolygons = mutableListOf<Polygon>()
 
     // Bottom Sheet 내 텍스트뷰 (피커 리스트와 거리 표시)
@@ -60,26 +60,17 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     // 데이터 클래스: Picker (이름과 좌표)
     data class Picker(val name: String, val location: LatLng)
-    // 데이터 클래스: Area (이름과 좌표 리스트)
-    data class Area(val name: String, val coordinates: List<LatLng>)
 
-    // 기존 피커 리스트 (초기 피커)
-    private val initialPickerList = listOf(
-        Picker("시작점", LatLng(36.103866, 128.418393)),
-        Picker("A구역", LatLng(36.1072940, 128.4180058)),
-        Picker("B구역", LatLng(36.1119887, 128.4147123))
-    )
+    // 미션 정보를 Picker로 변환한 초기 피커 리스트
+    private val missionPickers: List<Picker> by lazy {
+        missionList.map { mission -> Picker(mission.positionName ?: "미지정", mission.centerPoint) }
+    }
 
     // 추가된 피커 리스트 (동적으로 추가됨)
     private val additionalPickerList = mutableListOf<Picker>()
     // 추가된 피커 마커와 원을 제거하기 위한 리스트
     private val additionalPickerMarkers = mutableListOf<Marker>()
     private val additionalPickerCircles = mutableListOf<Circle>()
-
-    // 면적(폴리곤) 리스트 – polygonList의 각 폴리곤을 Area로 매핑
-    private val initialAreaList = polygonList.mapIndexed { index, coordinates ->
-        Area("폴리곤 영역 ${index + 1}", coordinates)
-    }
 
     // 위치 선택 모드 플래그 (지도 클릭 시 추가 피커 등록)
     private var isPickMode = false
@@ -94,8 +85,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     // 가장 가까운 대상으로 사용자 위치와 연결할 선(Polyline)
     private var nearestLine: Polyline? = null
 
-    // 모드 토글: Picker Mode vs. Auto Mode
-    // 기본 모드는 Picker Mode (즉, 수동 이동)로 설정
+    // 모드 토글: Picker Mode vs. Auto Mode (기본은 Picker Mode)
     private var isPickerModeEnabled = true
 
     // Picker Mode의 고정 초기 위치 (경복궁)
@@ -193,15 +183,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             e.printStackTrace()
         }
 
-        // 지도 유형을 위성/하이브리드로 설정하여 상세한 위성 사진처럼 표시
-//        googleMap.mapType = GoogleMap.MAP_TYPE_HYBRID
+        // 지도 유형 설정 (예: MAP_TYPE_NORMAL)
         googleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
 
         setupMap()
-        drawPolygons()  // 모든 폴리곤 그리기
-        addInitialPickerMarkers()  // 초기 피커들 그리기
+        drawMissionPolygons()  // 미션의 그리드(폴리곤) 그리기
+        addInitialPickerMarkers()  // 미션 피커들 그리기
 
-        // 기본 모드가 Picker Mode이므로 초기 내 위치를 고정 좌표로 설정하고, 상세하게 보이도록 높은 줌(18f)으로 이동
+        // 기본 모드가 Picker Mode일 경우 초기 내 위치를 고정 좌표로 설정 및 높은 줌(18f)으로 이동
         if (userMarker == null) {
             googleMap.moveCamera(
                 CameraUpdateFactory.newLatLngZoom(INITIAL_PICKER_LATLNG, 18f)
@@ -268,14 +257,19 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         startLocationUpdates()
     }
 
-    // 모든 폴리곤을 그리는 함수
-    private fun drawPolygons() {
-        polygonList.forEach { coordinates ->
+    // 미션의 그리드(폴리곤)을 그리는 함수
+    private fun drawMissionPolygons() {
+        missionList.forEach { mission ->
+            val (strokeColor, fillColor) = when (mission.codeId) {
+                "M001" -> Pair(Color.BLUE, Color.argb(34, 0, 0, 255))
+                "M002" -> Pair(Color.YELLOW, Color.argb(34, 255, 255, 0))
+                else -> Pair(Color.GRAY, Color.argb(34, 128, 128, 128))
+            }
             val poly = googleMap.addPolygon(
                 PolygonOptions()
-                    .addAll(coordinates)
-                    .strokeColor(0x5500FF00)
-                    .fillColor(0x2200FF00)
+                    .addAll(mission.edgePoints)
+                    .strokeColor(strokeColor)
+                    .fillColor(fillColor)
                     .strokeWidth(5f)
             )
             drawnPolygons.add(poly)
@@ -283,21 +277,32 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun addInitialPickerMarkers() {
-        for (picker in initialPickerList) {
+        missionList.forEach { mission ->
+            val markerColor = when (mission.codeId) {
+                "M001" -> BitmapDescriptorFactory.HUE_BLUE
+                "M002" -> BitmapDescriptorFactory.HUE_YELLOW
+                else -> BitmapDescriptorFactory.HUE_RED
+            }
             googleMap.addMarker(
                 MarkerOptions()
-                    .position(picker.location)
-                    .title(picker.name)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                    .position(mission.centerPoint)
+                    .title(mission.positionName ?: "미지정")
+                    .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
             )
-            googleMap.addCircle(
-                CircleOptions()
-                    .center(picker.location)
-                    .radius(100.0)
-                    .strokeWidth(2f)
-                    .strokeColor(Color.GREEN)
-                    .fillColor(0x2200FF00)
-            )
+            // 피커 반경 제거
+//            val circleColor = when (mission.codeId) {
+//                "M001" -> Color.BLUE
+//                "M002" -> Color.YELLOW
+//                else -> Color.RED
+//            }
+//            googleMap.addCircle(
+//                CircleOptions()
+//                    .center(mission.centerPoint)
+//                    .radius(100.0)
+//                    .strokeWidth(2f)
+//                    .strokeColor(circleColor)
+//                    .fillColor(adjustAlpha(circleColor, 0.13f))
+//            )
         }
     }
 
@@ -348,7 +353,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap))
             }
             userMarker = googleMap.addMarker(markerOptions)
-            // Picker Mode일 때는 초기 위치 고정 및 높은 줌으로 이동
             if (!isUserLocationUpdated && !isPickerModeEnabled) {
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15f))
                 isUserLocationUpdated = true
@@ -361,7 +365,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun checkIfWithinRadius(userLatLng: LatLng) {
-        val combinedPickerList = initialPickerList + additionalPickerList
+        val combinedPickerList = missionPickers + additionalPickerList
         for (picker in combinedPickerList) {
             val results = FloatArray(1)
             Location.distanceBetween(
@@ -378,10 +382,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private var isInsidePolygonToastShown = false
     private fun checkIfInsidePolygon(userLatLng: LatLng) {
-        // 모든 폴리곤에 대해 내부 포함 여부 확인
-        polygonList.forEach { coordinates ->
-            if (PolyUtil.containsLocation(userLatLng, coordinates, true) && !isInsidePolygonToastShown) {
-                Toast.makeText(requireContext(), "You are in Gumi", Toast.LENGTH_SHORT).show()
+        missionList.forEach { mission ->
+            if (PolyUtil.containsLocation(userLatLng, mission.edgePoints, true) && !isInsidePolygonToastShown) {
+                Toast.makeText(requireContext(), "You are in ${mission.positionName ?: "미지정"}", Toast.LENGTH_SHORT).show()
                 isInsidePolygonToastShown = true
             }
         }
@@ -399,7 +402,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             bottomSheetTextView.text = "위치 조회중..."
             return
         }
-        val combinedPickerList = initialPickerList + additionalPickerList
+        val combinedPickerList = missionPickers + additionalPickerList
         val pickerDistances = combinedPickerList.map { picker ->
             val results = FloatArray(1)
             Location.distanceBetween(
@@ -409,15 +412,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             )
             Triple(picker.name, results[0].toDouble(), picker.location)
         }
-        // 면적(폴리곤)의 경우, 모든 폴리곤에 대해 거리 계산
-        val areaDistances = polygonList.flatMapIndexed { index, coordinates ->
-            val distance = PolygonUtils.distanceToPolygon(currentLocation, coordinates)
-            listOf(Triple("폴리곤 영역 ${index + 1}", distance, PolygonUtils.closestPointOnPolygon(currentLocation, coordinates)))
-        }
-        val allDistances = (pickerDistances + areaDistances)
-            .sortedWith(compareBy({ it.second }, { it.first }))
         val sb = StringBuilder()
-        for ((name, distance, _) in allDistances) {
+        for ((name, distance, _) in pickerDistances.sortedWith(compareBy({ it.second }, { it.first }))) {
             val distanceText = if (distance < 1000) {
                 String.format("%.0f m", distance)
             } else {
@@ -429,15 +425,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     /**
-     * 기존에는 userLatLng와 targetPoint를 단순히 선으로 연결하여 polyline을 그렸었다.
-     * 아래는 대상까지의 전체 선 대신, 사용자 위치에서 대상 방향으로 일정 길이(예, 30m)만큼 오프셋한 선을 그리고,
-     * 화살표 모양의 CustomCap을 적용하여 방향을 표시하는 코드입니다.
+     * 피커(미션 중심점) 중 가장 가까운 대상을 찾고, 사용자 위치에서 해당 피커 방향으로 일정 길이(예, 30m)만큼의 선과 화살표로 표시
      */
     private fun drawLineToNearestTarget(userLatLng: LatLng) {
         var nearestDistance = Double.MAX_VALUE
         var nearestTargetPoint: LatLng? = null
         var nearestTargetName = ""
-        val combinedPickerList = initialPickerList + additionalPickerList
+        val combinedPickerList = missionPickers + additionalPickerList
         for (picker in combinedPickerList) {
             val results = FloatArray(1)
             Location.distanceBetween(
@@ -452,70 +446,45 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 nearestTargetName = picker.name
             }
         }
-        for (coordinates in polygonList) {
-            val distance = PolygonUtils.distanceToPolygon(userLatLng, coordinates)
-            if (distance < nearestDistance) {
-                nearestDistance = distance
-                nearestTargetPoint = PolygonUtils.closestPointOnPolygon(userLatLng, coordinates)
-                nearestTargetName = "폴리곤 영역" // 필요시 인덱스를 추가할 수 있음
-            }
-        }
         nearestTargetPoint?.let { targetPoint ->
             nearestLine?.remove()
-
-            // **변경된 부분:** 사용자 위치에서 대상 방향으로 일정 길이만큼의 선(예, 30m)을 그리도록 함.
             val arrowLineLength = 30.0  // 표시할 선의 길이 (미터)
             val actualDistance = SphericalUtil.computeDistanceBetween(userLatLng, targetPoint)
             val heading = SphericalUtil.computeHeading(userLatLng, targetPoint)
-            // 실제 거리가 arrowLineLength보다 크면 arrowLineLength만큼 떨어진 점, 아니면 실제 대상 지점을 사용
             val lineEndPoint = if (actualDistance > arrowLineLength) {
                 SphericalUtil.computeOffset(userLatLng, arrowLineLength, heading)
             } else {
                 targetPoint
             }
-
             val arrowBitmapDescriptor = getArrowBitmap()
-            // CustomCap 생성 시 두 번째 파라미터(여기서는 10f)는 기준 너비 (픽셀) – 필요에 따라 조정
             val arrowCap = CustomCap(arrowBitmapDescriptor, 15f)
             nearestLine = googleMap.addPolyline(
                 PolylineOptions()
                     .add(userLatLng, lineEndPoint)
                     .color(Color.YELLOW)
                     .width(15f)
-                    .endCap(arrowCap).color(Color.YELLOW)
+                    .endCap(arrowCap)
             )
-            // 기존 Toast 메시지 등은 주석 처리
-            // Toast.makeText(requireContext(), "가장 가까운 대상: $nearestTargetName (${if (nearestDistance < 1000) String.format("%.0f m", nearestDistance) else String.format("%.2f km", nearestDistance / 1000)})", Toast.LENGTH_SHORT).show()
         }
     }
 
-    /**
-     * userMarker와 targetPoint를 잇는 polyline의 끝에 사용할 화살표 아이콘을 BitmapDescriptor로 반환
-     */
-//    private fun getArrowBitmap(): BitmapDescriptor {
-//        // 시스템 기본 화살표 아이콘 사용 (필요에 따라 커스텀 drawable로 교체)
-//        val drawable: Drawable = ContextCompat.getDrawable(requireContext(), android.R.drawable.arrow_up_float)
-//            ?: throw IllegalArgumentException("Arrow drawable not found")
-//        val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
-//        val canvas = Canvas(bitmap)
-//        drawable.setBounds(0, 0, canvas.width, canvas.height)
-//        drawable.draw(canvas)
-//        return BitmapDescriptorFactory.fromBitmap(bitmap)
-//    }
-
     private fun getArrowBitmap(): BitmapDescriptor {
-        // 시스템 기본 화살표 아이콘 사용 (필요에 따라 커스텀 drawable로 교체)
         val drawable: Drawable = ContextCompat.getDrawable(requireContext(), android.R.drawable.arrow_up_float)
             ?: throw IllegalArgumentException("Arrow drawable not found")
-
-        // 원하는 색 (예: 노란색)으로 색상 필터 적용
         drawable.setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_ATOP)
-
         val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         drawable.setBounds(0, 0, canvas.width, canvas.height)
         drawable.draw(canvas)
         return BitmapDescriptorFactory.fromBitmap(bitmap)
+    }
+
+    private fun adjustAlpha(color: Int, factor: Float): Int {
+        val alpha = Math.round(Color.alpha(color) * factor)
+        val red = Color.red(color)
+        val green = Color.green(color)
+        val blue = Color.blue(color)
+        return Color.argb(alpha, red, green, blue)
     }
 
     override fun onRequestPermissionsResult(
