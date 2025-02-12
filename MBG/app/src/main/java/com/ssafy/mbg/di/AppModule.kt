@@ -2,6 +2,7 @@ package com.ssafy.mbg.di
 
 import android.content.Context
 import com.ssafy.mbg.api.AuthApi
+import com.ssafy.mbg.api.HomeApi
 import com.ssafy.mbg.data.auth.repository.AuthRepository
 import com.ssafy.mbg.data.auth.repository.AuthRepositoryImpl
 import com.ssafy.mbg.api.MyPageApi
@@ -84,4 +85,10 @@ object AppModule {
 //    @Provides
 //    @Singleton
 //    fun provideNaverLoginRepository(): SocialLoginRepository = NaverLoginRepositoryImpl()
+
+    @Provides
+    @Singleton
+    fun provideHomeApi(retrofit: Retrofit): HomeApi {
+        return retrofit.create(HomeApi::class.java)
+    }
 }

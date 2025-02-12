@@ -26,8 +26,7 @@ class MbgApplication : Application() {
                 clientName = getString(R.string.app_name)
             )
             Log.d(SocialTAG, "네이버 SDK 초기화 성공")
-        }
-        catch (e:Exception) {
+        } catch (e: Exception) {
             Log.d(SocialTAG, "초기화 실패")
         }
         val key = KeyHashUtil.getKeyHash(this)

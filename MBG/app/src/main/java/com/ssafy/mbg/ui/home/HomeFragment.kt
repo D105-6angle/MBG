@@ -1,15 +1,18 @@
 package com.ssafy.mbg.ui.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.ssafy.mbg.R
 import com.ssafy.mbg.databinding.FragmentHomeBinding
 import com.ssafy.mbg.ui.chatbot.ChatBotDialogFragment
+import com.ssafy.mbg.ui.home.InviteCodeFragment
 
 class HomeFragment : Fragment() {
 
@@ -50,6 +53,7 @@ class HomeFragment : Fragment() {
             NotificationFragment().show(parentFragmentManager, "NotificationFragment")
         }
         binding.teamIcon.setOnClickListener {
+            Log.d("HomeFragment", "teamIcon clicked")
             InviteCodeFragment().show(parentFragmentManager, "InviteCodeFragment")
         }
         binding.questionIcon.setOnClickListener {
@@ -62,7 +66,24 @@ class HomeFragment : Fragment() {
 
     }
 
+    fun updateTeamDisplay(teamNumber: Long) {
+        binding.teamIcon.visibility = View.GONE
+        binding.teamNumberText.apply {
+            text = "${teamNumber}조"
+            visibility = View.VISIBLE
+        }
+    }
 
+    fun navigateToRoomList(numOfGroups: Long, roomId: Long, location: String) {
+        findNavController().navigate(
+            R.id.action_homeFragment_to_roomListFragment,
+            bundleOf(
+                "numOfGroups" to numOfGroups,
+                "roomId" to roomId,
+                "location" to location
+            )
+        )
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
