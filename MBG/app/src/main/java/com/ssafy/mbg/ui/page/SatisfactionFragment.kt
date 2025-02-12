@@ -1,6 +1,7 @@
 package com.ssafy.mbg.ui.page
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -94,6 +95,8 @@ class SatisfactionFragment : Fragment() {
 
             val userId = userPreferences.userId
             val roomId = userPreferences.roomId
+
+            Log.d("SatisfactionFragment", "UserID: $userId, RoomID: $roomId")
 //            val roomId = 1L
 
             if (userId == null || roomId == null) {
@@ -114,9 +117,9 @@ class SatisfactionFragment : Fragment() {
                 answer3 = answer3,
                 answer4 = freeAnswer
             )
+            homeViewModel.clearGroup()
         }
 
-        homeViewModel.clearGroup()
     }
 
     override fun onDestroyView() {
