@@ -1,6 +1,5 @@
 package com.ssafy.tmbg.ui.auth
 
-// AuthState.kt - 인증 상태를 나타내는 sealed class
 sealed class AuthState {
     data object Initial : AuthState()
     data object Loading : AuthState()

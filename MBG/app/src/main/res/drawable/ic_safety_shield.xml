@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- 방패 외형 -->
+    <path
+        android:fillColor="#1565C0"
+        android:pathData="M12,1L3,5v6c0,5.55 3.84,10.74 9,12 5.16,-1.26 9,-6.45 9,-12V5L12,1zM12,2.18l7.9,3.52v4.3c0,4.85 -3.37,9.39 -7.9,10.61 -4.53,-1.22 -7.9,-5.76 -7.9,-10.61v-4.3L12,2.18z"/>
+
+    <!-- 내부 하이라이트 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.3"
+        android:pathData="M12,2.18l7.9,3.52v4.3c0,4.85 -3.37,9.39 -7.9,10.61V2.18z"/>
+
+    <!-- 안전 표시 - 느낌표 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M11.5,6v7h1V6H11.5zM11.5,15v2h1v-2H11.5z"/>
+</vector>
