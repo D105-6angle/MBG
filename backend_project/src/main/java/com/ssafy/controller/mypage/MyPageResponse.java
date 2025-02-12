@@ -1,5 +1,6 @@
 package com.ssafy.controller.mypage;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class MyPageResponse {
         private String email;
         private String name;
         private String nickname;
+        @JsonProperty("isFinishedReport")
         private boolean isFinishedReport;
     }
 
