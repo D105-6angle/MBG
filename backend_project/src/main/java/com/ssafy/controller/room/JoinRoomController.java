@@ -2,6 +2,11 @@ package com.ssafy.controller.room;
 
 import com.ssafy.model.entity.Room;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +27,15 @@ public class JoinRoomController {
     private final RoomService roomService;
 
     @Operation(summary = "초대코드 입력하여 방 참여")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "방 참여 성공",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = JoinRoomResponse.class)
+                    )
+            )
+    })
     @PostMapping
     public ResponseEntity<?> joinRoom(@RequestBody JoinRoomRequest request) {
 //        System.out.println("초대코드: " + request.getInviteCode());

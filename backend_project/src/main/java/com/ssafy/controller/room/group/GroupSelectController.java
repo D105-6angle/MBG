@@ -40,10 +40,12 @@ public class GroupSelectController {
 
         // 조 선택 후 Membership 생성
         var membership = groupService.joinGroup(roomId, request.getGroupNo(), user.getUserId());
+
         GroupSelectResponse response = GroupSelectResponse.builder()
                 .userId(membership.getUserId())
                 .roomId(membership.getRoomId())
                 .groupNo(membership.getGroupNo())
+                .codeId(membership.getCodeId())
                 .build();
 
         return ResponseEntity.ok(response);

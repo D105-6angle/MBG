@@ -16,4 +16,5 @@ public class Membership {
     // 연관
     private User user;
     private Room room;
+
 }

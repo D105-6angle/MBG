@@ -10,9 +10,11 @@ import com.ssafy.model.mapper.room.RoomMapper;
 import lombok.RequiredArgsConstructor;
 import com.ssafy.controller.room.group.GroupResponse;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -109,15 +111,42 @@ public class GroupService {
         }
     }
 
+    // 현재 조에서 조장(J001) 찾기
+    public Long findLeaderInGroup(long roomId, int groupNo) {
+        return groupMapper.findLeaderInGroup(roomId, groupNo);
+    }
+
+    // 기존 조장을 조원(J002)으로 변경
+    @Transactional
+    public int updateMemberToMember(long roomId, int groupNo, long userId) {
+        return groupMapper.updateMemberToMember(roomId, groupNo, userId);
+    }
+
+
     // 학생의 조 선택 및 소속 저장
+    @Transactional
     public Membership joinGroup(long roomId, int groupNo, long userId) {
-        // 기본 코드: "J002" (팀원)
+
+        // 현재 그룹에서 기존 조장이 있는지 확인
+        Optional<Long> currentLeader = Optional.ofNullable(findLeaderInGroup(roomId, groupNo));
+
+        // 기존 조장이 있다면, 해당 조장을 일반 조원(J002)으로 변경
+        if (currentLeader.isPresent()) {
+            updateMemberToMember(roomId, groupNo, currentLeader.get());
+        }
+
+
+        // 새로운 가입자는 자동으로 조장(J001) 설정
+        String newCodeId = "J001";
+
+
         Membership membership = Membership.builder()
                 .userId(userId)
                 .roomId(roomId)
                 .groupNo(groupNo)
-                .codeId("J002")
+                .codeId(newCodeId)
                 .build();
+
         int rows = groupMapper.insertMembership(membership);
         if (rows == 0) {
             throw new DatabaseOperationException("조 선택에 실패했습니다.");

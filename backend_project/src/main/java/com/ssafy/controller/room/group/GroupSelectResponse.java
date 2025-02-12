@@ -13,4 +13,5 @@ public class GroupSelectResponse {
     private long userId;
     private long roomId;
     private int groupNo;
+    private String codeId;
 }

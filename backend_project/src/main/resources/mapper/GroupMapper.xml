@@ -83,19 +83,30 @@
           AND user_id = #{userId}
     </delete>
 
-    <!-- 학생의 조 선택 후  소속(Membership) 추가 -->
-    <insert id="insertMembership" parameterType="com.ssafy.model.entity.Membership">
-        INSERT INTO memberships (user_id, room_id, code_id, group_no)
-        VALUES (#{membership.userId}, #{membership.roomId}, #{membership.codeId}, #{membership.groupNo})
-    </insert>
+    <update id="updateMemberToMember" parameterType="map">
+        UPDATE memberships
+        SET code_id = 'J002'
+        WHERE room_id = #{roomId}
+          AND group_no = #{groupNo}
+          AND code_id = 'J001'
+    </update>
 
-    <!-- 리더 찾기 -->
     <select id="findLeaderInGroup" parameterType="map" resultType="long">
         SELECT user_id
         FROM memberships
         WHERE room_id = #{roomId}
           AND group_no = #{groupNo}
           AND code_id = 'J001'
+        ORDER BY user_id DESC
+            LIMIT 1
     </select>
+
+
+    <insert id="insertMembership" parameterType="map" useGeneratedKeys="true" keyProperty="membershipId">
+        INSERT INTO memberships (user_id, room_id, group_no, code_id)
+        VALUES (#{userId}, #{roomId}, #{groupNo}, #{codeId})
+    </insert>
+
+
 
 </mapper>
