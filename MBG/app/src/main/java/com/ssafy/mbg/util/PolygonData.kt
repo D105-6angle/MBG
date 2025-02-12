@@ -46,10 +46,10 @@ object PolygonData {
             codeId = "M001",
             centerPoint = LatLng(37.579106, 126.977041),
             edgePoints = listOf(
-                LatLng(37.579196, 126.976871),
-                LatLng(37.579174, 126.977202),
-                LatLng(37.578982, 126.977191),
-                LatLng(37.578996, 126.976848)
+                LatLng(37.579203, 126.976893),
+                LatLng(37.579203, 126.977205),
+                LatLng(37.578991, 126.977194),
+                LatLng(37.579012, 126.976865)
             ),
             correct = false
         ),
@@ -63,6 +63,33 @@ object PolygonData {
                 LatLng(37.577626, 126.97654),
                 LatLng(37.577496, 126.976537),
                 LatLng(37.5775, 126.97641)
+            ),
+            correct = false
+        ),
+        // 새롭게 추가된 미션들
+        Mission(
+            missionId = 8,
+            positionName = "자경전",
+            codeId = "M003",
+            centerPoint = LatLng(37.58031, 126.987154),
+            edgePoints = listOf(
+                LatLng(37.580595, 126.977787),
+                LatLng(37.580555, 126.978552),
+                LatLng(37.579983, 126.978557),
+                LatLng(37.58001, 126.977751)
+            ),
+            correct = false
+        ),
+        Mission(
+            missionId = 9,
+            positionName = "향원정",
+            codeId = "M003",
+            centerPoint = LatLng(37.58237, 126.977052),
+            edgePoints = listOf(
+                LatLng(37.582843, 126.976867),
+                LatLng(37.582848, 126.97724),
+                LatLng(37.582233, 126.977227),
+                LatLng(37.582226, 126.97685)
             ),
             correct = false
         )

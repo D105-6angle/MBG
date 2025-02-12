@@ -263,6 +263,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             val (strokeColor, fillColor) = when (mission.codeId) {
                 "M001" -> Pair(Color.BLUE, Color.argb(34, 0, 0, 255))
                 "M002" -> Pair(Color.YELLOW, Color.argb(34, 255, 255, 0))
+                "M003" -> Pair(Color.MAGENTA, Color.argb(34, 255, 0, 255))  // M003은 보라색
                 else -> Pair(Color.GRAY, Color.argb(34, 128, 128, 128))
             }
             val poly = googleMap.addPolygon(
@@ -281,6 +282,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             val markerColor = when (mission.codeId) {
                 "M001" -> BitmapDescriptorFactory.HUE_BLUE
                 "M002" -> BitmapDescriptorFactory.HUE_YELLOW
+                "M003" -> BitmapDescriptorFactory.HUE_VIOLET  // M003은 보라색
                 else -> BitmapDescriptorFactory.HUE_RED
             }
             googleMap.addMarker(
