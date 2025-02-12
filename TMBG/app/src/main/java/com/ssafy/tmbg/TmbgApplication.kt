@@ -27,6 +27,9 @@ class TmbgApplication : Application(){
                 clientName = getString(R.string.app_name)
             )
             Log.d("SocialLogin", "네이버 SDK 초기화 성공!")
+
+            val key = KeyHashUtil.getKeyHash(this)
+            Log.d("KeyHash", key)
         }catch (e: Exception) {
             Log.e("SocialLogin", "초기화 실패..")
         }

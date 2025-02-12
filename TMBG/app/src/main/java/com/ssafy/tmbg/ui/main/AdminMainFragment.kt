@@ -54,21 +54,36 @@ class AdminMainFragment : Fragment() {
                 if (mainViewModel.roomId.value != -1) {
                     mainViewModel.roomId.value?.let { roomId ->
                         Log.d("AdminMainFragment", "팀 관리 버튼 클릭 - roomId: $roomId")
-                        // 팀 정보 로드 결과 관찰
+                        
+                        // Observer를 한 번만 설정하도록 수정
+                        teamViewModel.team.removeObservers(viewLifecycleOwner)
                         teamViewModel.team.observe(viewLifecycleOwner) { team ->
-                            team?.let {
-                                findNavController().navigate(R.id.action_adminMain_to_team)
+                            Log.d("AdminMainFragment", "팀 정보 로드 결과: $team")
+                            if (team != null) {  // null 체크를 명시적으로
+                                Log.d("AdminMainFragment", "네비게이션 시도")
+                                try {
+                                    findNavController().navigate(R.id.action_adminMain_to_team)
+                                    Log.d("AdminMainFragment", "네비게이션 성공")
+                                } catch (e: Exception) {
+                                    Log.e("AdminMainFragment", "네비게이션 실패: ${e.message}", e)
+                                }
                             }
                         }
-                        // 에러 처리 추가
+                        
+                        // 에러 처리도 Observer 중복 제거
+                        teamViewModel.error.removeObservers(viewLifecycleOwner)
                         teamViewModel.error.observe(viewLifecycleOwner) { error ->
+                            Log.e("AdminMainFragment", "팀 정보 로드 에러: $error")
                             if (error.isNotEmpty()) {
                                 Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
                             }
                         }
+                        
+                        Log.d("AdminMainFragment", "getTeam 호출 시도")
                         teamViewModel.getTeam(roomId)
                     }
                 } else {
+                    Log.d("AdminMainFragment", "팀 생성 다이얼로그 표시")
                     // childFragmentManager 대신 parentFragmentManager 사용
                     TeamCreateDialog().show(
                         requireActivity().supportFragmentManager,  // 또는 parentFragmentManager
