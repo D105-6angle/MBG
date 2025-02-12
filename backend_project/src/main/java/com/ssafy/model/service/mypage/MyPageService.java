@@ -4,20 +4,25 @@ import com.ssafy.controller.mypage.MyPageResponse;
 import com.ssafy.exception.auth.NotFoundUserException;
 import com.ssafy.exception.auth.WithdrawnUserException;
 import com.ssafy.exception.common.DatabaseOperationException;
+import com.ssafy.model.entity.Report;
 import com.ssafy.model.entity.User;
 import com.ssafy.model.mapper.auth.AuthMapper;
 import com.ssafy.model.mapper.mypage.MypageMapper;
+import com.ssafy.model.mapper.report.ReportMapper;
 import com.ssafy.model.service.auth.AuthService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class MyPageService {
     private final AuthService authService;
     private final MypageMapper mypageMapper;
+    private final ReportMapper reportMapper;
 
     @Transactional
     public void changeNickname(String providerId, Long userId, String newNickname) throws NotFoundUserException, DatabaseOperationException, WithdrawnUserException {
@@ -37,12 +42,24 @@ public class MyPageService {
         authService.validateDatabaseOperation(result, "회원 탈퇴");  // 5. DB에 잘 반영됐는지 확인
     }
 
-    public MyPageResponse.MyPageInfo getMyPageInfo(String providerId, Long userId) {
+    public MyPageResponse.MyPageInfo getMyPageInfo(String providerId, Long userId, Long roomId) throws NotFoundUserException, DatabaseOperationException {
         User user = authService.findUser(providerId);           // 1. 사용자 찾기
         authService.validateUserWithdrawal(user);               // 2. 탈퇴한 유저인지 확인
         authService.validateResourceOwnership(user, userId);    // 3. 본인 확인
 
-        // TODO: 풀이기록 및 유저 정보 가져오기
-        return null;
+        // 4. 만족도 조사를 다 했는지 확인
+        Report report = null;
+        boolean isFinishedReport = false;
+        if (roomId != null) {
+            report = reportMapper.getReport(roomId, userId);
+            isFinishedReport = (report != null);
+        }
+
+        MyPageResponse.UserInfo userInfo = mypageMapper.getMyPageUserInfo(userId);                      // 유저 정보 가져오기
+        userInfo.setFinishedReport(isFinishedReport);
+
+        List<MyPageResponse.AttemptedProblem> problems = mypageMapper.getAttempedProblems(userId);      // 시도한 카드에 대한 설명 가져오기
+        MyPageResponse.MyPageInfo response = MyPageResponse.MyPageInfo.builder().userInfo(userInfo).attemptedProblems(problems).build();
+        return response;
     }
 }

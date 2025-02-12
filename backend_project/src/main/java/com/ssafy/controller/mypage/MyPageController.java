@@ -37,10 +37,11 @@ public class MyPageController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "마이페이지 정보 조회", description = "마이페이지로 이동했을 때 보여지는 정보들")
+    @Operation(summary = "마이페이지 정보 조회")
     @GetMapping("{userId}")
-    public ResponseEntity<?> getMyPageInformations(@AuthenticationPrincipal String providerId, @PathVariable Long userId) {
-        MyPageResponse.MyPageInfo response = myPageService.getMyPageInfo(providerId, userId);
+    public ResponseEntity<?> getMyPageInformations(@AuthenticationPrincipal String providerId, @PathVariable Long userId,
+                                                   @RequestParam(value = "roomId", required = false) Long roomId) {
+        MyPageResponse.MyPageInfo response = myPageService.getMyPageInfo(providerId, userId, roomId);
         return ResponseEntity.ok(response);
     }
 }

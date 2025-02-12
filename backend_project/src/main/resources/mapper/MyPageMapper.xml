@@ -14,4 +14,28 @@
         SET is_deleted = true
         WHERE user_id = #{userId}
     </update>
+
+    <!-- 유저 정보 조회 -->
+    <select id="getMyPageUserInfo" resultType="com.ssafy.controller.mypage.MyPageResponse$UserInfo">
+        SELECT email, name, nickname
+        FROM users
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- 시도한 문제 목록 조회 -->
+    <select id="getAttempedProblems" resultType="com.ssafy.controller.mypage.MyPageResponse$AttemptedProblem">
+        SELECT l.card_id as cardId, COALESCE(hp.heritage_name, sp.object_name) as name,
+            COALESCE(hp.image_url,
+                     CASE
+                         WHEN l.result = true THEN sp.color_icon_image_url
+                         ELSE sp.black_icon_image_url
+                    END
+            ) as imageUrl,
+            DATE_FORMAT(l.created_at, '%Y-%m-%d %H:%i:%s') as lastAttempedAt
+        FROM logs l JOIN cards c ON l.card_id = c.card_id
+                 LEFT JOIN heritage_problems hp ON c.card_id = hp.card_id AND c.code_id = 'M001'
+                 LEFT JOIN story_problems sp ON c.card_id = sp.card_id AND c.code_id = 'M002'
+        WHERE l.user_id = #{userId}
+        ORDER BY l.created_at DESC
+    </select>
 </mapper>
