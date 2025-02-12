@@ -11,6 +11,8 @@ import androidx.navigation.fragment.findNavController
 import com.ssafy.mbg.R
 import com.ssafy.mbg.databinding.FragmentSatisfactionBinding
 import com.ssafy.mbg.di.UserPreferences
+import com.ssafy.mbg.ui.home.HomeViewModel
+import com.ssafy.mbg.ui.main.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -20,6 +22,7 @@ class SatisfactionFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: SatisfactionViewModel by viewModels()
+    private val homeViewModel : HomeViewModel by viewModels()
 
     @Inject
     lateinit var userPreferences: UserPreferences
@@ -90,10 +93,10 @@ class SatisfactionFragment : Fragment() {
             val freeAnswer = binding.freeAnswer.text.toString()
 
             val userId = userPreferences.userId
-//            val roomId = userPreferences.roomId
-            val roomId = 1L
+            val roomId = userPreferences.roomId
+//            val roomId = 1L
 
-            if (userId == null) {
+            if (userId == null || roomId == null) {
                 Toast.makeText(context, "사용자 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -112,6 +115,8 @@ class SatisfactionFragment : Fragment() {
                 answer4 = freeAnswer
             )
         }
+
+        homeViewModel.clearGroup()
     }
 
     override fun onDestroyView() {
