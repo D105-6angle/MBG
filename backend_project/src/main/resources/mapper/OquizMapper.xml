@@ -5,15 +5,13 @@
         <result property="content" column="content"/>
         <result property="initial" column="initial"/>
         <result property="blackIconUrl" column="black_icon_image_url"/>
-        <result property="colorIconUrl" column="color_icon_image_url"/>
     </resultMap>
 
     <select id="getRandomQuizByMissionId" parameterType="Long" resultMap="quizResultMap">
         SELECT
             qt.content,
             qt.initial,
-            sp.black_icon_image_url,
-            sp.color_icon_image_url
+            sp.black_icon_image_url
         FROM mission_positions mp
                  INNER JOIN cards c ON mp.card_id = c.card_id
                  INNER JOIN story_problems sp ON c.card_id = sp.card_id
@@ -22,5 +20,4 @@
         ORDER BY RAND()
             LIMIT 1
     </select>
-
 </mapper>

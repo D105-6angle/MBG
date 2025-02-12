@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class QuizResponse {
     private String content;
-    private String inital;
+    private String initial;
     private String blackIconUrl;
 }

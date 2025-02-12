@@ -1,10 +1,10 @@
 package com.ssafy.model.service.Oquiz;
 
 import com.ssafy.controller.Oquiz.QuizResponse;
+import com.ssafy.exception.Oquiz.NotFoundException;
 import com.ssafy.model.mapper.Oquiz.OquizMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.webjars.NotFoundException;
 
 @Service
 @RequiredArgsConstructor
