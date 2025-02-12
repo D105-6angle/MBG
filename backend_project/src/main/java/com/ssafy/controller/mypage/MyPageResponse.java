@@ -37,4 +37,13 @@ public class MyPageResponse {
         private String imageUrl;
         private String lastAttempedAt;
     }
+
+    @Getter
+    @NoArgsConstructor
+    public static class LogDetail {
+        private String cardName;
+        private String imageUrl;
+        private String description;
+        private String lastAttemptedAt;
+    }
 }
