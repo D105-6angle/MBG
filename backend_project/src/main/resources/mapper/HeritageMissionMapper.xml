@@ -4,7 +4,6 @@
 
 <mapper namespace="com.ssafy.model.mapper.mission.heritage.HeritageMissionMapper">
 
-    <!-- 컬럼과 필드를 매핑하는 resultMap -->
     <resultMap id="HeritageProblemResultMap" type="com.ssafy.model.entity.HeritageProblem">
         <id property="problemId" column="problem_id" />
         <result property="cardId" column="card_id" />
@@ -20,7 +19,7 @@
         <result property="answer" column="answer" />
     </resultMap>
 
-    <!-- 특정 미션 ID(missionId)에 해당하는 문화재 문제 조회 -->
+    <!-- 문화재 문제 조회 -->
     <select id="findByMissionId" resultMap="HeritageProblemResultMap">
         SELECT
             hp.problem_id,
@@ -40,5 +39,15 @@
         WHERE mp.mission_id = #{missionId}
             LIMIT 1
     </select>
+
+    <insert id="insertHeritageBook">
+        INSERT IGNORE INTO heritage_books (user_id, card_id, created_at)
+        VALUES (#{userId}, #{cardId}, NOW());
+    </insert>
+
+    <insert id="insertLog">
+        INSERT INTO logs (user_id, card_id, result, created_at)
+        VALUES (#{userId}, #{cardId}, #{result}, NOW());
+    </insert>
 
 </mapper>
