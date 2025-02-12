@@ -4,23 +4,39 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
-import com.ssafy.mbg.R
-import com.ssafy.mbg.databinding.FragmentInviteCodeBinding
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.ssafy.mbg.R
+import com.ssafy.mbg.adapter.RoomAdapter
+import com.ssafy.mbg.databinding.FragmentInviteCodeBinding
+import com.ssafy.mbg.di.UserPreferences
+import com.ssafy.mbg.data.home.dao.JoinRequest
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class InviteCodeFragment : DialogFragment() {
 
     private var _binding: FragmentInviteCodeBinding? = null
     private val binding get() = _binding!!
 
+    private val viewModel: HomeViewModel by viewModels()
+    
+    @Inject
+    lateinit var userPreferences: UserPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("InviteCodeFragment", "onCreate called")
         setStyle(STYLE_NO_TITLE, R.style.TransparentDialog)  // TransparentDialog 스타일 사용
     }
 
@@ -29,6 +45,7 @@ class InviteCodeFragment : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.d("InviteCodeFragment", "onCreateView called")
         _binding = FragmentInviteCodeBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -44,11 +61,43 @@ class InviteCodeFragment : DialogFragment() {
         }
 
         binding.submitButton.setOnClickListener {
-            val code = binding.inviteCodeInput.text.toString()
-            if (code.isNotEmpty()) {
-                dismiss()
-                findNavController().navigate(R.id.action_homeFragment_to_roomListFragment)
+            val inviteCode = binding.inviteCodeInput.text.toString()
+
+            if (inviteCode.isNotEmpty()) {
+                viewModel.joinRoom(JoinRequest(inviteCode))
             }
+        }
+
+        // 응답 관찰
+        viewModel.location.observe(viewLifecycleOwner) { location ->
+            location?.let {
+                userPreferences.location = it
+            }
+        }
+
+        viewModel.roomId.observe(viewLifecycleOwner) { roomId ->
+            if (roomId != 0L) {
+                userPreferences.roomId = roomId
+                dismiss()
+                // HomeFragment로 돌아가서 팀 번호 표시
+                (parentFragment as? HomeFragment)?.updateTeamDisplay(roomId)
+            }
+        }
+
+        viewModel.error.observe(viewLifecycleOwner) { error ->
+            if (error.isNotEmpty()) {
+                Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        viewModel.numOfGroups.observe(viewLifecycleOwner) { numOfGroups ->
+            // numOfGroups가 0이어도 navigate 하도록 수정
+            dismiss()
+            (parentFragment as? HomeFragment)?.navigateToRoomList(
+                numOfGroups = numOfGroups,
+                roomId = viewModel.roomId.value ?: 0L,
+                location = viewModel.location.value ?: ""
+            )
         }
     }
 
