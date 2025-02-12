@@ -13,10 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -32,14 +29,8 @@ public class HeritageMissionService {
         }
 
         try {
-            Optional<HeritageProblem> quizOptional = heritageMissionMapper.findByMissionId(missionId);
-
-            if (!quizOptional.isPresent()) {
-//                log.debug("Mission ID {} not found or has no associated card", missionId);
-                throw new MissionNotFoundException("미션 ID: " + missionId + "에 해당하는 퀴즈를 찾을 수 없습니다.");
-            }
-
-            HeritageProblem quiz = quizOptional.get();
+            HeritageProblem quiz = heritageMissionMapper.findByMissionId(missionId)
+                    .orElseThrow(() -> new MissionNotFoundException("미션 ID: " + missionId + "에 해당하는 퀴즈를 찾을 수 없습니다."));
 
             if (quiz.getExample1() == null || quiz.getExample2() == null ||
                     quiz.getExample3() == null || quiz.getExample4() == null ||
@@ -47,12 +38,12 @@ public class HeritageMissionService {
                 throw new InvalidRequestException("퀴즈 데이터가 완전하지 않습니다.");
             }
 
-            List<String> choices = Arrays.asList(
+            List<String> choices = new ArrayList<>(Arrays.asList(
                     quiz.getExample1(),
                     quiz.getExample2(),
                     quiz.getExample3(),
                     quiz.getExample4()
-            );
+            ));
             Collections.shuffle(choices);
 
             return new HeritageMissionResponse(
@@ -65,7 +56,7 @@ public class HeritageMissionService {
                     choices,
                     quiz.getAnswer()
             );
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
 //            log.error("Error while fetching heritage mission for missionId: {}", missionId, e);
             throw new DatabaseOperationException("퀴즈 조회 중 오류가 발생했습니다: " + e.getMessage());
         }
