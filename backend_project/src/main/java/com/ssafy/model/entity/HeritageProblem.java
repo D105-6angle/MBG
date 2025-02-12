@@ -7,12 +7,13 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class HeritageProbelm {
+public class HeritageProblem {
     private Long problemId;
     private Long cardId;
     private String heritageName;
     private String imageUrl;
     private String description;
+    private String objectImageUrl;
     private String content;
     private Double latitude;
     private Double longitude;

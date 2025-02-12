@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.model.mapper.mission.heritage.HeritageMissionMapper">
+
+    <!-- 컬럼과 필드를 매핑하는 resultMap -->
+    <resultMap id="HeritageProblemResultMap" type="com.ssafy.model.entity.HeritageProblem">
+        <id property="problemId" column="problem_id" />
+        <result property="cardId" column="card_id" />
+        <result property="heritageName" column="heritage_name" />
+        <result property="imageUrl" column="image_url" />
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="content" column="content" />
+        <result property="objectImageUrl" column="object_image_url" />
+        <result property="example1" column="example1" />
+        <result property="example2" column="example2" />
+        <result property="example3" column="example3" />
+        <result property="example4" column="example4" />
+        <result property="answer" column="answer" />
+    </resultMap>
+
+    <!-- 특정 미션 ID(missionId)에 해당하는 문화재 문제 조회 -->
+    <select id="findByMissionId" resultMap="HeritageProblemResultMap">
+        SELECT
+            hp.problem_id,
+            hp.card_id,
+            hp.heritage_name,
+            hp.image_url,
+            CAST(hp.description AS CHAR) AS description,
+            hp.content,
+            hp.object_image_url,
+            hp.example1,
+            hp.example2,
+            hp.example3,
+            hp.example4,
+            hp.answer
+        FROM heritage_problems hp
+            INNER JOIN mission_positions mp ON hp.card_id = mp.card_id
+        WHERE mp.mission_id = #{missionId}
+        LIMIT 1
+
+    </select>
+
+</mapper>
