@@ -68,23 +68,23 @@ class HomeFragment : Fragment() {
 
 ////////////////////////////////////////////////////////////////////////////
          // 테스트용 clearGroup 버튼 추가
-         binding.root.post {
-             val clearButton = Button(requireContext()).apply {
-                 text = "Clear Group (Test)"
-                 setOnClickListener {
-                     viewModel.clearGroup()
-                 }
-                 layoutParams = ViewGroup.LayoutParams(
-                     ViewGroup.LayoutParams.WRAP_CONTENT,
-                     ViewGroup.LayoutParams.WRAP_CONTENT
-                 )
-             }
-            
-             // 버튼을 기존 레이아웃의 하단에 추가
-             if (binding.root is ViewGroup) {
-                 (binding.root as ViewGroup).addView(clearButton)
-             }
-         }
+//         binding.root.post {
+//             val clearButton = Button(requireContext()).apply {
+//                 text = "Clear Group (Test)"
+//                 setOnClickListener {
+//                     viewModel.clearGroup()
+//                 }
+//                 layoutParams = ViewGroup.LayoutParams(
+//                     ViewGroup.LayoutParams.WRAP_CONTENT,
+//                     ViewGroup.LayoutParams.WRAP_CONTENT
+//                 )
+//             }
+//
+//             // 버튼을 기존 레이아웃의 하단에 추가
+//             if (binding.root is ViewGroup) {
+//                 (binding.root as ViewGroup).addView(clearButton)
+//             }
+//         }
 
 ///////////////////////////////////////////////////////////////////////////////
     }

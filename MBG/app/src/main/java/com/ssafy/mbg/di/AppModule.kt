@@ -6,11 +6,14 @@ import com.ssafy.mbg.api.HomeApi
 import com.ssafy.mbg.data.auth.repository.AuthRepository
 import com.ssafy.mbg.data.auth.repository.AuthRepositoryImpl
 import com.ssafy.mbg.api.MyPageApi
+import com.ssafy.mbg.api.ReportApi
 import com.ssafy.mbg.api.ScheduleApi
 import com.ssafy.mbg.data.auth.repository.KakaoLoginRepositoryImpl
 import com.ssafy.mbg.data.auth.repository.SocialLoginRepository
 import com.ssafy.mbg.data.mypage.repository.MyPageRepository
 import com.ssafy.mbg.data.mypage.repository.MyPageRepositoryImpl
+import com.ssafy.mbg.data.report.repository.ReportRepository
+import com.ssafy.mbg.data.report.repository.ReportRepositoryImpl
 import com.ssafy.mbg.data.task.repository.ScheduleRepository
 import com.ssafy.mbg.di.UserPreferences
 import dagger.Module
@@ -91,5 +94,17 @@ object AppModule {
     @Singleton
     fun provideHomeApi(retrofit: Retrofit): HomeApi {
         return retrofit.create(HomeApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideReportApi(retrofit: Retrofit): ReportApi {
+        return retrofit.create(ReportApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideReportRepository(reportApi: ReportApi): ReportRepository {
+        return ReportRepositoryImpl(reportApi)
     }
 }

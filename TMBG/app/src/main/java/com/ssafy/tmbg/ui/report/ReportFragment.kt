@@ -40,13 +40,13 @@ class ReportFragment : Fragment() {
     private lateinit var attendanceAdapter: AttendanceAdapter
     private lateinit var commentAdapter: CommentAdapter
     private val reportViewModel: ReportViewModel by viewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     // PDF 생성에 필요한 데이터를 저장하는 변수들
     private lateinit var question1Data: List<SatisfactionData>
     private lateinit var question2Data: List<SatisfactionData>
     private lateinit var question3Data: List<SatisfactionData>
     private lateinit var roomName: String
-    private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,12 +59,19 @@ class ReportFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        mainViewModel.roomId.observe(viewLifecycleOwner) { roomId ->
-//            reportViewModel.setRoomId(roomId)
-//        }
+
+        // MainViewModel에서 roomId를 가져와서 보고서 조회
+        mainViewModel.roomId.value?.let { roomId ->
+            if (roomId != -1) {
+                reportViewModel.setRoomId(roomId)
+                reportViewModel.startAutoUpdate() // 자동 업데이트 시작
+            } else {
+                Toast.makeText(context, "방을 먼저 생성해주세요", Toast.LENGTH_SHORT).show()
+            }
+        }
+
         setupUI()
         observeViewModel()
-        reportViewModel.startAutoUpdate() // 자동 업데이트 시작
     }
 
     /**
@@ -267,9 +274,6 @@ class ReportFragment : Fragment() {
                 students.map { Attendance(it.name) }
             )
         }
-
-        // RecyclerView 설정 확인
-
     }
 
     /**
@@ -313,7 +317,7 @@ class ReportFragment : Fragment() {
      * @param students 학생 목록
      */
     private fun loadAttendanceData(students: List<Student>) {
-        binding.studentListRecyclerView.apply {  // attendanceRecyclerView 대신 studentListRecyclerView 사용
+        binding.studentListRecyclerView.apply {
             if (adapter == null) {
                 adapter = attendanceAdapter
                 layoutManager = LinearLayoutManager(context)
