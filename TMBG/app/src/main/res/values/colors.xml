@@ -9,15 +9,12 @@
     <color name="schedule_text_secondary">#757575</color>
     <color name="schedule_accent">#FF9800</color>
     <color name="schedule_divider">#EEEEEE</color>
-
-    <color name="primary">#1976D2</color>
-    <color name="primary_dark">#1565C0</color>
-    <color name="accent">#FFC107</color>
-    <color name="very_good">#4CAF50</color>
-    <color name="good">#8BC34A</color>
-    <color name="normal">#FFC107</color>
-    <color name="bad">#FF9800</color>
-    <color name="very_bad">#F44336</color>
-    <color name="text_primary">#212121</color>
-    <color name="text_secondary">#757575</color>
+    <!-- Team Colors -->
+    <color name="team_background">#F6DFC3</color>  <!-- 현재 사용 중인 배경색 -->
+    <color name="team_button_background">#F3D4B0</color>  <!-- 현재 사용 중인 버튼 배경색 -->
+    <color name="team_text_primary">#000000</color>  <!-- 현재 사용 중인 기본 텍스트 색상 -->
+    <color name="team_text_secondary">#666666</color>  <!-- 현재 사용 중인 보조 텍스트 색상 -->
+    <color name="team_leader_text">@android:color/holo_red_light</color>  <!-- 현재 사용 중인 팀장 텍스트 색상 -->
+    <color name="red">#FF0000</color>
+    <color name="gray">#808080</color>
 </resources>

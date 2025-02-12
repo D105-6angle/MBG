@@ -158,7 +158,25 @@
   <component name="ChangeListManager">
     <list default="true" id="db4e149f-3cf5-43c3-bfbb-fc103ac6d4b2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/report/repositoy/ReportRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/report/repositoy/ReportRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/adapter/TeamMemberAdapter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/adapter/TeamMemberAdapter.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/api/TeamApi.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/api/TeamApi.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/team/dao/GroupDetailResponse.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/team/dao/GroupDetailResponse.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/team/dao/Team.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/team/dao/Team.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/team/dao/TeamMember.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/team/dao/TeamPhoto.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/team/dao/TeamPlace.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/team/repository/TeamRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/data/team/repository/TeamRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/splash/SplashActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/splash/SplashActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/team/TeamDetailFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/team/TeamDetailFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/team/TeamFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/team/TeamFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/team/TeamViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/team/TeamViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/res/layout/fragment_team.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/res/layout/fragment_team.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/res/layout/fragment_team_detail.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/res/layout/fragment_team_detail.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/res/layout/item_team_member.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/res/layout/item_team_member.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/res/layout/item_team_place.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/res/layout/item_team_place.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/res/values/colors.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/res/values/colors.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/res/values/themes.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/res/values/themes.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -168,7 +186,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=Default, isTemplate=false, identifier=serial=192.168.100.218:36473;connection=9dbabf89)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=R3CN309CCPV)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -259,7 +277,7 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "feature/S12P11D106-87-report-fe",
+    "git-widget-placeholder": "feature/S12P11D106-80-team-front",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/SSAFY/Documents/S12P11D106/TMBG",
     "project.structure.last.edited": "Modules",

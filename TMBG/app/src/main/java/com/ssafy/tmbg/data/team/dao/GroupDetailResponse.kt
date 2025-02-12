@@ -12,7 +12,7 @@ data class GroupDetailResponse(
 data class MemberDto(
     val userId: Long,
     val nickname: String,
-    val isLeader: String,
+    val codeId: String,
 )
 
 data class VerificationPhotos(
