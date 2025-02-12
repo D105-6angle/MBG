@@ -5,6 +5,7 @@ import com.ssafy.tmbg.data.auth.request.RegisterRequest
 import com.ssafy.tmbg.data.auth.request.UpdateUserRequest
 import com.ssafy.tmbg.data.auth.response.LoginResponse
 import com.ssafy.tmbg.data.auth.response.RegisterResponse
+
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE

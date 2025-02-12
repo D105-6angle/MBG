@@ -6,6 +6,7 @@ import com.ssafy.mbg.data.home.dao.JoinRoomRequest
 import com.ssafy.mbg.data.home.dao.JoinRoomResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -25,4 +26,11 @@ interface HomeApi {
         @Body request: JoinGroupRequest
     ) : Response<JoinGroupResponse>
 
+    /** 조원 삭제 */
+    @DELETE("rooms/{roomId}/groups/{groupNo}/members/{userId}")
+    suspend fun deleteMember(
+        @Path("roomId") roomId: Int,
+        @Path("groupNo") groupNo: Int,
+        @Path("userId") userId: Long
+    ): Response<Unit>
 }

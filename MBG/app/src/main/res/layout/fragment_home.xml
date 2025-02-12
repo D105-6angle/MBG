@@ -85,12 +85,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!-- 팀 아이콘 (그룹에 속하지 않았을 때) -->
         <ImageButton
             android:id="@+id/teamIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="#FFE8D9"
-            android:src="@drawable/team" />
+            android:src="@drawable/team"
+            android:visibility="gone" />
+
+        <!-- 나가기 아이콘 (그룹에 속했을 때) -->
+        <ImageButton
+            android:id="@+id/exitIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#FFE8D9"
+            android:src="@drawable/ic_exit"
+            android:visibility="gone" />
 
     </FrameLayout>
 

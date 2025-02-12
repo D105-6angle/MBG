@@ -120,4 +120,31 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun deleteMember(roomId: Int, groupNo: Int) {
+        viewModelScope.launch {
+            try {
+                userPreferences.userId?.let { userId ->
+                    Log.d("HomeViewModel", "Attempting to delete member - userId: $userId, roomId: $roomId, groupNo: $groupNo")
+                    val response = repository.deleteMember(roomId, groupNo, userId)
+                    Log.d("HomeViewModel", "Delete member API response: ${response.code()}")
+                    
+                    if (response.isSuccessful) {
+                        clearGroup()
+                        _isJoinedGroup.value = false
+                        Log.d("HomeViewModel", "Member deleted successfully - userId: $userId, roomId: $roomId, groupNo: $groupNo")
+                    } else {
+                        _error.value = "멤버 삭제에 실패했습니다. (${response.code()})"
+                        Log.e("HomeViewModel", "Failed to delete member: ${response.code()}")
+                    }
+                } ?: run {
+                    _error.value = "사용자 정보를 찾을 수 없습니다."
+                    Log.e("HomeViewModel", "UserId is null in UserPreferences")
+                }
+            } catch (e: Exception) {
+                _error.value = "네트워크 오류: ${e.message}"
+                Log.e("HomeViewModel", "Error deleting member", e)
+            }
+        }
+    }
+
 }
