@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.ssafy.mbg.databinding.FragmentSignUpBinding
 import com.ssafy.mbg.ui.main.MainActivity
@@ -71,9 +72,12 @@ class SignupFragment : Fragment() {
                     is AuthState.Loading -> binding.progressBar.visibility = View.VISIBLE
                     // 회원가입 성공 시 메인 액티비티로 이동
                     is AuthState.NavigateToMain -> {
-                        startActivity(Intent(requireContext(), MainActivity::class.java).apply {
-                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        })
+                        findNavController().navigate(
+                            SignupFragmentDirections.actionSignupToOxQuiz()
+                        )
+//                        startActivity(Intent(requireContext(), MainActivity::class.java).apply {
+//                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//                        })
                     }
                     // 에러 메시지 Toast로 보여주기
                     is AuthState.Error -> {

@@ -15,6 +15,11 @@
           <theme>@style/Theme.MBG</theme>
         </config>
       </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/dialog_quiz_fragment.xml">
+        <config>
+          <theme>@style/Theme.MBG</theme>
+        </config>
+      </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_book.xml">
         <config>
           <theme>@style/Theme.MBG</theme>
@@ -60,7 +65,17 @@
           <theme>@style/Theme.MBG</theme>
         </config>
       </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_oxquiz.xml">
+        <config>
+          <theme>@style/Theme.MBG</theme>
+        </config>
+      </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_page.xml">
+        <config>
+          <theme>@style/Theme.MBG</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_quiz_question.xml">
         <config>
           <theme>@style/Theme.MBG</theme>
         </config>
@@ -167,7 +182,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=R3CN309CCPV)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=Default, isTemplate=false, identifier=serial=192.168.100.218:43269;connection=70eb3415)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -219,7 +234,10 @@
       <list>
         <option value="navigationResourceFile" />
         <option value="Kotlin Interface" />
+        <option value="resourceFile" />
         <option value="layoutResourceFile" />
+        <option value="Kotlin Data Class" />
+        <option value="Kotlin Object" />
         <option value="layoutResourceFile" />
         <option value="Kotlin Data Class" />
         <option value="resourceFile" />
@@ -282,11 +300,13 @@
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\SSAFY\Desktop\S12P11D106\MBG\app\src\main\res\drawable" />
+      <recent name="C:\Users\SSAFY\Desktop\S12P11D106\MBG\app\src\main\java\com\ssafy\mbg\ui\ox_quiz" />
       <recent name="C:\Users\SSAFY\Desktop\S12P11D106\MBG\app\src\main\assets" />
       <recent name="C:\Users\SSAFY\Documents\S12P11D106\MBG\app" />
       <recent name="C:\Users\SSAFY\Documents\S12P11D106\MBG\app\src\main\res\drawable" />
     </key>
     <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
+      <recent name="com.ssafy.mbg.ui" />
       <recent name="com.ssafy.mbg.data.auth.response" />
     </key>
   </component>

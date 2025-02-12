@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- 작은 원형 점 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M4,4 C5.1,4 6,4.9 6,6 C6,7.1 5.1,8 4,8 C2.9,8 2,7.1 2,6 C2,4.9 2.9,4 4,4" />
+
+    <!-- 더 작은 보조 점 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,12 C12.55,12 13,12.45 13,13 C13,13.55 12.55,14 12,14 C11.45,14 11,13.55 11,13 C11,12.45 11.45,12 12,12" />
+
+    <!-- 중간 크기 점 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M20,20 C21.1,20 22,20.9 22,22 C22,23.1 21.1,24 20,24 C18.9,24 18,23.1 18,22 C18,20.9 18.9,20 20,20" />
+
+</vector>
