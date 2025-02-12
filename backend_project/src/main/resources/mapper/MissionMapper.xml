@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.model.mapper.mission.MissionMapper">
+
     <select id="getMissionsByRoomId" parameterType="Long" resultMap="missionMap">
         SELECT DISTINCT
         mp.mission_id,
@@ -48,9 +49,95 @@
     </resultMap>
 
 
+    <resultMap id="MissionPositionMap" type="com.ssafy.model.entity.MissionPosition">
+        <result property="missionId" column="mission_id"/>
+        <result property="placeId" column="place_id"/>
+        <result property="codeId" column="code_id"/>
+        <result property="cardId" column="card_id"/>
+        <result property="positionName" column="position_name"/>
+        <result property="centerPoint" column="center_point"/>
+        <result property="edgePoints" column="edge_points"/>
+        <result property="isCorrect" column="is_correct"/>
+    </resultMap>
 
-
-
-
-
+    <select id="getMissionInfoByPlace" parameterType="com.ssafy.controller.mission.MissionRequest$MissionsByHeritagePlace"
+            resultMap="MissionPositionMap">
+        WITH leader_info AS (
+        <if test="roomId != null">
+            SELECT m1.room_id, m1.group_no, m2.user_id as leader_id
+            FROM memberships m1
+            JOIN memberships m2 ON m1.room_id = m2.room_id
+            AND m1.group_no = m2.group_no
+            AND m2.code_id = 'J001'
+            WHERE m1.user_id = #{userId}
+            AND m1.room_id = #{roomId}
+        </if>
+        <if test="roomId == null">
+            SELECT NULL as room_id, NULL as group_no, NULL as leader_id
+            WHERE 1=0
+        </if>
+        ),
+        today_missions AS (
+        SELECT tc.mission_id, tc.card_id
+        FROM today_cards tc
+        WHERE DATE(tc.created_at) = CURRENT_DATE
+        ),
+        completed_missions AS (
+        SELECT
+        l.card_id,
+        MAX(CASE WHEN l.result = true THEN true ELSE false END) as is_correct
+        FROM logs l
+        WHERE l.user_id = #{userId}
+        GROUP BY l.card_id
+        ),
+        completed_photos AS (
+        <if test="roomId != null">
+            SELECT p.mission_id,
+            MAX(CASE WHEN p.picture_url IS NOT NULL THEN true ELSE false END) as is_correct
+            FROM pictures p
+            JOIN leader_info li ON p.user_id = li.leader_id
+            AND p.room_id = li.room_id
+            GROUP BY p.mission_id
+        </if>
+        <if test="roomId == null">
+            SELECT NULL as mission_id, false as is_correct
+            WHERE 1=0
+        </if>
+        )
+        SELECT DISTINCT
+        mp.mission_id,
+        mp.place_id,
+        mp.code_id,
+        CASE
+        WHEN mp.code_id = 'M002' THEN tm.card_id
+        ELSE mp.card_id
+        END as card_id,
+        mp.position_name,
+        ST_AsText(mp.center_point) as center_point,
+        ST_AsText(mp.edge_points) as edge_points,
+        CASE
+        WHEN mp.code_id = 'M003' THEN
+        <choose>
+            <when test="roomId != null">COALESCE(cp.is_correct, false)</when>
+            <otherwise>false</otherwise>
+        </choose>
+        ELSE COALESCE(cm.is_correct, false)
+        END as is_correct
+        FROM mission_positions mp
+        JOIN heritage_places hp ON mp.place_id = hp.place_id
+        LEFT JOIN today_missions tm ON mp.code_id = 'M002' AND mp.mission_id = tm.mission_id
+        LEFT JOIN completed_missions cm ON
+        CASE
+        WHEN mp.code_id = 'M002' THEN tm.card_id = cm.card_id
+        ELSE mp.card_id = cm.card_id
+        END
+        LEFT JOIN completed_photos cp ON mp.mission_id = cp.mission_id
+        WHERE hp.place_name = #{placeName}
+        AND (
+        mp.code_id = 'M001'
+        OR (mp.code_id = 'M002' AND tm.mission_id IS NOT NULL)
+        OR (mp.code_id = 'M003' AND #{roomId} IS NOT NULL)
+        )
+        ORDER BY mp.mission_id;
+    </select>
 </mapper>

@@ -1,18 +1,21 @@
 package com.ssafy.controller.mission;
 
+
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
 
-@Getter
-@Builder
 public class MissionResponse {
-    private Long missionId;
-    private String type;
-    private double latitude;
-    private double longitude;
-    private String regionName;
-    private String storyContent;
-    private String heritageContent;
-    private String heritageAnswer;
+
+    @Getter
+    @Builder
+    public static class MissionInfo {
+        private Long missionId;
+        private String positionName;
+        private String codeId;
+        private Double[] centerPoint;
+        private List<Double[]> edgePoints;
+        private boolean isCorrect;
+    }
 }

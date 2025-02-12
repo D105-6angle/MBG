@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.model.mapper.todaycard.TodayCardMapper">
+    <!-- 지정된 시간에 매일 카드 삽입 -->
+    <insert id="insertTodayCards" parameterType="java.util.List">
+        INSERT INTO today_cards (card_id, mission_id, created_at)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.cardId}, #{item.missionId}, #{item.createdAt})
+        </foreach>
+    </insert>
+</mapper>
