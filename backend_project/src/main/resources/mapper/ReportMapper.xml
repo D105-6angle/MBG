@@ -3,7 +3,6 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.ssafy.model.mapper.report.ReportMapper">
-
     <select id="findRoomName" resultType="string">
         SELECT room_name
         FROM rooms
@@ -29,4 +28,25 @@
         FROM reports
         WHERE room_id = #{roomId}
     </select>
+
+    <insert id="insertReport" parameterType="com.ssafy.model.entity.Report">
+        INSERT INTO reports (room_id, user_id, no1, no2, no3, no4)
+        VALUES (#{roomId}, #{userId}, #{no1}, #{no2}, #{no3}, #{no4})
+    </insert>
+
+    <select id="getReport" resultType="com.ssafy.model.entity.Report">
+        SELECT *
+        FROM reports
+        WHERE room_id = #{roomId}
+        AND user_id = #{userId}
+    </select>
+
+    <select id="existsRoom" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM rooms
+            WHERE room_id = #{roomId}
+        )
+    </select>
+
 </mapper>

@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -33,12 +34,18 @@ public class ReportController {
         return ResponseEntity.ok(reportService.getReportsByRoomId(roomId));
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Map<String, Object>> handleRuntimeException(RuntimeException e) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", HttpStatus.NOT_FOUND.value());
-        response.put("message", "존재하지 않는 방입니다.");
-        response.put("error", "Not Found");
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+//    @ExceptionHandler(RuntimeException.class)
+//    public ResponseEntity<Map<String, Object>> handleRuntimeException(RuntimeException e) {
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("status", HttpStatus.NOT_FOUND.value());
+//        response.put("message", "존재하지 않는 방입니다.");
+//        response.put("error", "Not Found");
+//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+//    }
+    @Operation(summary = "만족도 조사 설문 제출", description = "학생 개별 만족도 조사 설문 제출")
+    @PostMapping
+    public ResponseEntity<Void> submitReport(@Valid @RequestBody ReportRequest request) {
+        reportService.submitReport(request);
+        return ResponseEntity.ok().build();
     }
 }
