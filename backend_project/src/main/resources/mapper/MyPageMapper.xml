@@ -38,4 +38,27 @@
         WHERE l.user_id = #{userId}
         ORDER BY l.created_at DESC
     </select>
+
+    <!-- 풀이기록 상세 조회 -->
+    <select id="getLogDetail" resultType="com.ssafy.controller.mypage.MyPageResponse$LogDetail">
+        SELECT COALESCE(hp.heritage_name, sp.object_name) as cardName,
+            COALESCE(hp.image_url,
+                     CASE
+                         WHEN l.result = true THEN sp.color_icon_image_url
+                         ELSE sp.black_icon_image_url
+                     END
+            ) as imageUrl,
+            COALESCE(hp.description, sp.description) as description,
+            DATE_FORMAT(l.created_at, '%Y-%m-%d %H:%i:%s') as lastAttemptedAt
+        FROM cards c LEFT JOIN heritage_problems hp ON c.card_id = hp.card_id AND c.code_id = 'M001'
+        LEFT JOIN story_problems sp ON c.card_id = sp.card_id AND c.code_id = 'M002'
+        JOIN logs l ON c.card_id = l.card_id AND l.user_id = #{userId}
+        WHERE c.card_id = #{cardId}
+    </select>
+
+    <select id="getCard" parameterType="Long" resultType="com.ssafy.model.entity.Card">
+        SELECT card_id, code_id, name, image_url
+        FROM cards
+        WHERE card_id = #{cardId}
+    </select>
 </mapper>

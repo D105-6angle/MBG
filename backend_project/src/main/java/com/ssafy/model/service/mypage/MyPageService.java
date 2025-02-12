@@ -4,6 +4,8 @@ import com.ssafy.controller.mypage.MyPageResponse;
 import com.ssafy.exception.auth.NotFoundUserException;
 import com.ssafy.exception.auth.WithdrawnUserException;
 import com.ssafy.exception.common.DatabaseOperationException;
+import com.ssafy.exception.mypage.NotFoundCardException;
+import com.ssafy.model.entity.Card;
 import com.ssafy.model.entity.Report;
 import com.ssafy.model.entity.User;
 import com.ssafy.model.mapper.auth.AuthMapper;
@@ -60,6 +62,20 @@ public class MyPageService {
 
         List<MyPageResponse.AttemptedProblem> problems = mypageMapper.getAttempedProblems(userId);      // 시도한 카드에 대한 설명 가져오기
         MyPageResponse.MyPageInfo response = MyPageResponse.MyPageInfo.builder().userInfo(userInfo).attemptedProblems(problems).build();
+        return response;
+    }
+
+    // 풀이기록 상세 조회
+    public MyPageResponse.LogDetail getLogDetail(Long userId, Long cardId) throws NotFoundCardException {
+        Card card = mypageMapper.getCard(cardId);
+        if (card == null) {
+            throw new NotFoundCardException("카드를 찾을 수 없습니다.");
+        }
+
+        MyPageResponse.LogDetail response = mypageMapper.getLogDetail(userId, cardId);
+        if (response == null) {
+            throw new NotFoundCardException("풀이기록에 없는 카드입니다.");
+        }
         return response;
     }
 }

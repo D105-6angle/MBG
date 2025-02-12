@@ -9,6 +9,7 @@ import com.ssafy.exception.common.DatabaseOperationException;
 import com.ssafy.model.service.mypage.MyPageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +43,13 @@ public class MyPageController {
     public ResponseEntity<?> getMyPageInformations(@AuthenticationPrincipal String providerId, @PathVariable Long userId,
                                                    @RequestParam(value = "roomId", required = false) Long roomId) {
         MyPageResponse.MyPageInfo response = myPageService.getMyPageInfo(providerId, userId, roomId);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "풀이기록 상세 조회")
+    @GetMapping("/{userId}/card/{cardId}")
+    public ResponseEntity<?> getLogDetail(@PathVariable Long userId, @PathVariable Long cardId) {
+        MyPageResponse.LogDetail response = myPageService.getLogDetail(userId, cardId);
         return ResponseEntity.ok(response);
     }
 }
