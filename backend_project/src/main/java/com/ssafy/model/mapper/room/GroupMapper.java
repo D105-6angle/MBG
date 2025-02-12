@@ -40,22 +40,5 @@ public interface GroupMapper {
     // 조 선택 시 Membership 생성
     int insertMembership(@Param("membership") com.ssafy.model.entity.Membership membership);
 
-    // 리더 찾기 / 새 리더 후보 찾기 / 코드 업데이트
-    Long findLeaderInGroup(@Param("roomId") Long roomId,
-                           @Param("groupNo") int groupNo);
-
-    Long findNewLeaderCandidate(@Param("roomId") Long roomId,
-                                @Param("groupNo") int groupNo,
-                                @Param("excludeUserId") Long excludeUserId);
-
-    int updateMemberToLeader(@Param("roomId") Long roomId,
-                             @Param("groupNo") int groupNo,
-                             @Param("userId") Long userId);
-
-    int updateMemberToMember(@Param("roomId") Long roomId,
-                             @Param("groupNo") int groupNo,
-                             @Param("userId") Long userId);
-
-
 
 }

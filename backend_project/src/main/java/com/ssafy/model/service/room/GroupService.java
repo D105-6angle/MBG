@@ -125,24 +125,4 @@ public class GroupService {
         return membership;
     }
 
-
-
-    // 사진 제출 후 조장 재배정
-//    public void reassignLeader(long roomId, int groupNo, long userId) {
-//        Long currentLeader = groupMapper.findLeaderInGroup(roomId, groupNo);
-//        if (currentLeader == null) {
-//            return;
-//        }
-//        if (!currentLeader.equals(userId)) {
-//            return;
-//        }
-//        groupMapper.updateMemberToMember(roomId, groupNo, userId);
-//        Long newLeader = groupMapper.findNewLeaderCandidate(roomId, groupNo, userId);
-//        if (newLeader != null) {
-//            groupMapper.updateMemberToLeader(roomId, groupNo, newLeader);
-//        }
-//    }
-
-    // joinGroup(long roomId, int groupNo, long userId)
-
 }

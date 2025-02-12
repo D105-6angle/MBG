@@ -98,32 +98,4 @@
           AND code_id = 'J001'
     </select>
 
-    <!-- 새 리더 후보 찾기 -->
-    <select id="findNewLeaderCandidate" parameterType="map" resultType="long">
-        SELECT user_id
-        FROM memberships
-        WHERE room_id = #{roomId}
-          AND group_no = #{groupNo}
-          AND user_id != #{excludeUserId}
-        ORDER BY user_id DESC
-            LIMIT 1
-    </select>
-
-    <!-- 해당 멤버를 리더(J001)로 업데이트 -->
-    <update id="updateMemberToLeader" parameterType="map">
-        UPDATE memberships
-        SET code_id = 'J001'
-        WHERE room_id = #{roomId}
-          AND group_no = #{groupNo}
-          AND user_id = #{userId}
-    </update>
-
-    <!-- 해당 멤버를 일반(J002)으로 업데이트 -->
-    <update id="updateMemberToMember" parameterType="map">
-        UPDATE memberships
-        SET code_id = 'J002'
-        WHERE room_id = #{roomId}
-          AND group_no = #{groupNo}
-          AND user_id = #{userId}
-    </update>
 </mapper>
