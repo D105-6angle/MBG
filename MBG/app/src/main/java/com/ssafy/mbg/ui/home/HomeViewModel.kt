@@ -97,7 +97,7 @@ class HomeViewModel @Inject constructor(
     fun clearGroup() {
         viewModelScope.launch {
             userPreferences.apply {
-                roomId = 0L
+                roomId = null
                 location = ""
                 groupNo = 0
                 codeId = ""

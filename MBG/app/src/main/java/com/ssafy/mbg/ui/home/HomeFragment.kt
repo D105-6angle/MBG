@@ -62,7 +62,9 @@ class HomeFragment : Fragment() {
         lifecycleScope.launch {
             userPreferences.locationFlow.collect { location ->
                 Log.d("HomeFragment", "Location flow updated: $location")
-                updateLocationUI(location)
+                _binding?.let {
+                    updateLocationUI(location)
+                }
             }
         }
 
@@ -131,9 +133,13 @@ class HomeFragment : Fragment() {
             }
             
             // 팀 번호와 역할 표시
-            teamNumberText.apply {
-                text = "${userPreferences.groupNo}조 ${if (userPreferences.codeId == "J001") "조장" else "조원"}"
-                visibility = View.VISIBLE
+            if (userPreferences.groupNo == 0) {
+                teamNumberText.visibility = View.GONE
+            } else {
+                teamNumberText.apply {
+                    text = "${userPreferences.groupNo}조 ${if (userPreferences.codeId == "J001") "조장" else "조원"}"
+                    visibility = View.VISIBLE
+                }
             }
 
             // 캐릭터 GIF 표시
@@ -185,12 +191,14 @@ class HomeFragment : Fragment() {
     }
 
     private fun updateLocationUI(location: String) {
-        Log.d("HomeFragment", "Updating UI with location: $location")
-        binding.locationText.apply {
-            text = if (location.isNotEmpty()) {
-                location
-            } else {
-                "지역을 선택해 주세요"
+        // binding null 체크 추가
+        _binding?.let { binding ->
+            binding.locationText.apply {
+                text = if (location.isNotEmpty()) {
+                    location
+                } else {
+                    "지역을 선택해 주세요"
+                }
             }
         }
     }

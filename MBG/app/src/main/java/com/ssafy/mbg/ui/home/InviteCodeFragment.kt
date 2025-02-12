@@ -99,7 +99,7 @@ class InviteCodeFragment : DialogFragment() {
 
         // 방 ID 응답 처리
         viewModel.roomId.observe(viewLifecycleOwner) { roomId ->
-            if (roomId != 0L) {
+            if (roomId > 0L) {
                 userPreferences.roomId = roomId  // 방 ID 저장만 하고 그룹 정보는 설정하지 않음
                 
                 // location과 numOfGroups 값이 모두 있을 때 조 선택 화면으로 이동
