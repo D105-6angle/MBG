@@ -492,6 +492,17 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     /**
      * userMarker와 targetPoint를 잇는 polyline의 끝에 사용할 화살표 아이콘을 BitmapDescriptor로 반환
      */
+//    private fun getArrowBitmap(): BitmapDescriptor {
+//        // 시스템 기본 화살표 아이콘 사용 (필요에 따라 커스텀 drawable로 교체)
+//        val drawable: Drawable = ContextCompat.getDrawable(requireContext(), android.R.drawable.arrow_up_float)
+//            ?: throw IllegalArgumentException("Arrow drawable not found")
+//        val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+//        val canvas = Canvas(bitmap)
+//        drawable.setBounds(0, 0, canvas.width, canvas.height)
+//        drawable.draw(canvas)
+//        return BitmapDescriptorFactory.fromBitmap(bitmap)
+//    }
+
     private fun getArrowBitmap(): BitmapDescriptor {
         // 시스템 기본 화살표 아이콘 사용 (필요에 따라 커스텀 drawable로 교체)
         val drawable: Drawable = ContextCompat.getDrawable(requireContext(), android.R.drawable.arrow_up_float)
