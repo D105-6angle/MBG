@@ -62,7 +62,6 @@ class InviteCodeFragment : DialogFragment() {
 
         binding.submitButton.setOnClickListener {
             val inviteCode = binding.inviteCodeInput.text.toString()
-
             if (inviteCode.isNotEmpty()) {
                 viewModel.joinRoom(JoinRequest(inviteCode))
             }
@@ -71,7 +70,9 @@ class InviteCodeFragment : DialogFragment() {
         // 응답 관찰
         viewModel.location.observe(viewLifecycleOwner) { location ->
             location?.let {
-                userPreferences.location = it
+                if (it.isNotEmpty()) {  // 빈 문자열이 아닐 때만 처리
+                    userPreferences.location = it
+                }
             }
         }
 
@@ -91,13 +92,14 @@ class InviteCodeFragment : DialogFragment() {
         }
 
         viewModel.numOfGroups.observe(viewLifecycleOwner) { numOfGroups ->
-            // numOfGroups가 0이어도 navigate 하도록 수정
-            dismiss()
-            (parentFragment as? HomeFragment)?.navigateToRoomList(
-                numOfGroups = numOfGroups,
-                roomId = viewModel.roomId.value ?: 0L,
-                location = viewModel.location.value ?: ""
-            )
+            if (numOfGroups > 0L) {  // 0보다 클 때만 처리
+                dismiss()
+                (parentFragment as? HomeFragment)?.navigateToRoomList(
+                    numOfGroups = numOfGroups,
+                    roomId = viewModel.roomId.value ?: 0L,
+                    location = viewModel.location.value ?: ""
+                )
+            }
         }
     }
 

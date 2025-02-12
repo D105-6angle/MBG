@@ -157,18 +157,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="db4e149f-3cf5-43c3-bfbb-fc103ac6d4b2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/api/HomeApi.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/data/home/dao/JoinRequest.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/data/home/dao/JoinResponse.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/data/home/repository/HomeRepository.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/ui/home/HomeViewModel.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/MbgApplication.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/MbgApplication.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/di/AppModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/di/AppModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/di/NetworkModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/di/NetworkModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/di/UserPreferences.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/di/UserPreferences.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/ui/home/HomeFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/ui/home/HomeFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/ui/home/InviteCodeFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/ui/home/InviteCodeFragment.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
