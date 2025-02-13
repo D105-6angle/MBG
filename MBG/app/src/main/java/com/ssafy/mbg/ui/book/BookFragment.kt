@@ -5,20 +5,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.snackbar.Snackbar
 import com.ssafy.mbg.R
 import com.ssafy.mbg.adapter.BookPagerAdapter
 import com.ssafy.mbg.databinding.FragmentBookBinding
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collect
 
-/**
- * 도감 화면의 메인 Fragment
- *
- * ViewPager2를 사용하여 문화재/스토리 탭을 구현합니다.
- * 각 탭은 별도의 BookListFragment로 구성됩니다.
- */
+@AndroidEntryPoint
 class BookFragment : Fragment() {
     private var _binding: FragmentBookBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: BookViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,32 +36,68 @@ class BookFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupViewPager()
         setupTabButtons()
+        observeState()
+        fetchInitialData()
     }
 
-    /**
-     * ViewPager2 초기 설정
-     */
     private fun setupViewPager() {
         binding.viewPager.apply {
-            adapter = BookPagerAdapter(this@BookFragment)
-            // 양쪽 페이지를 모두 유지
+            adapter = BookPagerAdapter(this@BookFragment).apply {
+                // 초기 데이터 설정
+                updateData(emptyList())
+            }
             offscreenPageLimit = 2
 
-            // 페이지 변경 리스너 추가
             registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
                     updateTabSelection(position == 0)
-                    // 현재 표시된 Fragment에 탭 변경 알림
-                    (adapter as? BookPagerAdapter)?.notifyTabChanged(position)
                 }
             })
         }
     }
 
-    /**
-     * 탭 버튼 클릭 이벤트 설정
-     */
+    private fun fetchInitialData() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.getUserId()?.let { userId ->
+                viewModel.getBook(userId)
+            }
+        }
+    }
+
+    private fun observeState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.bookState.collect { state ->
+                when (state) {
+                    is BookState.Loading -> {
+                        binding.progressBar.visibility = View.VISIBLE
+                        binding.viewPager.visibility = View.GONE
+                    }
+                    is BookState.Success -> {
+                        binding.progressBar.visibility = View.GONE
+                        binding.viewPager.visibility = View.VISIBLE
+                        // ViewPager의 현재 페이지에 데이터 전달
+                        (binding.viewPager.adapter as? BookPagerAdapter)?.updateData(state.bookResponse.cards)
+                    }
+                    is BookState.Error -> {
+                        binding.progressBar.visibility = View.GONE
+                        binding.viewPager.visibility = View.VISIBLE
+                        Snackbar.make(
+                            binding.root,
+                            state.message,
+                            Snackbar.LENGTH_LONG
+                        ).show()
+                    }
+                    BookState.Initial -> {
+                        binding.viewPager.visibility = View.VISIBLE
+                    }
+                }
+            }
+        }
+    }
+
+
+
     private fun setupTabButtons() {
         binding.culturalTab.setOnClickListener {
             updateTabSelection(true)
@@ -71,11 +110,6 @@ class BookFragment : Fragment() {
         }
     }
 
-    /**
-     * 탭 선택 상태 업데이트
-     *
-     * @param isCulturalTab 문화재 탭 선택 여부
-     */
     private fun updateTabSelection(isCulturalTab: Boolean) {
         binding.culturalTab.setBackgroundResource(
             if (isCulturalTab) R.drawable.button_selected else R.drawable.button_unselected
