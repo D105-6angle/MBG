@@ -17,8 +17,7 @@ import com.ssafy.mbg.data.mypage.repository.MyPageRepository
 import com.ssafy.mbg.data.mypage.repository.MyPageRepositoryImpl
 import com.ssafy.mbg.data.report.repository.ReportRepository
 import com.ssafy.mbg.data.report.repository.ReportRepositoryImpl
-import com.ssafy.mbg.data.task.repository.ScheduleRepository
-import com.ssafy.mbg.di.UserPreferences
+import com.ssafy.mbg.data.task.repository.TaskRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -86,8 +85,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideScheduleRepository(scheduleApi : ScheduleApi) : ScheduleRepository {
-        return ScheduleRepository(scheduleApi)
+    fun provideScheduleRepository(scheduleApi : ScheduleApi) : TaskRepositoryImpl {
+        return TaskRepositoryImpl(scheduleApi)
     }
 //    @Provides
 //    @Singleton

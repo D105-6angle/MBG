@@ -19,151 +19,79 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class TaskFragment : Fragment() {
-    // ViewBinding을 위한 변수 선언
     private var _binding: FragmentTaskBinding? = null
-    private val binding get() = _binding!! // null이 아님을 보장하는 getter
+    private val binding get() = _binding!!
 
-    private var roomId: Long = -1L
-    // 팀 멤버와 일정 목록을 표시할 어댑터 선언
-    private val teamMemberAdapter = TeamMemberAdapter()
-    private val scheduleAdapter = ScheduleAdapter()
+    private val teamMemberAdapter by lazy { TeamMemberAdapter() }
+    private val scheduleAdapter by lazy { ScheduleAdapter() }
 
     @Inject
     lateinit var userPreferences: UserPreferences
 
-    private val viewModel : TaskViewModel by viewModels()
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        // roomId 초기화 시 예외 처리
-
-        try {
-            arguments?.let {
-               roomId = userPreferences.roomId ?: -1L
-            }
-        } catch (e: Exception) {
-            Log.e("TaskFragment", "Failed to get roomId from arguments: ${e.message}")
-            roomId = -1L
-        }
-    }
+    private val viewModel: TaskViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return try {
-            _binding = FragmentTaskBinding.inflate(inflater, container, false)
-            binding.root
-        } catch (e: Exception) {
-            Log.e("TaskFragment", "Failed to inflate view: ${e.message}")
-            View(requireContext())
-        }
+        _binding = FragmentTaskBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        try {
-            setupRecyclerViews()
-            setupObservers()
-
-            if (roomId != -1L) {
-                viewModel.getSchedules(roomId)
-            } else {
-                Toast.makeText(context, "유효하지 않은 방 ID입니다.", Toast.LENGTH_SHORT).show()
-            }
-
-            loadData()
-        } catch (e: Exception) {
-            Log.e("TaskFragment", "Error in onViewCreated: ${e.message}")
-            Toast.makeText(context, "화면 초기화 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
-        }
+        setupRecyclerViews()
+        setupObservers()
+        viewModel.getSchedules()
     }
 
     private fun setupRecyclerViews() {
-        try {
-            binding.teamMemberRecyclerView.apply {
-                adapter = teamMemberAdapter
-                layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            }
+        binding.teamMemberRecyclerView.apply {
+            adapter = teamMemberAdapter
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        }
 
-            binding.scheduleList.apply {
-                adapter = scheduleAdapter
-                layoutManager = LinearLayoutManager(context)
-            }
-        } catch (e: Exception) {
-            Log.e("TaskFragment", "Error setting up RecyclerViews: ${e.message}")
-            Toast.makeText(context, "목록 초기화 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
+        binding.scheduleList.apply {
+            adapter = scheduleAdapter
+            layoutManager = LinearLayoutManager(context)
         }
     }
 
     private fun setupObservers() {
-        try {
-            viewModel.state.observe(viewLifecycleOwner) { state ->
-                try {
-                    when(state) {
-                        is ScheduleState.Loading -> {
-                            binding.progressBar?.isVisible = true
-                        }
-                        is ScheduleState.Success -> {
-                            binding.progressBar?.isVisible = false
-                            scheduleAdapter.updateSchedules(state.schedules)  // 수정된 부분
-                        }
-                        is ScheduleState.Error -> {
-                            binding.progressBar?.isVisible = false
-                            Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
-                        }
-                        else -> {}
-                    }
-                } catch (e: Exception) {
-                    Log.e("TaskFragment", "Error processing state update: ${e.message}")
+        // 상태 관찰
+        viewModel.state.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is ScheduleState.Loading -> {
+                    binding.progressBar?.isVisible = true
                 }
+                is ScheduleState.Success -> {
+                    binding.progressBar?.isVisible = false
+                    scheduleAdapter.updateSchedules(state.schedules)
+                }
+                is ScheduleState.Error -> {
+                    binding.progressBar?.isVisible = false
+                    Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                    scheduleAdapter.updateSchedules(emptyList())
+                }
+                else -> {}
             }
-        } catch (e: Exception) {
-            Log.e("TaskFragment", "Error setting up observers: ${e.message}")
+        }
+
+        // 팀 멤버 관찰
+        viewModel.teamMembers.observe(viewLifecycleOwner) { members ->
+            Log.d("TaskFragment", "TeamMembers observed: ${members.size}")
+            teamMemberAdapter.updateMembers(members)
         }
     }
 
-    private fun loadData() {
-        try {
-            val members = listOf("최대규", "손은주", "제갈민", "이용재", "박성민", "김병년")
-            teamMemberAdapter.updateMembers(members)
-        } catch (e: Exception) {
-            Log.e("TaskFragment", "Error loading team members: ${e.message}")
-            Toast.makeText(context, "팀원 목록을 불러오는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
-        }
+    override fun onResume() {
+        super.onResume()
+        viewModel.getSchedules()
     }
 
     override fun onDestroyView() {
-        try {
-            super.onDestroyView()
-            _binding = null
-        } catch (e: Exception) {
-            Log.e("TaskFragment", "Error in onDestroyView: ${e.message}")
-        }
-    }
-
-    // Lifecycle 관련 예외 처리 추가
-    override fun onResume() {
-        try {
-            super.onResume()
-            // 화면이 다시 보일 때 데이터 새로고침이 필요한 경우
-            if (roomId != -1L) {
-                viewModel.getSchedules(roomId)
-            }
-        } catch (e: Exception) {
-            Log.e("TaskFragment", "Error in onResume: ${e.message}")
-        }
-    }
-
-    override fun onPause() {
-        try {
-            super.onPause()
-            // 필요한 정리 작업
-        } catch (e: Exception) {
-            Log.e("TaskFragment", "Error in onPause: ${e.message}")
-        }
+        super.onDestroyView()
+        _binding = null
     }
 }
