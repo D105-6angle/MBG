@@ -33,14 +33,14 @@ public class QuizService {
     @Transactional
     public QuizResultResponse processQuizAnswer(Long userId, Long missionId, String userAnswer) {
         // 1. 퀴즈 정보 조회
-        OquizMapper quizMapper;
         QuizInfo quizInfo = oquizMapper.getQuizInfoByMissionId(missionId);
         if (quizInfo == null) {
             throw new RuntimeException("Invalid mission_id: " + missionId);
         }
 
-        // 2. 정답 체크 (초성 비교)
+        // 2. 정답 체크
         boolean isCorrect = userAnswer.equals(quizInfo.getAnswer());
+
         // 3. 로그 저장
         oquizMapper.insertQuizLog(userId, quizInfo.getCardId(), isCorrect);
 

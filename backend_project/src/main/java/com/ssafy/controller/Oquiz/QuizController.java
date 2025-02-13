@@ -42,5 +42,4 @@ public class QuizController {
         );
         return ResponseEntity.ok(result);
     }
-
 }
