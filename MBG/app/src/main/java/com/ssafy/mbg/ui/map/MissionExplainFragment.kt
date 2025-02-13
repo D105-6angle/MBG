@@ -9,11 +9,11 @@ import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 import com.ssafy.mbg.R
 
-class RandomQuizFragment : DialogFragment() {
+class MissionExplainFragment : DialogFragment() {
 
     companion object {
-        fun newInstance(codeId: String, positionName: String, placeName: String): RandomQuizFragment {
-            val fragment = RandomQuizFragment()
+        fun newInstance(codeId: String, positionName: String, placeName: String): MissionExplainFragment {
+            val fragment = MissionExplainFragment()
             val args = Bundle().apply {
                 putString("codeId", codeId)
                 putString("positionName", positionName)
@@ -27,6 +27,8 @@ class RandomQuizFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.RoundedCornerDialog)
+        // 이 옵션을 통해서 외부영역 터치 + 뒤로가기로 취소 안되게 함
+        isCancelable = false
     }
 
     override fun onCreateView(
@@ -34,7 +36,7 @@ class RandomQuizFragment : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_random_quiz, container, false)
+        val view = inflater.inflate(R.layout.fragment_mission_explain, container, false)
 
         val quizTitle: TextView = view.findViewById(R.id.quizTitle)
         val quizText: TextView = view.findViewById(R.id.quizText)
@@ -71,8 +73,31 @@ class RandomQuizFragment : DialogFragment() {
             .load(R.drawable.ggumi_quiz)
             .into(imageView)
 
+        // "가자!" 버튼 클릭 시, 미션 코드에 따라 다른 프래그먼트를 띄움
         btnConfirm.setOnClickListener {
-            dismiss()
+            when (codeId) {
+                "M001" -> {
+                    // M001: 문화재 퀴즈 미션 팝업
+                    val popup = HeritageQuizMissionFragment.newInstance(codeId, positionName, "")
+                    popup.show(parentFragmentManager, "M001Popup")
+                }
+                "M002" -> {
+                    // M002: 랜덤 퀴즈 미션 팝업
+                    val popup = RandomQuizMissionFragment.newInstance(codeId, positionName, placeName)
+                    popup.show(parentFragmentManager, "M002Popup")
+                }
+                "M003" -> {
+                    // M003: 인증샷 미션 팝업
+                    val popup = PhotoMissionFragment.newInstance(codeId, positionName, "")
+                    popup.show(parentFragmentManager, "M003Popup")
+                }
+                else -> {
+                    // 기본 퀴즈 팝업
+                    val popup = HeritageQuizMissionFragment.newInstance("default", positionName, "")
+                    popup.show(parentFragmentManager, "DefaultPopup")
+                }
+            }
+            dismiss()  // MissionExplainFragment 종료
         }
 
         return view

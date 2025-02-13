@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Drawable
 import android.location.Location
 import android.os.Bundle
@@ -28,16 +27,13 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.*
 import com.google.maps.android.PolyUtil
 import com.google.maps.android.SphericalUtil
 import com.google.gson.Gson
 import com.ssafy.mbg.R
-import com.ssafy.mbg.ui.map.RandomQuizFragment
 import com.ssafy.mbg.di.UserPreferences
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -45,8 +41,6 @@ import okhttp3.Response
 import javax.inject.Inject
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.IOException
-import kotlin.math.cos
-import kotlin.math.sqrt
 
 @AndroidEntryPoint
 class MapFragment : Fragment(), OnMapReadyCallback {
@@ -430,21 +424,21 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         when (mission.codeId) {
             "M001" -> {
                 // M001: 문화재 미션 발생! / "[positionName] 관련 문제를 풀고 역사 카드를 얻어봐"
-                val popup = RandomQuizFragment.newInstance("M001", mission.positionName ?: "미지정", "")
+                val popup = MissionExplainFragment.newInstance("M001", mission.positionName ?: "미지정", "")
                 popup.show(parentFragmentManager, "M001Popup")
             }
             "M002" -> {
                 // M002: 랜덤 미션 발생! / "[placeName] 관련 문화재 관련 랜덤 퀴즈를 풀고 역사 카드를 얻어봐"
-                val popup = RandomQuizFragment.newInstance("M002", mission.positionName ?: "미지정", userPreferences.location)
+                val popup = MissionExplainFragment.newInstance("M002", mission.positionName ?: "미지정", userPreferences.location)
                 popup.show(parentFragmentManager, "M002Popup")
             }
             "M003" -> {
                 // M003: 인증샷 미션 발생! / "인증샷을 찍어서 업로드 해주세요"
-                val popup = RandomQuizFragment.newInstance("M003", mission.positionName ?: "미지정", "")
+                val popup = MissionExplainFragment.newInstance("M003", mission.positionName ?: "미지정", "")
                 popup.show(parentFragmentManager, "M003Popup")
             }
             else -> {
-                val popup = RandomQuizFragment.newInstance("default", mission.positionName ?: "미지정", "")
+                val popup = MissionExplainFragment.newInstance("default", mission.positionName ?: "미지정", "")
                 popup.show(parentFragmentManager, "DefaultPopup")
             }
         }
@@ -452,7 +446,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun showQuizFragment() {
         isQuizFragmentShown = true
-        val quizFragment = RandomQuizFragment()
+        val quizFragment = MissionExplainFragment()
         quizFragment.show(parentFragmentManager, "QuizFragment")
     }
 
