@@ -32,19 +32,32 @@
             FROM FCM
         </select>
 
-        <select id="selectTokensByRoomId" resultType="String">
-            SELECT f.token
-            FROM FCM f
-                     JOIN users u ON f.user_id = u.user_id
-            WHERE u.room_id = #{roomId}
-        </select>
+<!--        <select id="selectTokensByRoomId" resultType="String">-->
+<!--            SELECT f.token-->
+<!--            FROM FCM f-->
+<!--                     JOIN users u ON f.user_id = u.user_id-->
+<!--            WHERE u.room_id = #{roomId}-->
+<!--        </select>-->
 
-        <select id="selectStudentIdsByRoomId" resultType="Long">
-            SELECT f.user_id
-            FROM FCM f
-                     JOIN users u ON f.user_id = u.user_id
-            WHERE u.room_id = #{roomId}
-        </select>
+<!--        <select id="selectStudentIdsByRoomId" resultType="Long">-->
+<!--            SELECT f.user_id-->
+<!--            FROM FCM f-->
+<!--                     JOIN users u ON f.user_id = u.user_id-->
+<!--            WHERE u.room_id = #{roomId}-->
+<!--        </select>-->
+
+    <select id="selectTokensByRoomId" resultType="String">
+        SELECT DISTINCT f.token
+        FROM FCM f
+                 JOIN memberships m ON f.user_id = m.user_id
+        WHERE m.room_id = #{roomId}
+    </select>
+
+    <select id="selectStudentIdsByRoomId" resultType="Long">
+        SELECT DISTINCT m.user_id
+        FROM memberships m
+        WHERE m.room_id = #{roomId}
+    </select>
 <!--    <insert id="insert" parameterType="com.ssafy.controller.fcm.FcmDto">-->
 <!--        INSERT INTO FCM (user_id, token)-->
 <!--        VALUES (#{userId}, #{fcmToken})-->
@@ -78,16 +91,7 @@
 <!--        FROM FCM-->
 <!--    </select>-->
 
-<!--    <select id="selectTokensByRoomId" resultType="String">-->
-<!--        SELECT DISTINCT f.token-->
-<!--        FROM FCM f-->
-<!--                 JOIN memberships m ON f.user_id = m.user_id-->
-<!--        WHERE m.room_id = #{roomId}-->
-<!--    </select>-->
 
-<!--    <select id="selectStudentIdsByRoomId" resultType="Long">-->
-<!--        SELECT DISTINCT m.user_id-->
-<!--        FROM memberships m-->
-<!--        WHERE m.room_id = #{roomId}-->
-<!--    </select>-->
+
+
 </mapper>
