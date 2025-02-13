@@ -14,7 +14,7 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:padding="8dp"
-        android:background="#FFFFFF"
+        android:background="@android:color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:textSize="16sp"
-        android:textColor="#000000"
+        android:textColor="@color/text_black"
         app:layout_constraintStart_toEndOf="@id/itemIcon"
         app:layout_constraintTop_toTopOf="@id/itemIcon"/>
 
