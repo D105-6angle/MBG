@@ -29,6 +29,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.content.pm.PackageManager
 import android.os.Build
+import android.view.View
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -48,7 +49,6 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requestPostNotificationPermission()
         }
-
 
         // NavHostFragment와 NavController 연결
         val navHostFragment = supportFragmentManager
@@ -72,9 +72,33 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(R.id.satisfactionFragment)
         }
 
-
         // BottomNavigationView와 NavController 연동
         binding.bottomNavigation.setupWithNavController(navController)
+
+        // FAB 클릭 리스너 설정
+        binding.fab.setOnClickListener {
+            // 현재 destination이 mapFragment가 아닐 때만 이동
+            if (navController.currentDestination?.id != R.id.mapFragment) {
+                navController.navigate(R.id.mapFragment)
+            }
+        }
+
+        // 중앙 메뉴 아이템 완전히 비활성화
+        binding.bottomNavigation.menu.getItem(2).apply {
+            isEnabled = false
+            isVisible = false  // 완전히 숨김
+        }
+
+        // BottomNavigationView 클릭 리스너 추가
+        binding.bottomNavigation.setOnItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.homeFragment -> navController.navigate(R.id.homeFragment)
+                R.id.taskFragment -> navController.navigate(R.id.taskFragment)
+                R.id.bookFragment -> navController.navigate(R.id.bookFragment)
+                R.id.pageFragment -> navController.navigate(R.id.pageFragment)
+            }
+            true
+        }
 
         // 뒤로가기로 앱 종료를 제어할 탑 레벨(=탭) 목적지들
         val topLevelDestinations = setOf(
