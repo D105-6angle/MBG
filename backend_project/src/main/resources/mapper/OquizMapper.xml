@@ -11,6 +11,19 @@
         <result property="answer" column="answer"/>
         <result property="cardId" column="card_id"/>
     </resultMap>
+    <select id="getRandomQuizByMissionId" parameterType="Long" resultMap="quizResultMap">
+        SELECT
+            qt.content,
+            qt.initial,
+            sp.black_icon_image_url
+        FROM today_cards tc
+                 LEFT JOIN story_problems sp ON tc.card_id = sp.card_id
+                 LEFT JOIN quiz_types qt ON sp.problem_id = qt.problem_id
+        WHERE tc.mission_id = #{missionId}
+        ORDER BY RAND()
+            LIMIT 1
+    </select>
+
 
     <!-- 퀴즈 정보 조회 -->
     <select id="getQuizInfoByMissionId" resultMap="QuizInfoMap">
