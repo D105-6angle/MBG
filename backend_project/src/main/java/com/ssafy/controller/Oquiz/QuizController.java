@@ -1,5 +1,6 @@
 package com.ssafy.controller.Oquiz;
 
+import com.ssafy.exception.Oquiz.QuizNotFoundException;
 import com.ssafy.model.service.Oquiz.QuizService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,12 +20,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class QuizController {
     private final QuizService quizService;
 
-    @Operation(summary = "Get random quiz by mission ID")
+    @Operation(summary = "미션 ID로 해당 일화 퀴즈 조회")
     @ApiResponse(responseCode = "200", description = "Quiz found")
     @ApiResponse(responseCode = "404", description = "Quiz not found")
     @GetMapping("/{missionId}")
     public ResponseEntity<QuizResponse> getRandomQuiz(@PathVariable @Positive Long missionId) {
-        QuizResponse quiz = quizService.getRandomQuizByMissionId(missionId);
-        return ResponseEntity.ok(quiz);
+        try {
+            QuizResponse quiz = quizService.getRandomQuizByMissionId(missionId);
+            return ResponseEntity.ok(quiz);
+        } catch (QuizNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

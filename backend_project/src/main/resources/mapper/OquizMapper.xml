@@ -12,11 +12,10 @@
             qt.content,
             qt.initial,
             sp.black_icon_image_url
-        FROM mission_positions mp
-                 INNER JOIN cards c ON mp.card_id = c.card_id
-                 INNER JOIN story_problems sp ON c.card_id = sp.card_id
-                 INNER JOIN quiz_types qt ON sp.problem_id = qt.problem_id
-        WHERE mp.mission_id = #{missionId}
+        FROM today_cards tc
+                 LEFT JOIN story_problems sp ON tc.card_id = sp.card_id
+                 LEFT JOIN quiz_types qt ON sp.problem_id = qt.problem_id
+        WHERE tc.mission_id = #{missionId}
         ORDER BY RAND()
             LIMIT 1
     </select>
