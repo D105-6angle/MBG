@@ -8,10 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/random")
@@ -32,4 +29,18 @@ public class QuizController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PostMapping("/result/{missionId}")
+    public ResponseEntity<QuizResultResponse> submitQuizAnswer(
+            @PathVariable Long missionId,
+            @RequestBody QuizAnswerRequest request
+    ) {
+        QuizResultResponse result = quizService.processQuizAnswer(
+                request.getUserId(),
+                missionId,
+                request.getAnswer()
+        );
+        return ResponseEntity.ok(result);
+    }
+
 }

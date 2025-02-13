@@ -7,16 +7,56 @@
         <result property="blackIconUrl" column="black_icon_image_url"/>
     </resultMap>
 
-    <select id="getRandomQuizByMissionId" parameterType="Long" resultMap="quizResultMap">
+    <resultMap id="QuizInfoMap" type="com.ssafy.controller.Oquiz.QuizInfo">
+        <result property="answer" column="answer"/>
+        <result property="cardId" column="card_id"/>
+    </resultMap>
+
+    <!-- 퀴즈 정보 조회 -->
+    <select id="getQuizInfoByMissionId" resultMap="QuizInfoMap">
         SELECT
-            qt.content,
-            qt.initial,
-            sp.black_icon_image_url
+            qt.answer,
+            tc.card_id
         FROM today_cards tc
-                 LEFT JOIN story_problems sp ON tc.card_id = sp.card_id
-                 LEFT JOIN quiz_types qt ON sp.problem_id = qt.problem_id
+                 JOIN story_problems sp ON tc.card_id = sp.card_id
+                 JOIN quiz_types qt ON sp.problem_id = qt.problem_id
         WHERE tc.mission_id = #{missionId}
-        ORDER BY RAND()
-            LIMIT 1
     </select>
+
+    <!-- 퀴즈 로그 저장 -->
+    <insert id="insertQuizLog">
+        INSERT INTO logs (
+            user_id,
+            card_id,
+            result,
+            created_at
+        ) VALUES (
+                     #{userId},
+                     #{cardId},
+                     #{result},
+                     NOW()
+                 )
+    </insert>
+
+    <!-- 꾸미백과 중복 체크 -->
+    <select id="checkHeritageBookExists" resultType="int">
+        SELECT COUNT(*)
+        FROM heritage_books
+        WHERE user_id = #{userId}
+          AND card_id = #{cardId}
+    </select>
+
+    <!-- 꾸미백과 저장 -->
+    <insert id="insertHeritageBook">
+        INSERT INTO heritage_books (
+            user_id,
+            card_id,
+            created_at
+        ) VALUES (
+                     #{userId},
+                     #{cardId},
+                     NOW()
+                 )
+    </insert>
+
 </mapper>
