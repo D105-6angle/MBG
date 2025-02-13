@@ -22,7 +22,7 @@
             user_id as userId,
             title,
             content,
-            sent_time as sentTime
+            DATE_FORMAT(sent_time, '%Y년 %m월 %d일 %H:%i') as sentTime
         FROM alarms
         WHERE user_id = #{userId}
         ORDER BY sent_time DESC
