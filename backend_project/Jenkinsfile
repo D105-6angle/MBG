@@ -12,6 +12,8 @@
             MYSQL_PORT = credentials('MYSQL_PORT')
             MYSQL_CONTAINER = credentials('MYSQL_CONTAINER')
             JWT_SECRET_KEY = credentials('JWT_SECRET_KEY')
+            AWS_S3_ACCESS_KEY = credentials('AWS_S3_ACCESS_KEY')
+            AWS_S3_SECRET_KEY = credentials('AWS_S3_SECRET_KEY')
         }
 
         stages {

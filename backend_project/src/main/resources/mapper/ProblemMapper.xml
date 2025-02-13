@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.model.mapper.problem.ProblemMapper">
+
+    <insert id="insertHeritageProblem" parameterType="com.ssafy.model.entity.HeritageProblem">
+        INSERT INTO heritage_problems (
+            card_id, heritage_name, image_url, description,
+            object_image_url, content, example1, example2,
+            example3, example4, answer
+        ) VALUES (
+                     #{cardId}, #{heritageName}, #{imageUrl}, #{description},
+                     #{objectImageUrl}, #{content}, #{example1}, #{example2},
+                     #{example3}, #{example4}, #{answer}
+                 )
+    </insert>
+
+</mapper>
