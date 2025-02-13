@@ -11,10 +11,21 @@ import com.ssafy.mbg.R
 
 class RandomQuizFragment : DialogFragment() {
 
+    companion object {
+        fun newInstance(codeId: String, positionName: String, placeName: String): RandomQuizFragment {
+            val fragment = RandomQuizFragment()
+            val args = Bundle().apply {
+                putString("codeId", codeId)
+                putString("positionName", positionName)
+                putString("placeName", placeName)
+            }
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // 기존: setStyle(STYLE_NORMAL, android.R.style.Theme_Material_Light_Dialog_Alert)
-        // 변경: 모서리가 둥근 팝업 스타일 적용
         setStyle(STYLE_NORMAL, R.style.RoundedCornerDialog)
     }
 
@@ -26,18 +37,42 @@ class RandomQuizFragment : DialogFragment() {
         val view = inflater.inflate(R.layout.fragment_random_quiz, container, false)
 
         val quizTitle: TextView = view.findViewById(R.id.quizTitle)
+        val quizText: TextView = view.findViewById(R.id.quizText)
         val btnConfirm: Button = view.findViewById(R.id.btnConfirm)
         val imageView: ImageView = view.findViewById(R.id.imageView)
 
-        quizTitle.text = "랜덤 퀴즈 발생!"
+        // 전달받은 인자 읽기
+        val codeId = arguments?.getString("codeId") ?: "default"
+        val positionName = arguments?.getString("positionName") ?: "미지정"
+        val placeName = arguments?.getString("placeName") ?: ""
 
-        // Glide를 이용해 이미지 로드
+        // codeId에 따라 제목과 텍스트 분기 처리
+        when (codeId) {
+            "M001" -> {
+                quizTitle.text = "문화재 미션 발생!"
+                quizText.text = "$positionName 관련 문제를 풀고 역사 카드를 얻어봐"
+            }
+            "M002" -> {
+                quizTitle.text = "랜덤 미션 발생!"
+                quizText.text = "$placeName 관련 문화재 관련 랜덤 퀴즈를 풀고 역사 카드를 얻어봐"
+            }
+            "M003" -> {
+                quizTitle.text = "인증샷 미션 발생!"
+                quizText.text = "인증샷을 찍어서 업로드 해주세요"
+            }
+            else -> {
+                quizTitle.text = "퀴즈 발생!"
+                quizText.text = "퀴즈를 풀어보세요"
+            }
+        }
+
+        // Glide를 이용해 이미지 로드 (필요하면 codeId에 따라 분기 가능)
         Glide.with(this)
-            .load(R.drawable.ggumi_quiz) // 로컬 이미지 로드 (R.drawable.ggumi_quiz가 있다 가정)
+            .load(R.drawable.ggumi_quiz)
             .into(imageView)
 
         btnConfirm.setOnClickListener {
-            dismiss() // 다이얼로그 닫기
+            dismiss()
         }
 
         return view
@@ -45,13 +80,9 @@ class RandomQuizFragment : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        // 다이얼로그 크기 조정 (가로화면의 85% 정도로 설정)
         dialog?.window?.setLayout(
             (resources.displayMetrics.widthPixels * 0.85).toInt(),
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
-        // RoundedCornerDialog에서 이미 배경이 지정되므로, 투명으로 해놓으면 외곽 모서리 둥근 배경만 보임
-        // (아래 코드를 주석 처리하거나, 완전히 제거해도 됩니다. 여기서는 투명 적용)
-        // dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
     }
 }

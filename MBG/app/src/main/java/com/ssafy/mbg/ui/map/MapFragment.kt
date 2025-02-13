@@ -364,23 +364,89 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private var isInsidePolygonToastShown = false
+//    private var isInsidePolygonToastShown = false
+//
+//    private fun checkIfInsidePolygon(userLatLng: LatLng) {
+//        var isUserInside = false
+//
+//        missionList.forEach { mission ->
+//            if (PolyUtil.containsLocation(userLatLng, mission.getEdgePointsLatLng(), true)) {
+//                isUserInside = true
+//                if (!isInsidePolygonToastShown) {
+//                    Toast.makeText(requireContext(), "You are in ${mission.positionName ?: "미지정"}", Toast.LENGTH_SHORT).show()
+//                    isInsidePolygonToastShown = true
+//                }
+//            }
+//        }
+//
+//        if (!isUserInside) {
+//            isInsidePolygonToastShown = false
+//        }
+//    }
+
+//    // 각 미션(폴리곤) 이름과 토스트 표시 여부를 기록하는 맵
+//    private val polygonToastShownMap = mutableMapOf<String, Boolean>()
+//
+//    private fun checkIfInsidePolygon(userLatLng: LatLng) {
+//        missionList.forEach { mission ->
+//            // 미션 이름이 없으면 "미지정"으로 대체
+//            val polygonName = mission.positionName ?: "미지정"
+//            val isInside = PolyUtil.containsLocation(userLatLng, mission.getEdgePointsLatLng(), true)
+//
+//            if (isInside) {
+//                // 해당 폴리곤에 대해 아직 토스트가 띄워지지 않았다면
+//                if (polygonToastShownMap[polygonName] != true) {
+//                    Toast.makeText(requireContext(), "You are in $polygonName", Toast.LENGTH_SHORT).show()
+//                    polygonToastShownMap[polygonName] = true
+//                }
+//            } else {
+//                // 사용자가 폴리곤 밖으로 나가면, 다시 토스트를 띄울 수 있도록 플래그를 리셋 (원한다면)
+//                polygonToastShownMap[polygonName] = false
+//            }
+//        }
+//    }
+
+    // 각 미션(폴리곤)의 missionId를 키로 하여, 해당 미션에 대해 팝업을 이미 띄웠는지 여부를 기록하는 맵
+    private val missionPopupShownMap = mutableMapOf<Int, Boolean>()
 
     private fun checkIfInsidePolygon(userLatLng: LatLng) {
-        var isUserInside = false
-
         missionList.forEach { mission ->
-            if (PolyUtil.containsLocation(userLatLng, mission.getEdgePointsLatLng(), true)) {
-                isUserInside = true
-                if (!isInsidePolygonToastShown) {
-                    Toast.makeText(requireContext(), "You are in ${mission.positionName ?: "미지정"}", Toast.LENGTH_SHORT).show()
-                    isInsidePolygonToastShown = true
+            val key = mission.missionId
+            val isInside = PolyUtil.containsLocation(userLatLng, mission.getEdgePointsLatLng(), true)
+            if (isInside) {
+                // 해당 미션에 대해 아직 팝업이 띄워지지 않았다면
+                if (missionPopupShownMap[key] != true) {
+                    showMissionPopup(mission)
+                    missionPopupShownMap[key] = true
                 }
+            } else {
+                // 미션 영역 밖에 나가면, 다음번 재진입 시 다시 팝업이 뜰 수 있도록 리셋
+                missionPopupShownMap[key] = false
             }
         }
+    }
 
-        if (!isUserInside) {
-            isInsidePolygonToastShown = false
+    private fun showMissionPopup(mission: Mission) {
+        when (mission.codeId) {
+            "M001" -> {
+                // M001: 문화재 미션 발생! / "[positionName] 관련 문제를 풀고 역사 카드를 얻어봐"
+                val popup = RandomQuizFragment.newInstance("M001", mission.positionName ?: "미지정", "")
+                popup.show(parentFragmentManager, "M001Popup")
+            }
+            "M002" -> {
+                // M002: 랜덤 미션 발생! / "[placeName] 관련 문화재 관련 랜덤 퀴즈를 풀고 역사 카드를 얻어봐"
+                val popup = RandomQuizFragment.newInstance("M002", mission.positionName ?: "미지정", userPreferences.location)
+                popup.show(parentFragmentManager, "M002Popup")
+            }
+            "M003" -> {
+                // M003: 인증샷 미션 발생! / "인증샷을 찍어서 업로드 해주세요"
+                val popup = RandomQuizFragment.newInstance("M003", mission.positionName ?: "미지정", "")
+                popup.show(parentFragmentManager, "M003Popup")
+            }
+            else -> {
+                val popup = RandomQuizFragment.newInstance("default", mission.positionName ?: "미지정", "")
+                popup.show(parentFragmentManager, "DefaultPopup")
+            }
         }
     }
 
