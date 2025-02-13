@@ -11,16 +11,17 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.ssafy.mbg.R
 import com.ssafy.mbg.adapter.ProblemHistoryAdapter
-import com.ssafy.mbg.data.mypage.dto.MyPageDataSource
-import com.ssafy.mbg.data.mypage.dto.ProblemHistory
 import com.ssafy.mbg.databinding.FragmentPageBinding
+import com.ssafy.mbg.di.UserPreferences
 import com.ssafy.mbg.ui.auth.AuthState
 import com.ssafy.mbg.ui.auth.AuthViewModel
 import com.ssafy.mbg.ui.modal.ProfileModal
 import com.ssafy.mbg.ui.splash.SplashActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class PageFragment : Fragment() {
@@ -28,8 +29,16 @@ class PageFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val authViewModel : AuthViewModel by viewModels()
+    private val myPageViewModel : MyPageViewModel by viewModels()
+
+    @Inject
+    lateinit var userPreferences: UserPreferences
 
     private lateinit var problemHistoryAdapter: ProblemHistoryAdapter
+
+    private var currentEmail : String = ""
+    private var currentName : String = ""
+    private var currentNickname : String = ""
 
     private fun getTitle(solvedCount : Int) : String {
         return when {
@@ -39,13 +48,18 @@ class PageFragment : Fragment() {
         }
 
     }
+
+    private fun getProfileImage(solvedCount : Int): Int {
+        return when {
+            solvedCount in 0..5 -> R.drawable.profile_example
+            solvedCount in 6..10 -> R.drawable.profile_intermediate
+            else -> R.drawable.profile_advanced
+        }
+    }
     private fun initializeAdapter() {
         problemHistoryAdapter = ProblemHistoryAdapter { history ->
             val action = PageFragmentDirections.actionPageFragmentToHistoryDetailFragment(
-                title = history.name,
-//                image = history.imageUrl,
-                description = history.description ?: "",
-                lastSolvedAt = history.lastSolvedAt
+                cardId = history.cardId
             )
             findNavController().navigate(action)
         }
@@ -65,8 +79,9 @@ class PageFragment : Fragment() {
         initializeAdapter()
         setupClickListeners()
         setupRecyclerView()
-        loadData()
         observeAuthState()
+        observeMyPageState()
+        loadData()
     }
 
     private fun setupRecyclerView() {
@@ -100,9 +115,9 @@ class PageFragment : Fragment() {
     private fun showProfileModal() {
         val profileModal = ProfileModal(
             context = requireContext(),
-            email = "kimssafy@ssafy.com",
-            name = "김싸피",
-            currentNickname = "김싸피",
+            email = currentEmail,
+            name = currentName,
+            currentNickname = currentNickname,
             onConfirm = { newNickname ->
                 // 닉네임 변경 처리
                 binding.progressBar.visibility = View.VISIBLE  // 로딩 표시 추가 필요
@@ -116,10 +131,6 @@ class PageFragment : Fragment() {
             }
         )
         profileModal.show()
-    }
-
-    private fun findProblemAll() : List<ProblemHistory> {
-        return MyPageDataSource.solvedProblems
     }
 
     private fun observeAuthState() {
@@ -152,12 +163,57 @@ class PageFragment : Fragment() {
         }
     }
 
-    private fun loadData() {
-        // 더미 데이터 생성 - 새로운 필드 추가
-        val histories = findProblemAll()
-        problemHistoryAdapter.updateHistories(histories)
+    private fun observeMyPageState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            myPageViewModel.uiState.collect { state ->
+                when (state) {
+                    is MyPageState.Loading -> {
+                        binding.progressBar.visibility = View.VISIBLE
+                    }
+                    is MyPageState.Success -> {
+                        binding.progressBar.visibility = View.GONE
+                        state.profileResponse?.let { profile ->
+                            problemHistoryAdapter.updateHistories(profile.attemptedProblems)
 
-        val solvedCount = histories.size
-        binding.profileTitle.text = getTitle(solvedCount)
+                            val solvedCount = profile.attemptedProblems.size
+
+
+                            binding.profileTitle.text = getTitle(solvedCount)
+                            binding.profileImage.setImageResource(getProfileImage(solvedCount))
+
+                            profile.userInfo.let { userInfo ->
+                                currentEmail = userInfo.email
+                                currentName = userInfo.name
+                                currentNickname = userInfo.nickname
+
+                                binding.profileName.text = userInfo.nickname
+                            }
+                        }
+                    }
+                    is MyPageState.Error -> {
+                        binding.progressBar.visibility = View.GONE
+                        Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                    }
+                    else -> {
+                        binding.progressBar.visibility = View.GONE
+                    }
+                }
+            }
+        }
+    }
+
+    private fun loadData() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            userPreferences.userId?.let { userId ->
+                val roomIdString = userPreferences.roomId
+                myPageViewModel.getProfile(userId, roomIdString)
+            } ?: run {
+                Toast.makeText(context, "사용자 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
+                Intent(requireContext(), SplashActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(this)
+                }
+            }
+        }
     }
 }

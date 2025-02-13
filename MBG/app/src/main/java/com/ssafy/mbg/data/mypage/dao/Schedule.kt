@@ -1,4 +1,4 @@
-package com.ssafy.mbg.data.mypage.dto
+package com.ssafy.mbg.data.mypage.dao
 
 data class Schedule(
     val number: Int,
