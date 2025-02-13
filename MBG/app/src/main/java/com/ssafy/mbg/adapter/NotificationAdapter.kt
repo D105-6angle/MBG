@@ -15,7 +15,7 @@ class NotificationAdapter : RecyclerView.Adapter<NotificationAdapter.Notificatio
 
     /**
      * 알림 목록을 업데이트합니다.
-     * 
+     *
      * @param newNotifications 새로운 알림 목록
      */
     fun setNotifications(newNotifications: List<Notification>) {
@@ -26,7 +26,7 @@ class NotificationAdapter : RecyclerView.Adapter<NotificationAdapter.Notificatio
 
     /**
      * ViewHolder를 생성합니다.
-     * 
+     *
      * @param parent 부모 ViewGroup
      * @param viewType 뷰 타입 (현재는 단일 타입만 사용)
      * @return 생성된 ViewHolder
@@ -42,7 +42,7 @@ class NotificationAdapter : RecyclerView.Adapter<NotificationAdapter.Notificatio
 
     /**
      * ViewHolder에 데이터를 바인딩합니다.
-     * 
+     *
      * @param holder 데이터를 표시할 ViewHolder
      * @param position 데이터 위치
      */
@@ -54,7 +54,7 @@ class NotificationAdapter : RecyclerView.Adapter<NotificationAdapter.Notificatio
 
     /**
      * 알림 아이템을 표시하기 위한 ViewHolder
-     * 
+     *
      * @property binding 아이템 레이아웃 바인딩
      */
     class NotificationViewHolder(
@@ -62,7 +62,7 @@ class NotificationAdapter : RecyclerView.Adapter<NotificationAdapter.Notificatio
     ) : RecyclerView.ViewHolder(binding.root) {
         /**
          * 알림 데이터를 뷰에 바인딩합니다.
-         * 
+         *
          * @param notification 표시할 알림 데이터
          */
         fun bind(notification: Notification) {
