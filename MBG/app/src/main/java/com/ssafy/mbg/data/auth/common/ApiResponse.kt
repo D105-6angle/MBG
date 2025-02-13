@@ -1,6 +1,6 @@
 package com.ssafy.mbg.data.auth.common
 
-import com.ssafy.mbg.data.mypage.dto.ErrorDetail
+import com.ssafy.mbg.data.mypage.dao.ErrorDetail
 
 /**
  * API 응답의 공통 형식을 정의하는 wrapper 클래스

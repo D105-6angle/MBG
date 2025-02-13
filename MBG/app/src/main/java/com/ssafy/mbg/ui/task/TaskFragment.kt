@@ -9,14 +9,11 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ssafy.mbg.adapter.ScheduleAdapter
 import com.ssafy.mbg.adapter.TeamMemberAdapter
-import com.ssafy.mbg.data.mypage.dto.Schedule
 import com.ssafy.mbg.databinding.FragmentTaskBinding
 import com.ssafy.mbg.di.UserPreferences
-import com.ssafy.mbg.ui.home.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
