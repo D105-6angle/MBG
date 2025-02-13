@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice(basePackages = "com.ssafy.controller.mypage")
+@RestControllerAdvice(basePackages = {"com.ssafy.controller.mypage", "com.ssafy.controller.upload"})
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Hidden
 @Slf4j

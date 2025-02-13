@@ -1,13 +1,17 @@
-package com.ssafy.controller.problem;
+package com.ssafy.controller.upload;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-public class ProblemRequest {
+public class UploadRequest {
     @Getter
     @NoArgsConstructor
-    public static class HeritageRequest {
-        private Long cardId;
+    @ToString
+    public static class HeritageProblem {
+        private String obtainableCardName;
         private String heritageName;
         private String description;
         private String content;
