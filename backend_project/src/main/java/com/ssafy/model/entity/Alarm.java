@@ -12,11 +12,11 @@ public class Alarm {
     private Long userId;
     private String title;
     private String content;
-    private Date sentTime;
+    private String sentTime;
 
     public Alarm() {}
 
-    public Alarm(Long alarmId, Long userId, String title, String content, Date sentTime) {
+    public Alarm(Long alarmId, Long userId, String title, String content, String sentTime) {
         this.alarmId = alarmId;
         this.userId = userId;
         this.title = title;
