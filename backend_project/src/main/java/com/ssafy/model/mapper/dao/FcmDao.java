@@ -17,7 +17,7 @@ public interface FcmDao {
     List<Long> selectAllUserIds(); // 추가된 메서드
     // 특정 방의 학생 토큰 조회
     List<String> selectTokensByRoomId(@Param("roomId") Long roomId);
-
+    int upsert(FcmDto fcmDto);
     // 특정 방의 학생 ID 조회
     List<Long> selectStudentIdsByRoomId(@Param("roomId") Long roomId);
 }

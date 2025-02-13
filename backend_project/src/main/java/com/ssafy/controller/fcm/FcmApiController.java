@@ -48,14 +48,16 @@ public class FcmApiController {
         }
     }
 
-    @Operation(summary = "FCM 토큰을 추가한다.")
+    @Operation(summary = "FCM 토큰을 추가/업데이트한다.")
     @PostMapping("/add")
-    public ResponseEntity<?> addToken(@RequestParam Long userId, @RequestParam String fcmToken) {
-        int result = fcmService.addToken(userId, fcmToken);
-        if (result > 0) {
-            return ResponseEntity.ok(true);
-        } else {
-            return ResponseEntity.status(500).body(false);
+    public ResponseEntity<?> updateToken(@RequestParam Long userId, @RequestParam String fcmToken) {
+        try {
+            int result = fcmService.addToken(userId, fcmToken);
+            return ResponseEntity.ok(result > 0);
+        } catch (Exception e) {
+            log.error("FCM 토큰 업데이트 실패", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("FCM 토큰 업데이트 실패: " + e.getMessage());
         }
     }
 
