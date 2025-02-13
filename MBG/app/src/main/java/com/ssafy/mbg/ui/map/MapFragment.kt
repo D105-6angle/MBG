@@ -174,6 +174,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 it.position = newPos
                 updateDistanceDisplay(newPos)
                 drawLineToNearestTarget(newPos)
+                checkIfInsidePolygon(newPos) // 추가: picker mode 위치도 체크
             }
         }
         btnArrowDown.setOnClickListener {
@@ -364,12 +365,22 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private var isInsidePolygonToastShown = false
+
     private fun checkIfInsidePolygon(userLatLng: LatLng) {
+        var isUserInside = false
+
         missionList.forEach { mission ->
-            if (PolyUtil.containsLocation(userLatLng, mission.getEdgePointsLatLng(), true) && !isInsidePolygonToastShown) {
-                Toast.makeText(requireContext(), "You are in ${mission.positionName ?: "미지정"}", Toast.LENGTH_SHORT).show()
-                isInsidePolygonToastShown = true
+            if (PolyUtil.containsLocation(userLatLng, mission.getEdgePointsLatLng(), true)) {
+                isUserInside = true
+                if (!isInsidePolygonToastShown) {
+                    Toast.makeText(requireContext(), "You are in ${mission.positionName ?: "미지정"}", Toast.LENGTH_SHORT).show()
+                    isInsidePolygonToastShown = true
+                }
             }
+        }
+
+        if (!isUserInside) {
+            isInsidePolygonToastShown = false
         }
     }
 
