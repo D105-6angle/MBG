@@ -10,41 +10,27 @@
                                  token = VALUES(token)
     </insert>
 
-        <delete id="delete">
-            DELETE FROM FCM
-            WHERE user_id = #{userId}
-              AND token = #{fcmToken}
-        </delete>
+    <delete id="delete">
+        DELETE FROM FCM
+        WHERE user_id = #{userId}
+          AND token = #{fcmToken}
+    </delete>
 
     <select id="selectTokensByUserId" resultType="String">
         SELECT token
-        FROM FCM FORCE INDEX (idx_user_id)
+        FROM FCM
         WHERE user_id = #{userId}
     </select>
 
-        <select id="selectAllTokens" resultType="String">
-            SELECT token
-            FROM FCM
-        </select>
+    <select id="selectAllTokens" resultType="String">
+        SELECT token
+        FROM FCM
+    </select>
 
-        <select id="selectAllUserIds" resultType="Long">
-            SELECT DISTINCT user_id
-            FROM FCM
-        </select>
-
-<!--        <select id="selectTokensByRoomId" resultType="String">-->
-<!--            SELECT f.token-->
-<!--            FROM FCM f-->
-<!--                     JOIN users u ON f.user_id = u.user_id-->
-<!--            WHERE u.room_id = #{roomId}-->
-<!--        </select>-->
-
-<!--        <select id="selectStudentIdsByRoomId" resultType="Long">-->
-<!--            SELECT f.user_id-->
-<!--            FROM FCM f-->
-<!--                     JOIN users u ON f.user_id = u.user_id-->
-<!--            WHERE u.room_id = #{roomId}-->
-<!--        </select>-->
+    <select id="selectAllUserIds" resultType="Long">
+        SELECT DISTINCT user_id
+        FROM FCM
+    </select>
 
     <select id="selectTokensByRoomId" resultType="String">
         SELECT DISTINCT f.token
@@ -58,40 +44,4 @@
         FROM memberships m
         WHERE m.room_id = #{roomId}
     </select>
-<!--    <insert id="insert" parameterType="com.ssafy.controller.fcm.FcmDto">-->
-<!--        INSERT INTO FCM (user_id, token)-->
-<!--        VALUES (#{userId}, #{fcmToken})-->
-<!--    </insert>-->
-
-<!--    <insert id="upsert">-->
-<!--        INSERT INTO FCM (user_id, token)-->
-<!--        VALUES (#{userId}, #{fcmToken})-->
-<!--            ON DUPLICATE KEY UPDATE-->
-<!--                                 token = #{fcmToken}-->
-<!--    </insert>-->
-
-<!--    <delete id="delete" parameterType="com.ssafy.controller.fcm.FcmDto">-->
-<!--        DELETE FROM FCM-->
-<!--        WHERE user_id = #{userId} AND token = #{fcmToken}-->
-<!--    </delete>-->
-
-<!--    <select id="selectTokensByUserId" parameterType="long" resultType="string">-->
-<!--        SELECT token-->
-<!--        FROM FCM-->
-<!--        WHERE user_id = #{userId}-->
-<!--    </select>-->
-
-<!--    <select id="selectAllTokens" resultType="string">-->
-<!--        SELECT token-->
-<!--        FROM FCM-->
-<!--    </select>-->
-
-<!--    <select id="selectAllUserIds" resultType="long">-->
-<!--        SELECT DISTINCT user_id-->
-<!--        FROM FCM-->
-<!--    </select>-->
-
-
-
-
 </mapper>
