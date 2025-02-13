@@ -11,4 +11,8 @@ public interface HeritageMissionMapper {
 
     Optional<HeritageProblem> findByMissionId(@Param("missionId") Long missionId);
 
+    int insertHeritageBook(@Param("userId") Long userId, @Param("cardId") Long cardId);
+
+    int insertLog(@Param("userId") Long userId, @Param("cardId") Long cardId, @Param("result") boolean result);
+
 }

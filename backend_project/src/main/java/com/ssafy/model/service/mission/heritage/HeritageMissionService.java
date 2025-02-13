@@ -1,5 +1,7 @@
 package com.ssafy.model.service.mission.heritage;
 
+import com.ssafy.controller.mission.heritage.HeritageMissionAnswerRequest;
+import com.ssafy.controller.mission.heritage.HeritageMissionAnswerResponse;
 import com.ssafy.controller.mission.heritage.HeritageMissionResponse;
 import com.ssafy.exception.common.DatabaseOperationException;
 import com.ssafy.exception.common.InvalidRequestException;
@@ -58,5 +60,36 @@ public class HeritageMissionService {
 //            log.error("Error while fetching heritage mission for missionId: {}", missionId, e);
             throw new DatabaseOperationException("퀴즈 조회 중 오류가 발생했습니다: " + e.getMessage());
         }
+
     }
+    @Transactional
+    public HeritageMissionAnswerResponse submitHeritageMission(Long missionId, HeritageMissionAnswerRequest request) {
+        if (request.getUserId() == null || request.getAnswers() == null) {
+            throw new InvalidRequestException("유저 ID와 정답은 필수값입니다.");
+        }
+
+        HeritageProblem quiz = heritageMissionMapper.findByMissionId(missionId)
+                .orElseThrow(() -> new MissionNotFoundException("해당 미션 ID의 퀴즈를 찾을 수 없습니다."));
+
+        boolean isCorrect = quiz.getAnswer().equals(request.getAnswers());
+
+        if (isCorrect) {
+            // 카드 도감 등록
+            int insertedRows = heritageMissionMapper.insertHeritageBook(request.getUserId(), quiz.getCardId());
+
+            if (insertedRows == 0) {
+                log.info("카드 도감 등록 여부: 이미 등록됨");
+                return new HeritageMissionAnswerResponse(true, quiz.getObjectImageUrl());
+            }
+
+            log.info("카드 도감 등록 여부: 성공");
+        }
+
+        // 꾸미백과 (풀이 기록) 저장
+        heritageMissionMapper.insertLog(request.getUserId(), quiz.getCardId(), isCorrect);
+        log.info("꾸미백과 등록 여부: 성공");
+
+        return new HeritageMissionAnswerResponse(isCorrect, isCorrect ? quiz.getObjectImageUrl() : null);
+    }
+
 }
