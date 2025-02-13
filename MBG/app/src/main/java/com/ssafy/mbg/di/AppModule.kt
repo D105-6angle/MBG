@@ -2,6 +2,7 @@ package com.ssafy.mbg.di
 
 import android.content.Context
 import com.ssafy.mbg.api.AuthApi
+import com.ssafy.mbg.api.BookApi
 import com.ssafy.mbg.api.HomeApi
 import com.ssafy.mbg.data.auth.repository.AuthRepository
 import com.ssafy.mbg.data.auth.repository.AuthRepositoryImpl
@@ -10,6 +11,8 @@ import com.ssafy.mbg.api.ReportApi
 import com.ssafy.mbg.api.ScheduleApi
 import com.ssafy.mbg.data.auth.repository.KakaoLoginRepositoryImpl
 import com.ssafy.mbg.data.auth.repository.SocialLoginRepository
+import com.ssafy.mbg.data.book.repository.BookRepository
+import com.ssafy.mbg.data.book.repository.BookRepositoryImpl
 import com.ssafy.mbg.data.mypage.repository.MyPageRepository
 import com.ssafy.mbg.data.mypage.repository.MyPageRepositoryImpl
 import com.ssafy.mbg.data.report.repository.ReportRepository
@@ -106,5 +109,17 @@ object AppModule {
     @Singleton
     fun provideReportRepository(reportApi: ReportApi): ReportRepository {
         return ReportRepositoryImpl(reportApi)
+    }
+
+    @Provides
+    @Singleton
+    fun provideBookApi(retrofit: Retrofit): BookApi {
+        return retrofit.create(BookApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideBookRepository(bookApi: BookApi): BookRepository {
+        return BookRepositoryImpl(bookApi)
     }
 }
