@@ -5,22 +5,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.ssafy.mbg.adapter.BookAdapter
-import com.ssafy.mbg.data.Card
+import com.ssafy.mbg.data.book.dao.CardCollection
 import com.ssafy.mbg.databinding.FragmentBookListBinding
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
-/**
- * 도감의 카드 목록을 표시하는 Fragment
- *
- * @property isCultural 문화재 탭 여부 (true: 문화재 탭, false: 스토리 탭)
- */
+@AndroidEntryPoint
 class BookListFragment : Fragment() {
     private var _binding: FragmentBookListBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: BookViewModel by viewModels()
     private lateinit var bookAdapter: BookAdapter
 
-    // Bundle로 전달받은 값을 처리할 변수
     private var isCultural: Boolean = false
 
     companion object {
@@ -54,12 +56,10 @@ class BookListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
+        observeState()
         loadCards()
     }
 
-    /**
-     * RecyclerView 초기 설정
-     */
     private fun setupRecyclerView() {
         bookAdapter = BookAdapter(parentFragmentManager)
         binding.bookRecyclerView.apply {
@@ -68,23 +68,67 @@ class BookListFragment : Fragment() {
         }
     }
 
-    /**
-     * 카드 목록을 새로고침합니다.
-     */
-    fun refreshCards() {
-        if (!isAdded) return  // Fragment가 아직 추가되지 않은 경우 무시
+    private fun observeState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.bookState.collect { state ->
+                when (state) {
+                    is BookState.Loading -> {
+                        binding.progressBar.visibility = View.VISIBLE
+                        binding.bookRecyclerView.visibility = View.GONE
+                    }
+                    is BookState.Success -> {
+                        binding.progressBar.visibility = View.GONE
+                        binding.bookRecyclerView.visibility = View.VISIBLE
 
-        val testCards = (1..30).map { id ->
-            Card(id, isUnlocked = isCultural && id <= 3)
+                        val cards = state.bookResponse.cards.filter { card ->
+                            if (state.bookResponse.cards.isEmpty()) false
+                            else {
+                                // isCultural이 true면 M001, false면 M002 코드를 가진 카드들 필터링
+                                card.codeId == if (isCultural) "M001" else "M002"
+                            }
+                        }
+
+                        bookAdapter.setCards(cards)
+                    }
+                    is BookState.Error -> {
+                        binding.progressBar.visibility = View.GONE
+                        binding.bookRecyclerView.visibility = View.GONE
+                        Snackbar.make(
+                            binding.root,
+                            state.message,
+                            Snackbar.LENGTH_LONG
+                        ).show()
+                    }
+                    BookState.Initial -> Unit
+                }
+            }
         }
-        bookAdapter.setCards(testCards)
     }
 
-    /**
-     * 카드 데이터 로드 및 표시
-     */
+    fun setCards(newBookCards: List<CardCollection>) {
+        if (!isAdded) return
+
+        // 문화재(M001) 또는 이야기(M002) 카드 필터링
+        val filteredCards = newBookCards.filter {
+            it.codeId == if (isCultural) "M001" else "M002"
+        }
+
+        bookAdapter.setCards(filteredCards)
+    }
+
     private fun loadCards() {
-        refreshCards()
+        if (!isAdded) return
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.getUserId()?.let { userId ->
+                viewModel.getBook(userId)
+            }
+        }
+    }
+
+    fun refreshCards() {
+        if (!isAdded) return
+        loadCards()
     }
 
     override fun onDestroyView() {

@@ -8,34 +8,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
+import android.widget.ImageView
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ssafy.mbg.R
 import com.ssafy.mbg.databinding.ItemCardBinding
-import com.ssafy.mbg.data.Card
 import com.ssafy.mbg.ui.book.CardPopupFragment
-import android.widget.ImageView
+import com.bumptech.glide.Glide
+import com.ssafy.mbg.data.book.dao.CardCollection
 
-/**
- * 도감 화면의 카드 목록을 표시하기 위한 RecyclerView 어댑터
- * 
- * 카드의 잠금 상태에 따라 다른 이미지를 표시합니다:
- * - 잠금 해제된 카드: 각 카드별 고유 이미지
- * - 잠긴 카드: 카드 뒷면 이미지
- */
-class BookAdapter(private val fragmentManager: FragmentManager) : RecyclerView.Adapter<BookAdapter.CardViewHolder>() {
+class BookAdapter(
+    private val fragmentManager: FragmentManager
+) : RecyclerView.Adapter<BookAdapter.CardViewHolder>() {
+    private var bookCards: List<CardCollection> = emptyList()
 
-    /** 표시할 카드 목록 */
-    private val cards = mutableListOf<Card>()
-
-    /**
-     * 카드 목록을 업데이트합니다.
-     *
-     * @param newCards 새로운 카드 목록
-     */
-    fun setCards(newCards: List<Card>) {
-        cards.clear()
-        cards.addAll(newCards)
+    fun setCards(newBookCards: List<CardCollection>?) {
+        bookCards = newBookCards ?: emptyList()
         notifyDataSetChanged()
     }
 
@@ -49,53 +37,45 @@ class BookAdapter(private val fragmentManager: FragmentManager) : RecyclerView.A
     }
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
-        holder.bind(cards[position], fragmentManager)
+        holder.bind(bookCards[position], fragmentManager)
     }
 
-    override fun getItemCount(): Int = cards.size
+    override fun getItemCount(): Int = bookCards.size
 
-    /**
-     * 카드 아이템을 표시하기 위한 ViewHolder
-     * 
-     * @property binding 카드 아이템 레이아웃 바인딩
-     */
     class CardViewHolder(
         private val binding: ItemCardBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        /**
-         * 카드 정보를 뷰에 바인딩합니다.
-         * 
-         * @param card 표시할 카드 정보
-         * @param fragmentManager 팝업 표시를 위한 FragmentManager
-         */
-        fun bind(card: Card, fragmentManager: FragmentManager) {
-            val imageResource = when (card.id) {
-                1 -> R.drawable.card_1
-                2 -> R.drawable.card_2
-                3 -> R.drawable.card_3
-                else -> R.drawable.card_back
-            }
-            
+        fun bind(bookCard: CardCollection, fragmentManager: FragmentManager) {
+            // collectedAt이 null이 아니면 카드가 수집된 것으로 간주
+            val isUnlocked = bookCard.collectedAt != null
+
             binding.imageView.apply {
-                setImageResource(if (card.isUnlocked) imageResource else R.drawable.card_back)
+                if (isUnlocked) {
+                    // 실제 카드 이미지 로드
+                    Glide.with(this)
+                        .load(bookCard.imageUrl)
+                        .placeholder(R.drawable.card_back)
+                        .error(R.drawable.card_back)
+                        .into(this)
+                } else {
+                    // 잠긴 카드는 카드 뒷면 이미지 표시
+                    setImageResource(R.drawable.card_back)
+                }
                 scaleType = ImageView.ScaleType.FIT_XY
             }
 
             // 잠금 해제된 카드만 클릭 가능
-            if (card.isUnlocked) {
+            if (isUnlocked) {
                 itemView.setOnClickListener {
-                    animateCardFlip(itemView, imageResource, fragmentManager)
+                    animateCardFlip(itemView, bookCard, fragmentManager)
                 }
             }
         }
 
-        /**
-         * 카드 뒤집기 애니메이션을 실행합니다.
-         */
-        private fun animateCardFlip(itemView: View, imageResId: Int, fragmentManager: FragmentManager) {
+        private fun animateCardFlip(itemView: View, bookCard: CardCollection, fragmentManager: FragmentManager) {
             val flipSound = MediaPlayer.create(itemView.context, R.raw.card_flip)
-            
+
             itemView.cameraDistance = 8000 * itemView.resources.displayMetrics.density
 
             itemView.animate()
@@ -106,10 +86,7 @@ class BookAdapter(private val fragmentManager: FragmentManager) : RecyclerView.A
                     override fun onAnimationStart(animation: Animator) {
                         flipSound.start()
                         itemView.postDelayed({
-                            binding.imageView.apply {
-                                setImageResource(R.drawable.card_back)
-                                scaleType = ImageView.ScaleType.FIT_XY
-                            }
+                            binding.imageView.setImageResource(R.drawable.card_back)
                         }, 150)
                     }
 
@@ -122,16 +99,16 @@ class BookAdapter(private val fragmentManager: FragmentManager) : RecyclerView.A
                                 override fun onAnimationStart(animation: Animator) {
                                     flipSound.start()
                                     itemView.postDelayed({
-                                        binding.imageView.apply {
-                                            setImageResource(imageResId)
-                                            scaleType = ImageView.ScaleType.FIT_XY
-                                        }
+                                        // 실제 카드 이미지 다시 로드
+                                        Glide.with(binding.imageView)
+                                            .load(bookCard.imageUrl)
+                                            .into(binding.imageView)
                                     }, 150)
                                 }
 
                                 override fun onAnimationEnd(animation: Animator) {
                                     itemView.rotationY = 0f
-                                    showPopupDirectly(imageResId, fragmentManager)
+                                    showPopupDirectly(bookCard, fragmentManager)
                                     flipSound.release()
                                 }
                             })
@@ -141,12 +118,9 @@ class BookAdapter(private val fragmentManager: FragmentManager) : RecyclerView.A
                 .start()
         }
 
-        /**
-         * 카드 상세 정보 팝업을 표시합니다.
-         */
-        private fun showPopupDirectly(imageResId: Int, fragmentManager: FragmentManager) {
-            val popupFragment = CardPopupFragment.newInstance(imageResId)
+        private fun showPopupDirectly(bookCard: CardCollection, fragmentManager: FragmentManager) {
+            val popupFragment = CardPopupFragment.newInstance(bookCard.cardId)
             popupFragment.show(fragmentManager, "CardPopupFragment")
         }
     }
-} 
+}
