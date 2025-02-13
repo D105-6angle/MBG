@@ -3,6 +3,7 @@ package com.ssafy.model.service.Oquiz;
 import com.ssafy.controller.Oquiz.QuizResponse;
 import com.ssafy.exception.Oquiz.NotFoundException;
 import com.ssafy.model.mapper.Oquiz.OquizMapper;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,7 @@ public class QuizService {
     public QuizResponse getRandomQuizByMissionId(Long missionId) {
         QuizResponse quiz = oquizMapper.getRandomQuizByMissionId(missionId);
         if (quiz == null) {
-            throw new NotFoundException("해당 미션에 대한 퀴즈 없음");
+            throw new NotFoundException("Quiz not found for mission ID: " + missionId);
         }
         return quiz;
     }

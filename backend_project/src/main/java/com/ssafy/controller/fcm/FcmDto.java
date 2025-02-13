@@ -3,6 +3,7 @@ package com.ssafy.controller.fcm;
 import java.time.LocalDateTime;
 
 public class FcmDto {
+    private Long tokenId;    // 추가
     private Long userId;
     private String fcmToken;
 

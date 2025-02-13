@@ -1,6 +1,10 @@
 package com.ssafy.controller.Oquiz;
 
 import com.ssafy.model.service.Oquiz.QuizService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,11 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/random")
 @RequiredArgsConstructor
+@Tag(name = "Quiz", description = "Quiz API endpoints")
 public class QuizController {
     private final QuizService quizService;
 
+    @Operation(summary = "Get random quiz by mission ID")
+    @ApiResponse(responseCode = "200", description = "Quiz found")
+    @ApiResponse(responseCode = "404", description = "Quiz not found")
     @GetMapping("/{missionId}")
-    public ResponseEntity<QuizResponse> getRandomQuiz(@PathVariable Long missionId) {
+    public ResponseEntity<QuizResponse> getRandomQuiz(@PathVariable @Positive Long missionId) {
         QuizResponse quiz = quizService.getRandomQuizByMissionId(missionId);
         return ResponseEntity.ok(quiz);
     }
