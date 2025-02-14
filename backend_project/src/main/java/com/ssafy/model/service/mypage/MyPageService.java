@@ -64,8 +64,11 @@ public class MyPageService {
 
         List<MyPageResponse.AttemptedProblem> problems = mypageMapper.getAttempedProblems(userId);      // 시도한 카드에 대한 설명 가져오기
         for (MyPageResponse.AttemptedProblem problem : problems) {
-            String presignedUrl = s3Service.generatePresignedUrl(problem.getImageUrl());
-            problem.setImageUrl(presignedUrl);
+            // imageUrl이 null이 아닐 때만 presignedUrl 생성
+            if (problem.getImageUrl() != null && !problem.getImageUrl().trim().isEmpty()) {
+                String presignedUrl = s3Service.generatePresignedUrl(problem.getImageUrl());
+                problem.setImageUrl(presignedUrl);
+            }
         }
 
         MyPageResponse.MyPageInfo response = MyPageResponse.MyPageInfo.builder().userInfo(userInfo).attemptedProblems(problems).build();
