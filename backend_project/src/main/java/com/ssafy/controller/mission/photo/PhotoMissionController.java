@@ -59,6 +59,8 @@ public class PhotoMissionController {
 //        return ResponseEntity.ok(response);
 //    }
 
+
+
     // 수정 시작하자.
 //    @Operation(summary = "사진 등록", description = "해당 미션에 대해 사진 파일을 업로드합니다.")
 //    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
