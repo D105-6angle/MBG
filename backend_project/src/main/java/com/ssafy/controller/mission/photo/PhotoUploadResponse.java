@@ -17,4 +17,3 @@ public class PhotoUploadResponse {
     private String pictureUrl;
     private String completionTime;
 }
-
