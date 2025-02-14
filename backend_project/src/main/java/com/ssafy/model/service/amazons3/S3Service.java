@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
@@ -19,6 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class S3Service {
     private final S3Client s3Client;
+    private final AwsBasicCredentials credentials;
 
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucket;
@@ -39,6 +42,7 @@ public class S3Service {
     public String generatePresignedUrl(String fileKey) {
         S3Presigner presigner = S3Presigner.builder()
                 .region(s3Client.serviceClientConfiguration().region())
+                .credentialsProvider(StaticCredentialsProvider.create(credentials))
                 .build();
 
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()

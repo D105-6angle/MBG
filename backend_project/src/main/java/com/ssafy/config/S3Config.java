@@ -26,8 +26,15 @@ public class S3Config {
     private String region;
 
     @Bean
-    public S3Client s3Client() {
-        AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey, secretKey);
-        return S3Client.builder().region(Region.of(region)).credentialsProvider(StaticCredentialsProvider.create(credentials)).build();
+    public AwsBasicCredentials awsCredentials() {
+        return AwsBasicCredentials.create(accessKey, secretKey);
+    }
+
+    @Bean
+    public S3Client s3Client(AwsBasicCredentials credentials) {  // credentials를 주입받아 사용
+        return S3Client.builder()
+                .region(Region.of(region))
+                .credentialsProvider(StaticCredentialsProvider.create(credentials))
+                .build();
     }
 }
