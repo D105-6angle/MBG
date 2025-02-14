@@ -46,6 +46,11 @@ class RoomListFragment : Fragment() {
             setupRecyclerView(numOfGroups)
             setupObservers()
         }
+        
+        // 닫기 버튼 클릭 리스너 추가
+        binding.btnClose.setOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
     private fun setupObservers() {

@@ -83,6 +83,7 @@
             android:id="@+id/profileName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:text="@string/profile_name"
             android:textSize="20sp"
             android:textColor="@color/text_black" />

@@ -18,6 +18,7 @@ import com.ssafy.mbg.databinding.FragmentHomeBinding
 import com.ssafy.mbg.di.UserPreferences
 import com.ssafy.mbg.ui.chatbot.ChatBotDialogFragment
 import com.ssafy.mbg.ui.home.InviteCodeFragment
+import com.ssafy.mbg.ui.home.ExitGroupDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.flow.collect
@@ -232,20 +233,14 @@ class HomeFragment : Fragment() {
     }
 
     private fun showExitConfirmationDialog() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("그룹 나가기")
-            .setMessage("정말로 그룹에서 나가시겠습니까?")
-            .setPositiveButton("나가기") { dialog, _ ->
+        ExitGroupDialogFragment().apply {
+            onConfirmClick = {
                 // userPreferences의 roomId와 groupNo를 사용하여 deleteMember 호출
                 userPreferences.roomId?.toInt()?.let { roomId ->
                     viewModel.deleteMember(roomId, userPreferences.groupNo)
                 }
-                dialog.dismiss()
             }
-            .setNegativeButton("취소") { dialog, _ ->
-                dialog.dismiss()
-            }
-            .show()
+        }.show(parentFragmentManager, "ExitGroupDialog")
     }
 
     fun navigateToRoomList(numOfGroups: Long, roomId: Long, location: String) {

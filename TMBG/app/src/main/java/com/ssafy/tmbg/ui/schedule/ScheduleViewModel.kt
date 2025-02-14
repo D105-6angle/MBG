@@ -9,6 +9,7 @@ import com.ssafy.tmbg.data.schedule.dao.Schedule
 import com.ssafy.tmbg.data.schedule.dao.ScheduleRequest
 import com.ssafy.tmbg.data.schedule.dao.ScheduleUpdateRequest
 import com.ssafy.tmbg.data.schedule.repository.ScheduleRepository
+import com.ssafy.tmbg.ui.SharedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,48 +20,34 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class ScheduleViewModel @Inject constructor(
-    private val repository: ScheduleRepository
+    private val repository: ScheduleRepository,
 ) : ViewModel() {
 
-    // UI에 표시될 일정 목록을 관리하는 LiveData
     private val _schedules = MutableLiveData<List<Schedule>>()
-    val schedules: LiveData<List<Schedule>> = _schedules  // 외부에서는 읽기 전용으로 제공
+    val schedules: LiveData<List<Schedule>> = _schedules
 
-    // API 호출 중 로딩 상태를 관리하는 LiveData
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    // 에러 메시지를 관리하는 LiveData
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
 
-    /**
-     * 일정 목록을 서버에서 조회합니다.
-     * @param roomId 방 ID
-     * 
-     * 동작 과정:
-     * 1. 로딩 상태를 true로 설정
-     * 2. API 호출 시도
-     * 3. 성공 시: schedules LiveData를 새로운 목록으로 업데이트
-     * 4. 실패 시: error LiveData에 에러 메시지 설정
-     * 5. 완료 시: 로딩 상태를 false로 설정
-     */
+
     fun getSchedules(roomId: Int) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 Log.d("ScheduleViewModel", "Requesting schedules for roomId: $roomId")
                 val response = repository.getSchedules(roomId)
-                
-                // 응답 상세 로깅
+
                 Log.d("ScheduleViewModel", "Response code: ${response.code()}")
                 Log.d("ScheduleViewModel", "Response headers: ${response.headers()}")
                 Log.d("ScheduleViewModel", "Response raw: ${response.raw()}")
-                
+
                 if (response.isSuccessful) {
                     val scheduleResponse = response.body()
                     Log.d("ScheduleViewModel", "Response body: $scheduleResponse")
-                    
+
                     scheduleResponse?.let {
                         Log.d("ScheduleViewModel", "Parsed schedules: ${it.schedules}")
                         _schedules.value = it.schedules
@@ -83,39 +70,23 @@ class ScheduleViewModel @Inject constructor(
         }
     }
 
-    /**
-     * 새로운 일정을 생성합니다.
-     * @param roomId 방 ID
-     * @param scheduleRequest 생성할 일정 정보
-     * 
-     * 동작 과정:
-     * 1. 로딩 상태를 true로 설정
-     * 2. API 호출하여 일정 생성 시도
-     * 3. 성공 시: 
-     *    - 서버에서 받은 새 일정을 현재 목록에 추가
-     *    - schedules LiveData 업데이트
-     * 4. 실패 시: error LiveData에 에러 메시지 설정
-     * 5. 완료 시: 로딩 상태를 false로 설정
-     */
     fun createSchedule(roomId: Int, scheduleRequest: ScheduleRequest) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 Log.d("ScheduleViewModel", "Creating schedule for roomId: $roomId")
                 Log.d("ScheduleViewModel", "Request body: $scheduleRequest")
-                
+
                 val response = repository.createSchedule(roomId, scheduleRequest)
-                
-                // 응답 상세 로깅
+
                 Log.d("ScheduleViewModel", "Response code: ${response.code()}")
                 Log.d("ScheduleViewModel", "Response headers: ${response.headers()}")
                 Log.d("ScheduleViewModel", "Response raw: ${response.raw()}")
-                
+
                 if (response.isSuccessful) {
-                    // 서버에서 받은 새 일정을 현재 목록에 추가
                     val newSchedule = response.body()
                     Log.d("ScheduleViewModel", "Response body (new schedule): $newSchedule")
-                    
+
                     val currentList = _schedules.value.orEmpty().toMutableList()
                     newSchedule?.let {
                         currentList.add(it)
@@ -139,47 +110,29 @@ class ScheduleViewModel @Inject constructor(
         }
     }
 
-    /**
-     * 기존 일정을 수정합니다.
-     * @param roomId 방 ID
-     * @param scheduleId 수정할 일정 ID
-     * @param schedule 수정할 일정 정보
-     * 
-     * 동작 과정:
-     * 1. 로딩 상태를 true로 설정
-     * 2. API 호출하여 일정 수정 시도
-     * 3. 성공 시:
-     *    - 현재 목록에서 해당 일정을 찾아 업데이트
-     *    - schedules LiveData 업데이트
-     * 4. 실패 시: error LiveData에 에러 메시지 설정
-     * 5. 완료 시: 로딩 상태를 false로 설정
-     */
     fun updateSchedule(roomId: Int, scheduleId: Int, schedule: Schedule) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 Log.d("ScheduleViewModel", "Updating schedule - roomId: $roomId, scheduleId: $scheduleId")
                 Log.d("ScheduleViewModel", "Update request body: $schedule")
-                
-                // Schedule -> ScheduleUpdateRequest로 변환
+
                 val updateRequest = ScheduleUpdateRequest(
                     startTime = schedule.startTime,
                     endTime = schedule.endTime,
                     content = schedule.content
                 )
-                
+
                 val response = repository.updateSchedule(roomId, scheduleId, updateRequest)
-                
-                // 응답 상세 로깅
+
                 Log.d("ScheduleViewModel", "Response code: ${response.code()}")
                 Log.d("ScheduleViewModel", "Response headers: ${response.headers()}")
                 Log.d("ScheduleViewModel", "Response raw: ${response.raw()}")
-                
+
                 if (response.isSuccessful) {
                     val updatedSchedule = response.body()
                     Log.d("ScheduleViewModel", "Response body (updated schedule): $updatedSchedule")
-                    
-                    // 현재 목록에서 수정된 일정 업데이트
+
                     val currentList = _schedules.value.orEmpty().toMutableList()
                     val index = currentList.indexOfFirst { it.scheduleId == scheduleId }
                     if (index != -1 && updatedSchedule != null) {
@@ -202,20 +155,6 @@ class ScheduleViewModel @Inject constructor(
         }
     }
 
-    /**
-     * 일정을 삭제합니다.
-     * @param roomId 방 ID
-     * @param scheduleId 삭제할 일정 ID
-     * 
-     * 동작 과정:
-     * 1. 로딩 상태를 true로 설정
-     * 2. API 호출하여 일정 삭제 시도
-     * 3. 성공 시:
-     *    - 현재 목록에서 해당 일정을 제거
-     *    - schedules LiveData 업데이트
-     * 4. 실패 시: error LiveData에 에러 메시지 설정
-     * 5. 완료 시: 로딩 상태를 false로 설정
-     */
     fun deleteSchedule(roomId: Int, scheduleId: Int) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -235,5 +174,4 @@ class ScheduleViewModel @Inject constructor(
             }
         }
     }
-
-} 
+}

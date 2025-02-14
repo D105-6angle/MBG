@@ -1,6 +1,5 @@
 package com.ssafy.mbg.ui.book
 
-import com.ssafy.mbg.data.book.response.BookDetailResponse
 import com.ssafy.mbg.data.book.response.BookResponse
 
 sealed class BookState {

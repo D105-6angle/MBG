@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="@drawable/main_background">
 
     <!-- 상단 가로 가이드라인 -->
     <androidx.constraintlayout.widget.Guideline
@@ -26,9 +27,10 @@
         android:id="@+id/notification_icon"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_margin="16dp"
-        android:background="@color/background"
-        android:src="@drawable/ic_notification"
+        android:layout_marginTop="33dp"
+        android:layout_marginStart="16dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_notification_2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -37,7 +39,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:drawableEnd="@drawable/ic_dropdown"
         android:drawablePadding="4dp"
         android:textColor="@color/text_black"
@@ -52,7 +54,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        android:textSize="16sp"
+        android:textSize="22sp"
         android:background="@drawable/group_info"
         android:gravity="center"
         android:textColor="@color/text_black"
@@ -75,14 +77,15 @@
         android:layout_marginStart="16dp"
         android:background="@null"
         android:scaleType="fitCenter"
-        app:layout_constraintBottom_toTopOf="@+id/guideline3"
+        app:layout_constraintBottom_toBottomOf="@id/guideline3"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/chatbot" />
 
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginTop="35dp"
+        android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -91,8 +94,8 @@
             android:id="@+id/teamIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/background"
-            android:src="@drawable/team"
+            android:src="@drawable/ic_enter"
+            android:background="@android:color/transparent"
             android:visibility="gone" />
 
         <!-- 나가기 아이콘 (그룹에 속했을 때) -->
@@ -100,25 +103,27 @@
             android:id="@+id/exitIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/background"
             android:src="@drawable/ic_exit"
+            android:background="@android:color/transparent"
             android:visibility="gone" />
 
     </FrameLayout>
+
+    <!-- 그림자 -->
 
     <ImageView
         android:id="@+id/characterGif"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:background="@color/background"
         android:scaleType="fitCenter"
         android:src="@drawable/character_gif_origin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.734" />
 
-    <!-- 그림자 -->
     <View
         android:id="@+id/shadow"
         android:layout_width="120dp"
@@ -129,31 +134,12 @@
         app:layout_constraintStart_toStartOf="@id/characterGif"
         app:layout_constraintTop_toTopOf="@id/characterGif" />
 
-
-    <TextView
-        android:id="@+id/tvNickname"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:background="@drawable/nickname_box_background"
-        android:paddingStart="16dp"
-        android:paddingTop="8dp"
-        android:paddingEnd="16dp"
-        android:paddingBottom="8dp"
-        android:text="@string/user_nickname"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/characterGif"
-        app:layout_constraintVertical_bias="0.0" />
-
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="693dp" />
+        app:layout_constraintGuide_end="120dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

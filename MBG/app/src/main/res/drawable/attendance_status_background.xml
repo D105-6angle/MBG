@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- res/drawable/attendance_status_background.xml -->
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <corners android:radius="12dp"/>
-    <solid android:color="#4CAF50"/> <!-- 기본 색상, 코드에서 동적 변경 -->
-</shape>

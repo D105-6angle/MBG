@@ -7,22 +7,19 @@ import androidx.lifecycle.viewModelScope
 import com.ssafy.tmbg.data.team.dao.TeamRequest
 import com.ssafy.tmbg.data.team.repository.TeamRepository
 import android.content.Context
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.LiveData
 import com.ssafy.tmbg.data.team.dao.Team
 import kotlinx.coroutines.launch
 import com.ssafy.tmbg.data.team.dao.GroupDetailResponse
-import android.content.SharedPreferences
 import android.content.Intent
 import android.util.Log
+import com.ssafy.tmbg.ui.SharedViewModel
 
 @HiltViewModel
 class TeamViewModel @Inject constructor(
     private val repository: TeamRepository,
-    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
 
     private val _team = MutableLiveData<Team?>()
@@ -31,50 +28,34 @@ class TeamViewModel @Inject constructor(
     private val _hasTeam = MutableLiveData<Boolean>()
     val hasTeam: LiveData<Boolean> = _hasTeam
 
-    private val _roomId = MutableLiveData<Int>()
-    val roomId: LiveData<Int> = _roomId
-
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
 
     private val _groupDetail = MutableLiveData<GroupDetailResponse>()
     val groupDetail: LiveData<GroupDetailResponse> = _groupDetail
 
-    init {
-        _hasTeam.value = false
-        _roomId.value = -1
-        _error.value = ""
+    // SharedViewModel의 roomId 사용
 
-        val savedRoomId = sharedPreferences.getInt("room_id", -1)
-        if (savedRoomId != -1) {
-            _roomId.value = savedRoomId
-            getTeam(savedRoomId)
-        }
-    }
 
-    fun createTeam(teamRequest: TeamRequest) {
-        viewModelScope.launch {
-            try {
-                val response = repository.createTeam(teamRequest)
-
-                if (response.isSuccessful) {
-                    response.body()?.let { teamCreateResponse ->
-                        val newRoomId = teamCreateResponse.roomId.toInt()
-                        _roomId.value = newRoomId
-                        // roomId를 SharedPreferences에 저장
-                        sharedPreferences.edit().putInt("room_id", newRoomId).apply()
-                        getTeam(newRoomId)
-                    } ?: run {
-                        _error.value = "팀 생성 응답이 비어있습니다"
-                    }
-                } else {
-                    val errorBody = response.errorBody()?.string()
-                    _error.value = "팀 생성에 실패했습니다 (${response.code()})"
+    suspend fun createTeam(teamRequest: TeamRequest): Result<Int> {
+        return try {
+            val response = repository.createTeam(teamRequest)
+            if (response.isSuccessful) {
+                response.body()?.let { teamCreateResponse ->
+                    val newRoomId = teamCreateResponse.roomId.toInt()
+                    getTeam(newRoomId)
+                    Result.success(newRoomId)
+                } ?: run {
+                    _error.value = "팀 생성 응답이 비어있습니다"
+                    Result.failure(Exception("팀 생성 응답이 비어있습니다"))
                 }
-            } catch (e: Exception) {
-                _error.value = "네트워크 오류: ${e.message}"
+            } else {
+                _error.value = "팀 생성에 실패했습니다 (${response.code()})"
+                Result.failure(Exception("팀 생성 실패: ${response.code()}"))
             }
-
+        } catch (e: Exception) {
+            _error.value = "네트워크 오류: ${e.message}"
+            Result.failure(e)
         }
     }
 
@@ -85,7 +66,7 @@ class TeamViewModel @Inject constructor(
                 type = "text/plain"
                 putExtra(Intent.EXTRA_TEXT, team.inviteCode)
             }
-            
+
             try {
                 context.startActivity(Intent.createChooser(shareIntent, "초대 코드 공유하기"))
             } catch (e: Exception) {
@@ -138,10 +119,9 @@ class TeamViewModel @Inject constructor(
                 Log.d("TeamViewModel", "addGroup 호출됨 - roomId: $roomId")
                 val response = repository.addGroup(roomId)
                 Log.d("TeamViewModel", "addGroup API 응답: $response")
-                
+
                 if (response.isSuccessful) {
                     Log.d("TeamViewModel", "그룹 추가 성공")
-                    // 그룹 추가 성공 후 팀 정보를 다시 불러옴
                     getTeam(roomId)
                 } else {
                     val errorBody = response.errorBody()?.string()
@@ -158,13 +138,15 @@ class TeamViewModel @Inject constructor(
     fun deleteMember(roomId: Int, groupNo: Int, userId: Long) {
         viewModelScope.launch {
             try {
-                Log.d("TeamViewModel", "deleteMember 호출 - roomId: $roomId, groupNo: $groupNo, userId: $userId")
+                Log.d(
+                    "TeamViewModel",
+                    "deleteMember 호출 - roomId: $roomId, groupNo: $groupNo, userId: $userId"
+                )
                 val response = repository.deleteMember(roomId, groupNo, userId)
                 Log.d("TeamViewModel", "deleteMember 응답: $response")
-                
+
                 if (response.isSuccessful) {
                     Log.d("TeamViewModel", "멤버 삭제 성공")
-                    // 멤버 삭제 성공 후 그룹 상세 정보를 다시 불러옴
                     getGroupDetail(roomId, groupNo)
                 } else {
                     val errorBody = response.errorBody()?.string()

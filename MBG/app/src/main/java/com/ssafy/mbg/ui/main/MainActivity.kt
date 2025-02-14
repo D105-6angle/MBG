@@ -30,6 +30,7 @@ import androidx.core.content.ContextCompat
 import android.content.pm.PackageManager
 import android.os.Build
 import android.view.View
+import android.content.res.ColorStateList
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -150,6 +151,24 @@ class MainActivity : AppCompatActivity() {
         createNotificationChannel("ssafy_channel", "ssafy")
         // FCM 초기화
         initFCM()
+
+        // destination 변경 감지
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.mapFragment -> {
+                    // 맵 프래그먼트일 때 선택된 상태의 색상
+                    binding.fab.backgroundTintList = ColorStateList.valueOf(
+                        ContextCompat.getColor(this, R.color.bottom_bar_fab_background_selected)
+                    )
+                }
+                else -> {
+                    // 다른 프래그먼트일 때 선택되지 않은 상태의 색상
+                    binding.fab.backgroundTintList = ColorStateList.valueOf(
+                        ContextCompat.getColor(this, R.color.bottom_bar_fab_background_unselected)
+                    )
+                }
+            }
+        }
     }
 
     // 툴바 업 버튼 동작 시 NavController에 위임

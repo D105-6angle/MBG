@@ -119,7 +119,10 @@ class BookAdapter(
         }
 
         private fun showPopupDirectly(bookCard: CardCollection, fragmentManager: FragmentManager) {
-            val popupFragment = CardPopupFragment.newInstance(bookCard.cardId)
+            val popupFragment = CardPopupFragment.newInstance(
+                cardId = bookCard.cardId,
+                imageUrl = bookCard.imageUrl  // 이미지 URL 추가
+            )
             popupFragment.show(fragmentManager, "CardPopupFragment")
         }
     }

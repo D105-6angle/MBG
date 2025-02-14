@@ -18,12 +18,14 @@ import com.ssafy.tmbg.databinding.FragmentTeamDetailBinding
 import com.ssafy.tmbg.adapter.TeamMemberAdapter
 import com.ssafy.tmbg.adapter.TeamPhotoAdapter
 import com.ssafy.tmbg.adapter.TeamPlaceAdapter
-import com.ssafy.tmbg.ui.main.MainViewModel
 import com.ssafy.tmbg.ui.team.TeamViewModel
 import com.ssafy.tmbg.data.team.dao.VerificationPhotos
 import com.ssafy.tmbg.data.team.dao.GroupDetailResponse
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import com.ssafy.tmbg.ui.SharedViewModel
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class TeamDetailFragment : Fragment() {
@@ -31,7 +33,7 @@ class TeamDetailFragment : Fragment() {
     private val binding get() = _binding!!
     private val teamViewModel: TeamViewModel by viewModels()
     private val args: TeamDetailFragmentArgs by navArgs()
-    private val mainViewModel: MainViewModel by activityViewModels()
+    private val sharedViewModel: SharedViewModel by activityViewModels()  // MainViewModel -> SharedViewModel
     private var isDeleteMode = false
     private lateinit var memberAdapter: TeamMemberAdapter
 
@@ -48,28 +50,19 @@ class TeamDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupUI()
         setupObservers()
-        
-        // roomId와 groupNo로 상세 정보 요청
-        mainViewModel.roomId.value?.let { roomId ->
-            teamViewModel.getGroupDetail(roomId, args.groupNumber)
-        }
 
-        // 리사이클러뷰 설정
-        setupMemberRecyclerView()
-        setupPhotoRecyclerView(emptyList())  // 초기에는 빈 리스트로 설정
-        setupPlaceRecyclerView()
-    }
-
-    private fun setupUI() {
-        binding.apply {
-            // 툴바 타이틀 설정 (그룹 번호)
-            toolbarTitle.text = "${args.groupNumber}조"
-
-            // 뒤로가기 버튼
-            btnBack.setOnClickListener {
-                findNavController().navigateUp()
+        // Flow로 roomId 수집하여 상세 정보 요청
+        viewLifecycleOwner.lifecycleScope.launch {
+            sharedViewModel.roomId.collect { roomId ->
+                if (roomId != -1) {
+                    teamViewModel.getGroupDetail(roomId, args.groupNumber)
+                }
             }
         }
+
+        setupMemberRecyclerView()
+        setupPhotoRecyclerView(emptyList())
+        setupPlaceRecyclerView()
     }
 
     private fun setupObservers() {
@@ -87,29 +80,31 @@ class TeamDetailFragment : Fragment() {
                 binding.rvLeader.adapter = TeamMemberAdapter(
                     members = listOfNotNull(leader),
                     onDeleteClick = { userId ->
-                        mainViewModel.roomId.value?.let { roomId ->
-                            teamViewModel.deleteMember(roomId, args.groupNumber, userId)
+                        // Flow로 roomId 수집
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            sharedViewModel.roomId.collect { roomId ->
+                                if (roomId != -1) {
+                                    teamViewModel.deleteMember(roomId, args.groupNumber, userId)
+                                }
+                            }
                         }
                     }
                 )
-                
+
                 // 조원 리사이클러뷰 업데이트
                 memberAdapter = TeamMemberAdapter(
                     members = detail.members.filter { it.codeId != "J001" },
                     onDeleteClick = { userId ->
-                        mainViewModel.roomId.value?.let { roomId ->
-                            teamViewModel.deleteMember(roomId, args.groupNumber, userId)
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            sharedViewModel.roomId.collect { roomId ->
+                                if (roomId != -1) {
+                                    teamViewModel.deleteMember(roomId, args.groupNumber, userId)
+                                }
+                            }
                         }
                     }
                 )
                 binding.rvMembers.adapter = memberAdapter
-                
-                // 삭제 모드 상태 유지
-                memberAdapter.setDeleteMode(isDeleteMode)
-                (binding.rvLeader.adapter as? TeamMemberAdapter)?.setDeleteMode(isDeleteMode)
-
-                // 사진 리사이클러뷰 설정
-                setupPhotoRecyclerView(detail.verificationPhotos)
 
                 // 방문 장소 리사이클러뷰 업데이트
                 binding.rvPlaces.adapter = TeamPlaceAdapter(detail.visitedPlaces)
@@ -129,6 +124,18 @@ class TeamDetailFragment : Fragment() {
                 else 
                     ContextCompat.getColor(requireContext(), R.color.gray)
             )
+        }
+    }
+
+    private fun setupUI() {
+        binding.apply {
+            // 툴바 타이틀 설정 (그룹 번호)
+            toolbarTitle.text = "${args.groupNumber}조"
+
+            // 뒤로가기 버튼
+            btnBack.setOnClickListener {
+                findNavController().navigateUp()
+            }
         }
     }
 

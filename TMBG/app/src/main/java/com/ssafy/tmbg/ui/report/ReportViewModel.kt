@@ -1,10 +1,11 @@
 package com.ssafy.tmbg.ui.report
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.tmbg.data.report.repositoy.ReportRepository
 import com.ssafy.tmbg.data.report.repositoy.ReportRepositoryImpl
-import com.ssafy.tmbg.ui.main.MainViewModel
+import com.ssafy.tmbg.ui.SharedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -20,41 +21,29 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class ReportViewModel @Inject constructor(
-    private val reportRepositoryImpl: ReportRepositoryImpl
+    private val reportRepositoryImpl: ReportRepositoryImpl,
 ) : ViewModel() {
     private val _state = MutableStateFlow<ReportState>(ReportState.Initial)
     val state: StateFlow<ReportState> = _state.asStateFlow()
 
     private var updateJob: Job? = null
-    private val _roomId = MutableStateFlow<Int>(-1)
-    val roomId = _roomId.asStateFlow()
 
-    fun setRoomId(id: Int) {
-        _roomId.value = id
-    }
-
-    fun startAutoUpdate() {
+    fun startAutoUpdate(roomId: Int) {
+        Log.d("ReportViewModel", "startAutoUpdate: $roomId")
         updateJob?.cancel()
         updateJob = viewModelScope.launch {
             while (true) {
-                fetchReport()
+                fetchReport(roomId)
                 delay(10000)
             }
         }
     }
 
-    private fun stopAutoUpdate() {
-        updateJob?.cancel()
-        updateJob = null
-    }
+    private suspend fun fetchReport(roomId: Int): Boolean {
+        if (roomId == -1) return false
 
-    private suspend fun fetchReport(): Boolean {
         try {
-            val currentRoomId = _roomId.value
-            if (currentRoomId == -1) return false
-
-            val result = reportRepositoryImpl.getReport(currentRoomId)
-
+            val result = reportRepositoryImpl.getReport(roomId)
             result.onSuccess { response ->
                 _state.value = ReportState.Success(
                     message = "보고서가 업데이트 되었습니다.",
@@ -68,6 +57,7 @@ class ReportViewModel @Inject constructor(
                 }
             }
         } catch (e: Exception) {
+            Log.e("ReportViewModel", "Error in fetchReport", e)
             if (_state.value !is ReportState.Success) {
                 _state.value = ReportState.Error(e.message ?: "알 수 없는 오류가 발생했어요")
             }
@@ -75,7 +65,19 @@ class ReportViewModel @Inject constructor(
         return false
     }
 
+    fun clearState() {
+        stopAutoUpdate()
+        _state.value = ReportState.Initial
+    }
+
+    private fun stopAutoUpdate() {
+        Log.d("ReportViewModel", "stopAutoUpdate called")
+        updateJob?.cancel()
+        updateJob = null
+    }
+
     override fun onCleared() {
+        Log.d("ReportViewModel", "onCleared called")
         super.onCleared()
         stopAutoUpdate()
     }

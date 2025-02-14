@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:textColor="#666666"
+        android:textColor="@color/confirm_withdraw"
         android:layout_marginEnd="16dp"/>
 
     <!-- 학생 이름 -->
@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textSize="16sp"
-        android:textColor="#333333"/>
+        android:textColor="@color/team_member"/>
 
     <!-- 체크 아이콘 -->
     <ImageView

@@ -3,19 +3,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp">
+    android:layout_marginVertical="8dp"
+    android:layout_marginHorizontal="4dp">
 
-    <!-- 조 정보를 보여주는 버튼 -->
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnTeam"
-        android:text="@string/team_num"
+    <!-- 조 정보를 보여주는 카드뷰 -->
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#F3D4B0"
-        android:gravity="start|center_vertical"
-        android:padding="16dp"
-        android:textColor="#000000"
-        android:textSize="16sp"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:cardCornerRadius="12dp"
+        app:cardElevation="2dp"
+        app:cardBackgroundColor="#FFFFFF"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnTeam"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/team_num"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="start|center_vertical"
+            android:padding="16dp"
+            android:textColor="#2C3E50"
+            android:textSize="16sp"/>
+
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
