@@ -12,15 +12,17 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.gson.Gson
 import com.ssafy.mbg.R
-import java.io.IOException
-import android.graphics.Color
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.HttpUrl
 import okhttp3.Request
 import okhttp3.Response
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.IOException
+import android.graphics.Color
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class HeritageQuizMissionFragment : DialogFragment() {
@@ -35,7 +37,7 @@ class HeritageQuizMissionFragment : DialogFragment() {
         fun newInstance(missionId: Int): HeritageQuizMissionFragment {
             val fragment = HeritageQuizMissionFragment()
             val args = Bundle().apply {
-                putInt("missionId", missionId)  // missionId 전달
+                putInt("missionId", missionId)
             }
             fragment.arguments = args
             return fragment
@@ -54,18 +56,24 @@ class HeritageQuizMissionFragment : DialogFragment() {
         val answer: String
     )
 
+    // 데이터 모델: QuizResult (정답 제출 후 응답)
+    data class QuizResult(
+        val objectImageUrl: String,
+        val correct: Boolean
+    )
+
     private lateinit var quizImageView: ImageView
     private lateinit var contentTextView: TextView
     private lateinit var choicesContainer: LinearLayout
     private lateinit var btnSubmit: Button
 
-    // 사용자가 선택한 답변을 저장하는 변수
+    // 사용자가 선택한 답변 저장
     private var selectedAnswer: String? = null
     private var quizResponse: HeritageQuizResponse? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // RoundedCornerDialog 스타일 적용 및 팝업 취소 불가 설정
+        // RoundedCornerDialog 스타일 적용 및 팝업 취소 불가
         setStyle(STYLE_NORMAL, R.style.RoundedCornerDialog)
         isCancelable = false
     }
@@ -73,7 +81,7 @@ class HeritageQuizMissionFragment : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        // Postpone the enter transition so that we display the fragment only when ready.
+        // postponeEnterTransition로 UI 완성 후 표시
         postponeEnterTransition()
         val view = inflater.inflate(R.layout.fragment_heritage_quiz_mission, container, false)
 
@@ -86,17 +94,11 @@ class HeritageQuizMissionFragment : DialogFragment() {
             if (selectedAnswer == null) {
                 Toast.makeText(requireContext(), "답변을 선택해주세요.", Toast.LENGTH_SHORT).show()
             } else {
-                // 정답 여부 확인
-                if (selectedAnswer == quizResponse?.answer) {
-                    Toast.makeText(requireContext(), "정답입니다!", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(requireContext(), "오답입니다. 정답은 ${quizResponse?.answer} 입니다.", Toast.LENGTH_SHORT).show()
-                }
-                dismiss()
+                submitAnswer()
             }
         }
 
-        // missionId를 인자로 받아 quiz를 요청
+        // missionId를 인자로 받아 퀴즈 요청
         val missionId = arguments?.getInt("missionId") ?: -1
         if (missionId == -1) {
             Toast.makeText(requireContext(), "잘못된 미션 ID", Toast.LENGTH_SHORT).show()
@@ -156,15 +158,13 @@ class HeritageQuizMissionFragment : DialogFragment() {
     }
 
     private fun updateUIWithQuiz(quiz: HeritageQuizResponse) {
-        // Glide를 사용해 이미지 로드. Listener를 통해 이미지가 로드되면 postponed transition을 시작.
         Glide.with(this)
             .load(quiz.imageUrl)
-            .error(R.drawable.cultural_1) // 이미지가 없으면 대체 이미지 사용
+            .error(R.drawable.cultural_1)
             .listener(object : RequestListener<Drawable> {
                 override fun onLoadFailed(
                     e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean
                 ): Boolean {
-                    // 이미지 로드 실패 시에도 transition을 시작합니다.
                     startPostponedEnterTransition()
                     return false
                 }
@@ -172,17 +172,14 @@ class HeritageQuizMissionFragment : DialogFragment() {
                 override fun onResourceReady(
                     resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean
                 ): Boolean {
-                    // 이미지가 준비되면 transition을 시작
                     startPostponedEnterTransition()
                     return false
                 }
             })
             .into(quizImageView)
 
-        // 문제 내용 설정
         contentTextView.text = quiz.content
 
-        // 선택지 버튼 동적 생성
         choicesContainer.removeAllViews()
         for (choice in quiz.choices) {
             val btnChoice = Button(requireContext())
@@ -207,12 +204,68 @@ class HeritageQuizMissionFragment : DialogFragment() {
             val child = choicesContainer.getChildAt(i)
             if (child is Button) {
                 if (child.text == selectedAnswer) {
-                    child.setBackgroundColor(Color.YELLOW) // 선택된 버튼 강조
+                    child.setBackgroundColor(Color.YELLOW)
                 } else {
                     child.setBackgroundColor(Color.TRANSPARENT)
                 }
             }
         }
+    }
+
+    private fun submitAnswer() {
+        val missionId = arguments?.getInt("missionId") ?: -1
+        if (missionId == -1) {
+            Toast.makeText(requireContext(), "잘못된 미션 ID", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val userId = userPreferences.userId
+        if (userId == null) {
+            Toast.makeText(requireContext(), "사용자 정보가 없습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val jsonBody = """
+            {
+              "userId": $userId,
+              "answers": "${selectedAnswer}"
+            }
+        """.trimIndent()
+        val requestBody = jsonBody.toRequestBody("application/json".toMediaType())
+        val url = "https://i12d106.p.ssafy.io/api/missions/quiz/heritage/$missionId"
+        val request = Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .addHeader("accept", "*/*")
+            .addHeader("Content-Type", "application/json")
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                activity?.runOnUiThread {
+                    Toast.makeText(requireContext(), "정답 제출 실패", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                response.use {
+                    if (!response.isSuccessful) {
+                        activity?.runOnUiThread {
+                            Toast.makeText(requireContext(), "오류: ${response.code}", Toast.LENGTH_SHORT).show()
+                        }
+                        return
+                    }
+                    val responseBody = response.body?.string()
+                    if (responseBody != null) {
+                        val gson = Gson()
+                        val result = gson.fromJson(responseBody, QuizResult::class.java)
+                        activity?.runOnUiThread {
+                            val resultFragment = QuizMissionResultFragment.newInstance(result.objectImageUrl, result.correct)
+                            resultFragment.show(parentFragmentManager, "QuizResultFragment")
+                            dismiss()
+                        }
+                    }
+                }
+            }
+        })
     }
 
     override fun onStart() {
