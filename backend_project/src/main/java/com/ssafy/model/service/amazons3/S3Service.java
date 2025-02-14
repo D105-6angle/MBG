@@ -13,6 +13,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.UUID;
@@ -22,6 +23,13 @@ import java.util.UUID;
 public class S3Service {
     private final S3Client s3Client;
     private final AwsBasicCredentials credentials;
+    private S3Presigner presigner;
+
+    @PostConstruct
+    public void init() {
+        presigner = S3Presigner.builder().region(s3Client.serviceClientConfiguration().region())
+                .credentialsProvider(StaticCredentialsProvider.create(credentials)).build();
+    }
 
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucket;
@@ -40,11 +48,6 @@ public class S3Service {
 
     // Presigned URL 생성
     public String generatePresignedUrl(String fileKey) {
-        S3Presigner presigner = S3Presigner.builder()
-                .region(s3Client.serviceClientConfiguration().region())
-                .credentialsProvider(StaticCredentialsProvider.create(credentials))
-                .build();
-
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(bucket)
                 .key(fileKey)
@@ -57,8 +60,6 @@ public class S3Service {
                 .build();
 
         String presignedUrl = presigner.presignGetObject(presignRequest).url().toString();
-        presigner.close();
-
         return presignedUrl;
     }
 
