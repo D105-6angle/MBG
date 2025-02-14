@@ -6,6 +6,7 @@ import com.ssafy.controller.common.FailResponse;
 import com.ssafy.exception.auth.NotFoundUserException;
 import com.ssafy.exception.auth.WithdrawnUserException;
 import com.ssafy.exception.common.DatabaseOperationException;
+import com.ssafy.model.service.amazons3.S3Service;
 import com.ssafy.model.service.mypage.MyPageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "마이페이지 API")
 public class MyPageController {
     private final MyPageService myPageService;
+    private final S3Service s3Service;
 
     @Operation(summary = "닉네임 변경")
     @PatchMapping("{userId}/nickname")
