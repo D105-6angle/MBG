@@ -430,8 +430,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 popup.show(parentFragmentManager, "M001Popup")
             }
             "M002" -> {
-                // M002: 랜덤 미션 발생! / "[placeName] 관련 문화재 관련 랜덤 퀴즈를 풀고 역사 카드를 얻어봐"
-                val popup = MissionExplainFragment.newInstance("M002", mission.positionName ?: "미지정", userPreferences.location)
+                // M002 분기도 missionId를 전달하도록 수정
+                val popup = MissionExplainFragment.newInstance("M002", mission.positionName ?: "미지정", userPreferences.location, mission.missionId)
                 popup.show(parentFragmentManager, "M002Popup")
             }
             "M003" -> {

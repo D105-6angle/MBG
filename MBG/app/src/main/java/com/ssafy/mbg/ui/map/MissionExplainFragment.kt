@@ -85,8 +85,9 @@ class MissionExplainFragment : DialogFragment() {
                     popup.show(parentFragmentManager, "M001Popup")
                 }
                 "M002" -> {
-                    // M002: 랜덤 퀴즈 미션 팝업
-                    val popup = RandomQuizMissionFragment.newInstance(codeId, positionName, placeName)
+                    // M002의 경우, missionId도 전달 (없다면 기본값 0)
+                    val missionId = arguments?.getInt("missionId") ?: 0
+                    val popup = RandomQuizMissionFragment.newInstance(missionId, codeId, positionName, placeName)
                     popup.show(parentFragmentManager, "M002Popup")
                 }
                 "M003" -> {
