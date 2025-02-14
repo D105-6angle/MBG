@@ -22,6 +22,7 @@
             LIMIT 1
     </select>
 
+
     <!-- ResultMap 정의 -->
     <resultMap id="QuizInfoMap" type="com.ssafy.controller.Oquiz.QuizInfo">
         <result property="quizId" column="quiz_id"/>
@@ -98,4 +99,11 @@
                  JOIN story_problems sp ON qt.problem_id = sp.problem_id
         WHERE qt.quiz_id = #{quizId}
     </select>
+
+    <select id="getCardImageUrlByCardId" resultType="String">
+        SELECT image_url
+        FROM cards
+        WHERE card_id = #{cardId}
+    </select>
+
 </mapper>
