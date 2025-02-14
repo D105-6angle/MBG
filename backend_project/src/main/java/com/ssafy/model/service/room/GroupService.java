@@ -7,6 +7,7 @@ import com.ssafy.model.entity.Membership;
 import com.ssafy.model.entity.Room;
 import com.ssafy.model.mapper.room.GroupMapper;
 import com.ssafy.model.mapper.room.RoomMapper;
+import com.ssafy.model.service.amazons3.S3Service;
 import lombok.RequiredArgsConstructor;
 import com.ssafy.controller.room.group.GroupResponse;
 import org.springframework.stereotype.Service;
@@ -19,9 +20,9 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class GroupService {
-
     private final RoomMapper roomMapper;
     private final GroupMapper groupMapper;
+    private final S3Service s3Service;
 
     // 전체 조 목록 조회
     public List<GroupResponse> getAllGroups(long roomId, int numOfGroups) {
@@ -79,6 +80,12 @@ public class GroupService {
                     .missionId(pd.getMissionId())
                     .completionTime(pd.getCompletionTime())
                     .build();
+
+            if (pd.getPictureUrl() != null) {
+                String presignedUrl = s3Service.generatePresignedUrl(pd.getPictureUrl());
+                dto.setPictureUrl(presignedUrl);
+            }
+
             verificationPhotos.add(dto);
         }
 

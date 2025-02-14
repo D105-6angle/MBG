@@ -48,7 +48,8 @@
 
     <insert id="insertLog">
         INSERT INTO logs (user_id, card_id, result, created_at)
-        VALUES (#{userId}, #{cardId}, #{result}, NOW());
+        VALUES (#{userId}, #{cardId}, #{result}, NOW())
+            ON DUPLICATE KEY UPDATE result = #{result}
     </insert>
 
     <select id="findByLog" resultType="com.ssafy.model.entity.Log">
