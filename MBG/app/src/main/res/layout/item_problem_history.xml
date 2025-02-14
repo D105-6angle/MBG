@@ -24,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:textSize="16sp"
+        android:textSize="24sp"
         android:textColor="@color/text_black"
         app:layout_constraintStart_toEndOf="@id/itemIcon"
         app:layout_constraintTop_toTopOf="@id/itemIcon"/>
@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
-        android:textSize="14sp"
+        android:textSize="16sp"
         android:textColor="#666666"
         app:layout_constraintStart_toEndOf="@id/itemIcon"
         app:layout_constraintTop_toBottomOf="@id/itemTitle"/>
