@@ -4,7 +4,6 @@ import android.util.Log
 import com.google.gson.Gson
 import com.ssafy.mbg.api.BookApi
 import com.ssafy.mbg.data.auth.response.ErrorResponse
-import com.ssafy.mbg.data.book.response.BookDetailResponse
 import com.ssafy.mbg.data.book.response.BookResponse
 import retrofit2.Response
 import javax.inject.Inject
@@ -20,20 +19,6 @@ class BookRepositoryImpl @Inject constructor(
             defaultError = ERROR_DEFAULT,
             handleErrorCode = { code ->
                 when (code) {
-                    STATUS_NOT_FOUND -> ERROR_NOT_FOUND
-                    else -> null
-                }
-            }
-        )
-    }
-
-    override suspend fun getBookDetail(userId: Long, cardId: Long): Result<BookDetailResponse> {
-        return handleApiCall(
-            apiCall = {bookApi.getBookDetail(userId, cardId)},
-            noDataError = ERROR_NO_DATA,
-            defaultError = ERROR_DEFAULT,
-            handleErrorCode = {code ->
-                when(code) {
                     STATUS_NOT_FOUND -> ERROR_NOT_FOUND
                     else -> null
                 }
