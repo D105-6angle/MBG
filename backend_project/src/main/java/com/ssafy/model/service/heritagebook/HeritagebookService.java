@@ -23,13 +23,6 @@ public class HeritagebookService {
                 .build();
     }
 
-    public HeritagebookResponse.DetailResponse getCardDetails(Long userId, Long cardId) {
-        HeritageBook card = heritagebookMapper.findByUserIdAndCardId(userId, cardId);
-        if (card == null) {
-            throw new IllegalArgumentException("해당 카드를 찾을 수 없습니다. userId: " + userId + ", cardId: " + cardId);
-        }
-        return toResponse(card);
-    }
 
     private HeritagebookResponse.DetailResponse toResponse(HeritageBook card) {
         return HeritagebookResponse.DetailResponse.builder()

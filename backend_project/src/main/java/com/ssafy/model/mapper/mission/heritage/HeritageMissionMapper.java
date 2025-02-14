@@ -5,6 +5,7 @@ import com.ssafy.model.entity.Log;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.Optional;
 
 @Mapper
@@ -16,5 +17,7 @@ public interface HeritageMissionMapper {
 
     int insertLog(@Param("userId") Long userId, @Param("cardId") Long cardId, @Param("result") boolean result);
 
+
     Log findByLog(@Param("userId") Long userId, @Param("cardId") Long cardId);
+
 }

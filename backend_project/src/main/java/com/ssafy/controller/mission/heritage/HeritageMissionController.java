@@ -35,8 +35,12 @@ public class HeritageMissionController {
             @RequestBody HeritageMissionAnswerRequest request) {
 
         HeritageMissionAnswerResponse answerResponse = heritageMissionService.submitHeritageMission(missionId, request);
-        String objectImageUrl = s3Service.generatePresignedUrl(answerResponse.getObjectImageUrl());
-        answerResponse.setObjectImageUrl(objectImageUrl);
+
+        if (answerResponse.getObjectImageUrl() != null) {
+            String objectImageUrl = s3Service.generatePresignedUrl(answerResponse.getObjectImageUrl());
+            answerResponse.setObjectImageUrl(objectImageUrl);
+        }
+
         return ResponseEntity.ok(answerResponse);
     }
 }
