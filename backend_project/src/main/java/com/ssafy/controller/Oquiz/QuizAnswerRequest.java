@@ -8,4 +8,5 @@ import lombok.Setter;
 public class QuizAnswerRequest {
     private Long userId;
     private String answer;
+    private Long quizId;
 }

@@ -24,4 +24,8 @@ public interface OquizMapper {
     // 꾸미백과 저장
     void insertHeritageBook(@Param("userId") Long userId,
                             @Param("cardId") Long cardId);
+
+
+    QuizInfo getQuizInfoByQuizId(@Param("quizId") Long quizId);
+
 }

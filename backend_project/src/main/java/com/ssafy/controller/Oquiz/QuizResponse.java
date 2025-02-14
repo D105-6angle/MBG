@@ -1,15 +1,14 @@
 package com.ssafy.controller.Oquiz;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class QuizResponse {
+    private String quizId;
     private String content;
     private String initial;
     private String blackIconUrl;

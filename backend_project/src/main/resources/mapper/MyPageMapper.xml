@@ -61,4 +61,6 @@
         FROM cards
         WHERE card_id = #{cardId}
     </select>
+
+
 </mapper>
