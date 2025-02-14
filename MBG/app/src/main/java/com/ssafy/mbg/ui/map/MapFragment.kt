@@ -98,7 +98,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var isPickerModeEnabled = true
 
     // Picker Mode의 고정 초기 위치 (경복궁)
-    private val INITIAL_PICKER_LATLNG = LatLng(37.57640594972532, 126.97686654390287)
+//    private val INITIAL_PICKER_LATLNG = LatLng(37.57640594972532, 126.97686654390287)
+    private val INITIAL_PICKER_LATLNG = LatLng(37.579050513803224, 126.97762422651554)
+
 
     // API 응답 JSON과 매핑되는 미션 데이터 모델 (centerPoint와 edgePoints는 [lat, lng] 배열)
     data class Mission(
@@ -424,12 +426,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         when (mission.codeId) {
             "M001" -> {
                 // M001: 문화재 미션 발생! / "[positionName] 관련 문제를 풀고 역사 카드를 얻어봐"
-                val popup = MissionExplainFragment.newInstance("M001", mission.positionName ?: "미지정", "")
+                val popup = MissionExplainFragment.newInstance("M001", mission.positionName ?: "미지정", "", mission.missionId)
                 popup.show(parentFragmentManager, "M001Popup")
             }
             "M002" -> {
-                // M002: 랜덤 미션 발생! / "[placeName] 관련 문화재 관련 랜덤 퀴즈를 풀고 역사 카드를 얻어봐"
-                val popup = MissionExplainFragment.newInstance("M002", mission.positionName ?: "미지정", userPreferences.location)
+                // M002 분기도 missionId를 전달하도록 수정
+                val popup = MissionExplainFragment.newInstance("M002", mission.positionName ?: "미지정", userPreferences.location, mission.missionId)
                 popup.show(parentFragmentManager, "M002Popup")
             }
             "M003" -> {
@@ -511,7 +513,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 targetPoint
             }
             val arrowBitmapDescriptor = getArrowBitmap()
-            val arrowCap = CustomCap(arrowBitmapDescriptor, 15f)
+            val arrowCap = CustomCap(arrowBitmapDescriptor, 10f)
             nearestLine = googleMap.addPolyline(
                 PolylineOptions()
                     .add(userLatLng, lineEndPoint)
