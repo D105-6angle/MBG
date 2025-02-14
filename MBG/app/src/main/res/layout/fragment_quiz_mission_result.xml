@@ -10,9 +10,12 @@
 
     <ImageView
         android:id="@+id/resultImageView"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:scaleType="centerCrop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxWidth="200dp"
+        android:maxHeight="400dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
         android:layout_marginBottom="16dp"/>
 
     <TextView

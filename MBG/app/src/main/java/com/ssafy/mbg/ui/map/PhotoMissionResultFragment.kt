@@ -47,8 +47,8 @@ class PhotoMissionResultFragment : DialogFragment() {
         pictureUrl?.let { url ->
             Glide.with(this)
                 .load(url)
-                .placeholder(R.drawable.ic_book)
-                .error(R.drawable.ic_book)
+                .placeholder(R.drawable.ic_sync)
+                .error(R.drawable.ic_uploadfile)
                 .into(imageViewResult)
         }
 

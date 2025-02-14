@@ -151,27 +151,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/bottomSheetTitleTextView"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:gravity="center"
-            android:text="찾는 중 입니다"
-            android:textColor="@color/black"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/bottom_sheet_handle" />
-
-        <View
+        <!-- 컨테이너: 피커 목록과 거리 정보를 블록처럼 배치 (애니메이션 적용) -->
+        <LinearLayout
+            android:id="@+id/bottomSheetContainer"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:animateLayoutChanges="false"
+            app:layout_constraintTop_toBottomOf="@id/bottom_sheet_handle"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/bottomSheetTitleTextView" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
