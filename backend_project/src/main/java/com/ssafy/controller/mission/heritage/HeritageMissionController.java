@@ -1,5 +1,6 @@
 package com.ssafy.controller.mission.heritage;
 
+import com.ssafy.model.service.amazons3.S3Service;
 import com.ssafy.model.service.mission.heritage.HeritageMissionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,11 +15,16 @@ import org.springframework.web.bind.annotation.*;
 public class HeritageMissionController {
 
     private final HeritageMissionService heritageMissionService;
+    private final S3Service s3Service;
 
     @GetMapping("/{missionId}")
-    @Operation(summary = "문화재 문제 전체 조회")
+    @Operation(summary = "문화재 문제 조회")
     public ResponseEntity<HeritageMissionResponse> getHeritageMission(@PathVariable Long missionId) {
         HeritageMissionResponse quiz = heritageMissionService.getHeritageMissionByMissionId(missionId);
+        String imageUrl = s3Service.generatePresignedUrl(quiz.getImageUrl());
+        String objectImageUrl = s3Service.generatePresignedUrl(quiz.getObjectImageUrl());
+        quiz.setImageUrl(imageUrl);
+        quiz.setObjectImageUrl(objectImageUrl);
         return ResponseEntity.ok(quiz);
     }
 
