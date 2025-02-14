@@ -89,6 +89,11 @@ public class S3Service {
 
     // Presigned URL 생성
     public String generatePresignedUrl(String fileKey) {
+        if (fileKey == null) {
+            log.error("null 값을 PresignedURL으로 만들려고 시도했습니다.");
+            return null;
+        }
+
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(bucket)
                 .key(fileKey)
