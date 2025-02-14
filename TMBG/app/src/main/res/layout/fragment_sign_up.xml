@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFD0BA">
+    android:background="@color/sign_up_main">
 
     <!-- 상단 Sign Up 섹션 -->
     <com.google.android.material.progressindicator.CircularProgressIndicator
@@ -33,7 +33,7 @@
         android:id="@+id/signupForm"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="#FFE8D9"
+        android:background="@color/splash_main"
         android:paddingHorizontal="32dp"
         android:paddingTop="48dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -44,7 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/input_nickname"
-            android:textColor="#666666"
+            android:textColor="@color/confirm_withdraw"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -65,7 +65,7 @@
                 android:hint="@string/hint_text"
                 android:minHeight="52dp"
                 android:padding="16dp"
-                android:textColorHint="#999999" />
+                android:textColorHint="@color/sign_up_hint" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -74,11 +74,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:text=""
-            android:textColor="#666666"
+            android:text="닉네임 입력"
+            android:textColor="@color/confirm_withdraw"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etNickname" />
+            />
 
         <ImageView
             android:layout_width="24dp"
@@ -95,7 +95,7 @@
             android:background="@drawable/button_confirm"
             android:padding="16dp"
             android:text="@string/submit_sign_up_btn"
-            android:textColor="#ffffff"
+            android:textColor="@color/white"
             android:textSize="16sp"
             app:layout_constraintTop_toBottomOf="@id/tvNewUserQuestion" />
 
@@ -113,7 +113,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/sign_up"
-        android:textColor="#000000"
+        android:textColor="@color/black"
         android:textSize="40sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/signupForm" />

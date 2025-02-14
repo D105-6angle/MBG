@@ -11,10 +11,6 @@ import com.ssafy.tmbg.databinding.ModalProfileBinding
 
 class ProfileModal(
     context: Context,
-    private val email: String,
-    private val name: String,
-    private val currentNickname: String,
-    private val onConfirm: (String) -> Unit,
     private val onLogout: () -> Unit,
     private val onWithdraw: () -> Unit
 ) : Dialog(context) {
@@ -49,43 +45,11 @@ class ProfileModal(
     private fun initializeViews() {
         with(binding) {
             // 초기값 설정
-            emailTextView.text = email
-            nameTextView.text = name
-            nicknameEditText.hint = "닉네임 : $currentNickname"
 
             // 닉네임 입력 필드 설정
-            nicknameEditText.apply {
-                setText(currentNickname)  // 현재 닉네임을 기본값으로 설정
-                setSelection(currentNickname.length)  // 커서를 끝으로 이동
-            }
 
             // 클릭 리스너 설정
-            changeNicknameButton.setOnClickListener {
-                nicknameEditText.requestFocus()
-            }
 
-            confirmButton.setOnClickListener {
-                val newNickname = nicknameEditText.text.toString().trim()
-                when {
-                    newNickname.isBlank() -> {
-                        nicknameEditText.error = "닉네임을 입력해주세요"
-                    }
-                    newNickname == currentNickname -> {
-                        nicknameEditText.error = "현재 닉네임과 동일합니다"
-                    }
-                    newNickname.length < 2 -> {
-                        nicknameEditText.error = "닉네임은 2자 이상이어야 합니다"
-                    }
-
-                    newNickname.length > 13 -> {
-                        nicknameEditText.error = "닉네임은 13자 이하여야 합니다"
-                    }
-                    else -> {
-                        onConfirm(newNickname)
-                        dismiss()
-                    }
-                }
-            }
 
             logoutButton.setOnClickListener {
                 onLogout()

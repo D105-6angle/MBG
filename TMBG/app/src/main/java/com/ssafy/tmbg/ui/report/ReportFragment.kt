@@ -60,29 +60,20 @@ class ReportFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // MainViewModel에서 roomId를 가져와서 보고서 조회
         mainViewModel.roomId.value?.let { roomId ->
-            if (roomId != -1) {
-                reportViewModel.setRoomId(roomId)
-                reportViewModel.startAutoUpdate() // 자동 업데이트 시작
-            } else {
-                Toast.makeText(context, "방을 먼저 생성해주세요", Toast.LENGTH_SHORT).show()
-            }
+            reportViewModel.startAutoUpdate(roomId)
         }
 
         setupUI()
         observeViewModel()
     }
 
-    /**
-     * UI 초기 설정을 담당하는 함수
-     */
     private fun setupUI() {
         setupBackButton()
         setupDownloadButton()
         setupRecyclerView()
         setupCommentRecyclerView()
-        binding.reportContainer.visibility = View.GONE // 초기에는 보고서 숨김
+        binding.reportContainer.visibility = View.GONE
     }
 
     private fun setupCommentRecyclerView() {
@@ -98,18 +89,12 @@ class ReportFragment : Fragment() {
         commentAdapter.updateComments(comments)
     }
 
-    /**
-     * 뒤로가기 버튼 설정
-     */
     private fun setupBackButton() {
         binding.backButton.setOnClickListener {
             activity?.onBackPressed()
         }
     }
 
-    /**
-     * PDF 다운로드 버튼 설정
-     */
     private fun setupDownloadButton() {
         binding.downloadButton.setOnClickListener {
             MaterialAlertDialogBuilder(requireContext())
@@ -117,7 +102,9 @@ class ReportFragment : Fragment() {
                 .setMessage("보고서를 저장하고 체험학습을 종료하시겠습니까?")
                 .setPositiveButton("확인") { dialog, _ ->
                     downloadReport()
-                    mainViewModel.clearRoomId() // 룸 아이디 초기화
+                    Log.d("ReportFragment", "Clearing roomId")
+                    mainViewModel.clearRoomId()
+                    reportViewModel.clearRoomId()
                     dialog.dismiss()
                 }
                 .setNegativeButton("취소") { dialog, _ ->
@@ -127,21 +114,15 @@ class ReportFragment : Fragment() {
         }
     }
 
-    /**
-     * RecyclerView 초기 설정
-     */
     private fun setupRecyclerView() {
         attendanceAdapter = AttendanceAdapter()
-        binding.studentListRecyclerView.apply {  // ID 변경
+        binding.studentListRecyclerView.apply {
             adapter = attendanceAdapter
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(true)
         }
     }
 
-    /**
-     * ViewModel의 상태를 관찰하고 UI를 업데이트하는 함수
-     */
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             reportViewModel.state.collect { state ->
