@@ -2,14 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.model.mapper.Oquiz.OquizMapper">
     <resultMap id="quizResultMap" type="com.ssafy.controller.Oquiz.QuizResponse">
+        <result property="quizId" column="quiz_id"/>
         <result property="content" column="content"/>
         <result property="initial" column="initial"/>
         <result property="blackIconUrl" column="black_icon_image_url"/>
     </resultMap>
 
-
     <select id="getRandomQuizByMissionId" parameterType="Long" resultMap="quizResultMap">
         SELECT
+            qt.quiz_id,
             qt.content,
             qt.initial,
             sp.black_icon_image_url
@@ -53,14 +54,14 @@
         INSERT INTO logs (
             user_id,
             card_id,
-            result,
-            created_at
+            result
         ) VALUES (
                      #{userId},
                      #{cardId},
-                     #{result},
-                     NOW()
+                     #{result}
                  )
+            ON DUPLICATE KEY UPDATE
+                                 result = VALUES(result)
     </insert>
 
     <!-- 꾸미백과 중복 체크 -->
@@ -74,14 +75,27 @@
     <!-- 꾸미백과 저장 -->
     <insert id="insertHeritageBook">
         INSERT INTO heritage_books (
-            user_id,
-            card_id,
-            created_at
+        user_id,
+        card_id
         ) VALUES (
-                     #{userId},
-                     #{cardId},
-                     NOW()
-                 )
+        #{userId},
+        #{cardId}
+        )
+        ON DUPLICATE KEY UPDATE
+        user_id = user_id <!-- no-op update -->
     </insert>
 
+
+    <select id="getQuizInfoByQuizId" resultMap="QuizInfoMap">
+        SELECT
+            qt.quiz_id,
+            qt.problem_id,
+            qt.content,
+            qt.initial,
+            qt.answer,
+            sp.card_id
+        FROM quiz_types qt
+                 JOIN story_problems sp ON qt.problem_id = sp.problem_id
+        WHERE qt.quiz_id = #{quizId}
+    </select>
 </mapper>
