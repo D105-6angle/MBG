@@ -54,7 +54,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="quiz_character_background">
+            android:background="@color/quiz_character_background">
 
             <ImageView
                 android:id="@+id/ivCharacter"
@@ -119,6 +119,7 @@
         android:layout_height="56dp"
         android:layout_marginHorizontal="24dp"
         android:layout_marginBottom="40dp"
+        android:textColor="@android:color/black"
         android:text="안전 퀴즈 시작하기"
         android:textSize="18sp"
         android:textStyle="bold"

@@ -27,7 +27,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:background="@color/primary_color">
+                android:background="@color/bottom_bar_background">
 
                 <ImageView
                     android:id="@+id/closeButton"
@@ -57,6 +57,7 @@
             <!-- 채팅 목록 -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/chatRecyclerView"
+                android:background="@color/background"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
