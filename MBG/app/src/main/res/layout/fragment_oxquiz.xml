@@ -54,7 +54,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="quiz_character_background">
+            android:background="@color/quiz_character_background">
 
             <ImageView
                 android:id="@+id/ivCharacter"
