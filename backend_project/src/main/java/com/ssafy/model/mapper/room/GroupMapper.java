@@ -38,11 +38,6 @@ public interface GroupMapper {
                      @Param("userId") long userId);
 
 
-    // 기존 조장에서 일반 조원으로 변경
-
-    int updateMemberToMember(@Param("roomId") long roomId, @Param("groupNo") int groupNo, @Param("userId") long userId);
-
-
     // 현재 그룹에서 조장 찾기 (가장 오래된 조장 기준)
     Long findLeaderInGroup(@Param("roomId") long roomId, @Param("groupNo") int groupNo);
 
