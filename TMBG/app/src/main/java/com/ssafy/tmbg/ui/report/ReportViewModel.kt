@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.tmbg.data.report.repositoy.ReportRepository
 import com.ssafy.tmbg.data.report.repositoy.ReportRepositoryImpl
-import com.ssafy.tmbg.ui.main.MainViewModel
+import com.ssafy.tmbg.ui.SharedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -21,41 +21,29 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class ReportViewModel @Inject constructor(
-    private val reportRepositoryImpl: ReportRepositoryImpl
+    private val reportRepositoryImpl: ReportRepositoryImpl,
 ) : ViewModel() {
     private val _state = MutableStateFlow<ReportState>(ReportState.Initial)
     val state: StateFlow<ReportState> = _state.asStateFlow()
 
     private var updateJob: Job? = null
-    private var currentRoomId: Int = -1
 
     fun startAutoUpdate(roomId: Int) {
-        Log.d("ReportViewModel", "startAutoUpdate called with roomId: $roomId")
-        currentRoomId = roomId
+        Log.d("ReportViewModel", "startAutoUpdate: $roomId")
         updateJob?.cancel()
         updateJob = viewModelScope.launch {
             while (true) {
-                val result = fetchReport()
-                Log.d("ReportViewModel", "fetchReport result: $result, currentRoomId: $currentRoomId")
+                fetchReport(roomId)
                 delay(10000)
             }
         }
     }
 
-    fun clearRoomId() {
-        Log.d("ReportViewModel", "clearRoomId called, previous roomId: $currentRoomId")
-        currentRoomId = -1
-        stopAutoUpdate()
-        _state.value = ReportState.Initial
-    }
+    private suspend fun fetchReport(roomId: Int): Boolean {
+        if (roomId == -1) return false
 
-    private suspend fun fetchReport(): Boolean {
         try {
-            Log.d("ReportViewModel", "fetchReport started with currentRoomId: $currentRoomId")
-            if (currentRoomId == -1) return false
-
-            val result = reportRepositoryImpl.getReport(currentRoomId)
-
+            val result = reportRepositoryImpl.getReport(roomId)
             result.onSuccess { response ->
                 _state.value = ReportState.Success(
                     message = "보고서가 업데이트 되었습니다.",
@@ -77,15 +65,20 @@ class ReportViewModel @Inject constructor(
         return false
     }
 
-    override fun onCleared() {
-        Log.d("ReportViewModel", "onCleared called with currentRoomId: $currentRoomId")
-        super.onCleared()
+    fun clearState() {
         stopAutoUpdate()
+        _state.value = ReportState.Initial
     }
 
     private fun stopAutoUpdate() {
         Log.d("ReportViewModel", "stopAutoUpdate called")
         updateJob?.cancel()
         updateJob = null
+    }
+
+    override fun onCleared() {
+        Log.d("ReportViewModel", "onCleared called")
+        super.onCleared()
+        stopAutoUpdate()
     }
 }

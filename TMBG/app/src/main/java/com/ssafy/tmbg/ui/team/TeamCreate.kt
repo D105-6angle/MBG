@@ -12,17 +12,19 @@ import androidx.fragment.app.activityViewModels
 import com.ssafy.tmbg.databinding.CreateTeamBinding
 import com.ssafy.tmbg.data.team.dao.TeamRequest
 import com.ssafy.tmbg.ui.main.AdminMainFragment
-import com.ssafy.tmbg.ui.main.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import android.widget.ArrayAdapter
+import androidx.lifecycle.lifecycleScope
 import com.ssafy.tmbg.R
+import com.ssafy.tmbg.ui.SharedViewModel
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class TeamCreateDialog : DialogFragment() {
     private var _binding: CreateTeamBinding? = null
     private val binding get() = _binding!!
     private val teamViewModel: TeamViewModel by viewModels()
-    private val mainViewModel: MainViewModel by activityViewModels()
+    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,13 +38,12 @@ class TeamCreateDialog : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // TeamViewModel의 roomId 변경을 관찰하여 MainViewModel과 동기화
-        teamViewModel.roomId.observe(viewLifecycleOwner) { roomId ->
-            if (roomId != -1) {
-                mainViewModel.setRoomId(roomId)
-            }
-        }
+        setupObservers()
+        setupLocationDropdown()
+        setupSubmitButton()
+    }
 
+    private fun setupObservers() {
         // TeamViewModel의 상태 관찰
         teamViewModel.team.observe(viewLifecycleOwner) { team ->
             team?.let {
@@ -57,29 +58,28 @@ class TeamCreateDialog : DialogFragment() {
             }
         }
 
-        // 에러 메시지 관찰
         teamViewModel.error.observe(viewLifecycleOwner) { errorMessage ->
             if (!errorMessage.isNullOrEmpty()) {
                 Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
             }
         }
+    }
 
-        // 문화재 목록 설정
+    private fun setupLocationDropdown() {
         val locations = arrayOf(
             "경복궁",
             "인동향교",
             // 더 많은 문화재 추가
         )
-        
+
         val adapter = ArrayAdapter(
             requireContext(),
             R.layout.dropdown_item,
             locations
         ).apply {
-            // 필터 설정
             setNotifyOnChange(true)
         }
-        
+
         binding.locationDropdown.apply {
             setAdapter(adapter)
             threshold = 1  // 1글자 입력부터 필터링 시작
@@ -89,18 +89,24 @@ class TeamCreateDialog : DialogFragment() {
                 }
             }
         }
+    }
 
+    private fun setupSubmitButton() {
         binding.submitButton.setOnClickListener {
             val teamName = binding.editText2.text.toString()
-            val location = binding.locationDropdown.text.toString()  // 변경된 부분
+            val location = binding.locationDropdown.text.toString()
             val numOfGroups = binding.editText3.text.toString().toIntOrNull() ?: 1
 
             if (teamName.isNotEmpty() && location.isNotEmpty()) {
-                teamViewModel.createTeam(TeamRequest(
-                    roomName = teamName,
-                    location = location,
-                    numOfGroups = numOfGroups
-                ))
+                viewLifecycleOwner.lifecycleScope.launch {
+                    teamViewModel.createTeam(TeamRequest(
+                        roomName = teamName,
+                        location = location,
+                        numOfGroups = numOfGroups
+                    )).onSuccess { newRoomId ->
+                        sharedViewModel.setRoomId(newRoomId)
+                    }
+                }
             } else {
                 Toast.makeText(context, "모든 항목을 입력해주세요", Toast.LENGTH_SHORT).show()
             }
@@ -109,13 +115,12 @@ class TeamCreateDialog : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        // 다이얼로그 크기 설정
         dialog?.window?.apply {
             setBackgroundDrawableResource(android.R.color.transparent)
 
             val displayMetrics = requireContext().resources.displayMetrics
-            val width = (displayMetrics.widthPixels * 0.8).toInt()  // 90% -> 80%
-            val height = (displayMetrics.heightPixels * 0.6).toInt()  // 80% -> 60%
+            val width = (displayMetrics.widthPixels * 0.8).toInt()
+            val height = (displayMetrics.heightPixels * 0.6).toInt()
 
             setLayout(width, height)
         }
