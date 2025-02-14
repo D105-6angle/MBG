@@ -98,7 +98,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var isPickerModeEnabled = true
 
     // Picker Mode의 고정 초기 위치 (경복궁)
-    private val INITIAL_PICKER_LATLNG = LatLng(37.57640594972532, 126.97686654390287)
+//    private val INITIAL_PICKER_LATLNG = LatLng(37.57640594972532, 126.97686654390287)
+    private val INITIAL_PICKER_LATLNG = LatLng(37.579050513803224, 126.97762422651554)
+
 
     // API 응답 JSON과 매핑되는 미션 데이터 모델 (centerPoint와 edgePoints는 [lat, lng] 배열)
     data class Mission(

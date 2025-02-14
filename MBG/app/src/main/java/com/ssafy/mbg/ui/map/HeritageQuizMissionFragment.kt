@@ -1,16 +1,19 @@
 package com.ssafy.mbg.ui.map
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.*
 import android.widget.*
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.google.gson.Gson
 import com.ssafy.mbg.R
-//import okhttp3.*
 import java.io.IOException
 import android.graphics.Color
-import android.util.Log
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import okhttp3.Call
@@ -32,7 +35,7 @@ class HeritageQuizMissionFragment : DialogFragment() {
         fun newInstance(missionId: Int): HeritageQuizMissionFragment {
             val fragment = HeritageQuizMissionFragment()
             val args = Bundle().apply {
-                putInt("missionId", missionId)  // missionId를 Int로 전달
+                putInt("missionId", missionId)  // missionId 전달
             }
             fragment.arguments = args
             return fragment
@@ -43,9 +46,9 @@ class HeritageQuizMissionFragment : DialogFragment() {
     data class HeritageQuizResponse(
         val problemId: Int,
         val heritageName: String,
-        val imageUrl: String,
+        val imageUrl: String,      // 퀴즈 이미지
         val description: String,
-        val objectImageUrl: String,
+        val objectImageUrl: String, // 정답시 보여줄 이미지
         val content: String,
         val choices: List<String>,
         val answer: String
@@ -70,6 +73,8 @@ class HeritageQuizMissionFragment : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
+        // Postpone the enter transition so that we display the fragment only when ready.
+        postponeEnterTransition()
         val view = inflater.inflate(R.layout.fragment_heritage_quiz_mission, container, false)
 
         quizImageView = view.findViewById(R.id.quizImageView)
@@ -104,8 +109,6 @@ class HeritageQuizMissionFragment : DialogFragment() {
     }
 
     private fun fetchHeritageQuiz(missionId: Int) {
-//        val url = "https://i12d106.p.ssafy.io/api/missions/quiz/heritage/$missionId"
-
         val url = HttpUrl.Builder()
             .scheme("https")
             .host("i12d106.p.ssafy.io")
@@ -115,8 +118,6 @@ class HeritageQuizMissionFragment : DialogFragment() {
             .addPathSegment("heritage")
             .addPathSegment("$missionId")
             .build()
-
-//        Toast.makeText(requireContext(), "확인: $url", Toast.LENGTH_SHORT).show()
 
         val request = Request.Builder()
             .url(url)
@@ -155,10 +156,27 @@ class HeritageQuizMissionFragment : DialogFragment() {
     }
 
     private fun updateUIWithQuiz(quiz: HeritageQuizResponse) {
-        // 이미지 로드, 만약 실패하면 대체 이미지(cultural_1.png) 사용
+        // Glide를 사용해 이미지 로드. Listener를 통해 이미지가 로드되면 postponed transition을 시작.
         Glide.with(this)
-            .load(quiz.objectImageUrl)
+            .load(quiz.imageUrl)
             .error(R.drawable.cultural_1) // 이미지가 없으면 대체 이미지 사용
+            .listener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(
+                    e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean
+                ): Boolean {
+                    // 이미지 로드 실패 시에도 transition을 시작합니다.
+                    startPostponedEnterTransition()
+                    return false
+                }
+
+                override fun onResourceReady(
+                    resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean
+                ): Boolean {
+                    // 이미지가 준비되면 transition을 시작
+                    startPostponedEnterTransition()
+                    return false
+                }
+            })
             .into(quizImageView)
 
         // 문제 내용 설정
@@ -189,9 +207,9 @@ class HeritageQuizMissionFragment : DialogFragment() {
             val child = choicesContainer.getChildAt(i)
             if (child is Button) {
                 if (child.text == selectedAnswer) {
-                    child.setBackgroundColor(Color.YELLOW) // 선택된 버튼을 강조
+                    child.setBackgroundColor(Color.YELLOW) // 선택된 버튼 강조
                 } else {
-                    child.setBackgroundColor(Color.TRANSPARENT) // 다른 버튼은 기본 색상
+                    child.setBackgroundColor(Color.TRANSPARENT)
                 }
             }
         }
