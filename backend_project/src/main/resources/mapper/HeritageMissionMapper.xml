@@ -51,4 +51,10 @@
         VALUES (#{userId}, #{cardId}, #{result}, NOW());
     </insert>
 
+    <select id="findByLog" resultType="com.ssafy.model.entity.Log">
+        SELECT user_id, card_id
+        FROM logs
+        WHERE user_id = #{userId} AND card_id = #{cardId}
+    </select>
+
 </mapper>

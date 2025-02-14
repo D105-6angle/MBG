@@ -7,6 +7,7 @@ import com.ssafy.exception.common.DatabaseOperationException;
 import com.ssafy.exception.common.InvalidRequestException;
 import com.ssafy.exception.mission.MissionNotFoundException;
 import com.ssafy.model.entity.HeritageProblem;
+import com.ssafy.model.entity.Log;
 import com.ssafy.model.mapper.mission.heritage.HeritageMissionMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -86,9 +87,12 @@ public class HeritageMissionService {
         }
 
         // 꾸미백과 (풀이 기록) 저장
-        heritageMissionMapper.insertLog(request.getUserId(), quiz.getCardId(), isCorrect);
-        log.info("꾸미백과 등록 여부: 성공");
+        Log log = heritageMissionMapper.findByLog(request.getUserId(), quiz.getCardId());
+        if (log == null) {
+            heritageMissionMapper.insertLog(request.getUserId(), quiz.getCardId(), isCorrect);
+        }
 
+//        log.info("꾸미백과 등록 여부: 성공");
         return new HeritageMissionAnswerResponse(isCorrect, isCorrect ? quiz.getObjectImageUrl() : null);
     }
 
