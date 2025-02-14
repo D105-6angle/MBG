@@ -4,6 +4,7 @@ import com.ssafy.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -28,6 +29,8 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         // 로그인, 회원가입 등의 인증 관련 경로는 누구나 접근 가능
                         .requestMatchers("/api/auth/**").permitAll()
+                        // multipart 요청에 대한 명시적 허용
+                        .requestMatchers(HttpMethod.POST, "/api/upload/**").authenticated()
                         // 그 외 모든 요청은 인증이 필요
                         .anyRequest().authenticated())
                 // 4. UsernamePasswordAuthenticationFilter 이전에 우리가 만든 JwtAuthenticationFilter가 동작하도록 앞에다가 추가
