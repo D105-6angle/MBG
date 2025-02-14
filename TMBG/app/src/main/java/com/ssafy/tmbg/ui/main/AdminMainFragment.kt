@@ -58,40 +58,43 @@ class AdminMainFragment : Fragment() {
     private fun setupClickListeners() {
         binding.apply {
             btnTeam.setOnClickListener {
-                val roomId = sharedPreferences.getInt("room_id", -1)
-                if (roomId != -1) {
-                    Log.d("AdminMainFragment", "팀 관리 버튼 클릭 - roomId: $roomId")
+                viewLifecycleOwner.lifecycleScope.launch {
+                    sharedViewModel.roomId.collect { roomId ->
+                        if (roomId != -1) {
+                            Log.d("AdminMainFragment", "팀 관리 버튼 클릭 - roomId: $roomId")
 
-                    teamViewModel.team.removeObservers(viewLifecycleOwner)
-                    teamViewModel.team.observe(viewLifecycleOwner) { team ->
-                        Log.d("AdminMainFragment", "팀 정보 로드 결과: $team")
-                        if (team != null) {
-                            Log.d("AdminMainFragment", "네비게이션 시도")
-                            try {
-                                findNavController().navigate(R.id.action_adminMain_to_team)
-                                Log.d("AdminMainFragment", "네비게이션 성공")
-                            } catch (e: Exception) {
-                                Log.e("AdminMainFragment", "네비게이션 실패: ${e.message}", e)
+                            teamViewModel.team.removeObservers(viewLifecycleOwner)
+                            teamViewModel.team.observe(viewLifecycleOwner) { team ->
+                                Log.d("AdminMainFragment", "팀 정보 로드 결과: $team")
+                                if (team != null) {
+                                    Log.d("AdminMainFragment", "네비게이션 시도")
+                                    try {
+                                        findNavController().navigate(R.id.action_adminMain_to_team)
+                                        Log.d("AdminMainFragment", "네비게이션 성공")
+                                    } catch (e: Exception) {
+                                        Log.e("AdminMainFragment", "네비게이션 실패: ${e.message}", e)
+                                    }
+                                }
                             }
+
+                            teamViewModel.error.removeObservers(viewLifecycleOwner)
+                            teamViewModel.error.observe(viewLifecycleOwner) { error ->
+                                Log.e("AdminMainFragment", "팀 정보 로드 에러: $error")
+                                if (error.isNotEmpty()) {
+                                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                                }
+                            }
+
+                            Log.d("AdminMainFragment", "getTeam 호출 시도")
+                            teamViewModel.getTeam(roomId)
+                        } else {
+                            Log.d("AdminMainFragment", "팀 생성 다이얼로그 표시")
+                            TeamCreateDialog().show(
+                                requireActivity().supportFragmentManager,
+                                "TeamCreateDialog"
+                            )
                         }
                     }
-
-                    teamViewModel.error.removeObservers(viewLifecycleOwner)
-                    teamViewModel.error.observe(viewLifecycleOwner) { error ->
-                        Log.e("AdminMainFragment", "팀 정보 로드 에러: $error")
-                        if (error.isNotEmpty()) {
-                            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-                        }
-                    }
-
-                    Log.d("AdminMainFragment", "getTeam 호출 시도")
-                    teamViewModel.getTeam(roomId)
-                } else {
-                    Log.d("AdminMainFragment", "팀 생성 다이얼로그 표시")
-                    TeamCreateDialog().show(
-                        requireActivity().supportFragmentManager,
-                        "TeamCreateDialog"
-                    )
                 }
             }
 
@@ -120,7 +123,7 @@ class AdminMainFragment : Fragment() {
             }
 
             btnSchedule.setOnClickListener {
-               viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.lifecycleScope.launch {
                     sharedViewModel.roomId.collect { roomId ->
                         if (roomId != -1) {
                             findNavController().navigate(R.id.action_adminMain_to_schedule)
