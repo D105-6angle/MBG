@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:text="안전 수칙\nOX 퀴즈"
                 android:textAlignment="center"
-                android:textColor="#1565C0"
+                android:textColor="@color/quiz_text_color"
                 android:textSize="24sp"
                 android:textStyle="bold"/>
         </LinearLayout>
@@ -54,7 +54,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#F5F9FF">
+            android:background="quiz_character_background">
 
             <ImageView
                 android:id="@+id/ivCharacter"
@@ -89,7 +89,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="24dp"
-            android:background="#F5F9FF">
+            android:background="@color/quiz_character_background">
 
             <TextView
                 android:id="@+id/tvDescription"
@@ -97,7 +97,7 @@
                 android:layout_height="wrap_content"
                 android:text="안전 수칙 OX 퀴즈를 풀어야\n게임 진행이 가능해!"
                 android:textAlignment="center"
-                android:textColor="#1565C0"
+                android:textColor="@color/quiz_text_color"
                 android:textSize="18sp"
                 android:textStyle="bold"/>
 
@@ -107,7 +107,7 @@
                 android:layout_marginTop="12dp"
                 android:text="안전한 게임 플레이를 위해\n퀴즈를 진행해주세요"
                 android:textAlignment="center"
-                android:textColor="#455A64"
+                android:textColor="@color/quiz_guide_text_color"
                 android:textSize="14sp"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
@@ -123,7 +123,7 @@
         android:textSize="18sp"
         android:textStyle="bold"
         app:cornerRadius="12dp"
-        app:backgroundTint="#1565C0"
+        app:backgroundTint="@color/quiz_start_button_background"
         app:elevation="6dp"
         app:iconGravity="textStart"
         app:iconPadding="8dp"

@@ -5,7 +5,7 @@
     android:id="@+id/pageFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFE8D9">
+    android:background="@color/background">
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progressBar"
@@ -85,7 +85,7 @@
             android:layout_height="wrap_content"
             android:text="@string/profile_name"
             android:textSize="20sp"
-            android:textColor="#000000" />
+            android:textColor="@color/text_black" />
     </LinearLayout>
 
     <!-- 만족도 조사 버튼 추가 -->
@@ -98,7 +98,7 @@
         android:textSize="16sp"
         android:padding="12dp"
         app:cornerRadius="8dp"
-        android:backgroundTint="#FF7B54"
+        android:backgroundTint="@color/satisfaction_button_background"
         app:layout_constraintTop_toBottomOf="@id/nameContainer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -111,7 +111,7 @@
         android:layout_marginStart="24dp"
         android:text="@string/problem_history"
         android:textSize="20sp"
-        android:textColor="#000000"
+        android:textColor="@color/text_black"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/satisfactionButton"
         app:layout_constraintStart_toStartOf="parent" />
