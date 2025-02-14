@@ -26,14 +26,5 @@
         ORDER BY hb.created_at DESC
     </select>
 
-    <!-- 도감 카드 상세 조회 -->
-    <select id="findByUserIdAndCardId" resultMap="HeritageBookResultMap">
-        SELECT
-            hb.card_id, hb.user_id, hb.created_at,
-            c.code_id, c.name, c.image_url
-        FROM heritage_books hb
-                 JOIN cards c ON hb.card_id = c.card_id
-        WHERE hb.user_id = #{userId} AND hb.card_id = #{cardId}
-    </select>
 
 </mapper>
