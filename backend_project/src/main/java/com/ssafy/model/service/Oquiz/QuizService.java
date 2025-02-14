@@ -6,6 +6,7 @@ import com.ssafy.controller.Oquiz.QuizResultResponse;
 import com.ssafy.exception.Oquiz.QuizNotFoundException;
 import com.ssafy.model.mapper.Oquiz.OquizMapper;
 
+import com.ssafy.model.service.amazons3.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class QuizService {
     private final OquizMapper oquizMapper;
+    private final S3Service s3Service;
 
     public QuizResponse getRandomQuizByMissionId(Long missionId) {
         log.info("Fetching quiz for mission ID: {}", missionId);
@@ -41,7 +43,7 @@ public class QuizService {
         // 2. 정답 체크
         boolean isCorrect = userAnswer.equals(quizInfo.getAnswer());
 
-        // 3. 로그 저장 (자동으로 log_id가 생성되고 created_at이 설정됨)
+        // 3. 로그 저장
         oquizMapper.insertQuizLog(userId, quizInfo.getCardId(), isCorrect);
 
         // 4. 정답인 경우 꾸미백과에 추가
@@ -51,9 +53,15 @@ public class QuizService {
             }
         }
 
-        // 5. 결과 반환
+        // 5. 카드 이미지 URL 가져오기
+        String cardImageUrl_temp = oquizMapper.getCardImageUrlByCardId(quizInfo.getCardId());
+        String presignedUrl = s3Service.generatePresignedUrl(cardImageUrl_temp);
+
+
+        // 6. 결과 반환
         return QuizResultResponse.builder()
                 .result(isCorrect)
+                .cardImageUrl(presignedUrl)
                 .build();
     }
 

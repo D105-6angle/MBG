@@ -28,4 +28,8 @@ public interface OquizMapper {
 
     QuizInfo getQuizInfoByQuizId(@Param("quizId") Long quizId);
 
+
+    String getCardImageUrlByCardId(@Param("cardId") Long cardId);
+
+
 }
