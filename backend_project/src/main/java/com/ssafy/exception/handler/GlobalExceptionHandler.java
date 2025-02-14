@@ -1,36 +1,32 @@
-//package com.ssafy.exception.handler;
-//
-//
-//import com.ssafy.exception.report.DuplicateReportException;
-//import com.ssafy.exception.schedule.RoomNotFoundException;
-//import io.swagger.v3.oas.annotations.Hidden;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.web.bind.annotation.ExceptionHandler;
-//import org.springframework.web.bind.annotation.RestControllerAdvice;
-//
-//import java.util.HashMap;
-//import java.util.Map;
-//
-//@RestControllerAdvice
-//@Hidden
-//public class GlobalExceptionHandler {
-//
-//    @ExceptionHandler(RoomNotFoundException.class)
-//    public ResponseEntity<Map<String, Object>> handleRoomNotFoundException(RoomNotFoundException e) {
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("message", e.getMessage());
-//        response.put("error", "Not Found");
-//        response.put("status", HttpStatus.NOT_FOUND.value());
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-//    }
-//
-//    @ExceptionHandler(DuplicateReportException.class)
-//    public ResponseEntity<Map<String, Object>> handleDuplicateReportException(DuplicateReportException e) {
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("message", e.getMessage());
-//        response.put("error", "Conflict");
-//        response.put("status", HttpStatus.CONFLICT.value());
-//        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-//    }
-//}
+package com.ssafy.exception.handler;
+
+
+import com.ssafy.controller.common.FailResponse;
+import com.ssafy.exception.report.DuplicateReportException;
+import com.ssafy.exception.s3.NullPresignedURLException;
+import com.ssafy.exception.schedule.RoomNotFoundException;
+import io.swagger.v3.oas.annotations.Hidden;
+import lombok.extern.slf4j.Slf4j;
+import okhttp3.Response;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@RestControllerAdvice
+@Hidden
+@Order(Ordered.LOWEST_PRECEDENCE)
+@Slf4j
+public class GlobalExceptionHandler {
+    @ExceptionHandler(NullPresignedURLException.class)
+    public ResponseEntity<FailResponse> handleNullPresignedURL(NullPresignedURLException e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(FailResponse.builder()
+                .status(500).message(e.getMessage()).error("Null").build());
+    }
+}

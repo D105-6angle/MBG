@@ -11,6 +11,7 @@ import com.ssafy.model.entity.User;
 import com.ssafy.model.mapper.auth.AuthMapper;
 import com.ssafy.model.mapper.mypage.MypageMapper;
 import com.ssafy.model.mapper.report.ReportMapper;
+import com.ssafy.model.service.amazons3.S3Service;
 import com.ssafy.model.service.auth.AuthService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class MyPageService {
     private final AuthService authService;
     private final MypageMapper mypageMapper;
     private final ReportMapper reportMapper;
+    private final S3Service s3Service;
 
     @Transactional
     public void changeNickname(String providerId, Long userId, String newNickname) throws NotFoundUserException, DatabaseOperationException, WithdrawnUserException {
@@ -61,6 +63,14 @@ public class MyPageService {
         userInfo.setFinishedReport(isFinishedReport);
 
         List<MyPageResponse.AttemptedProblem> problems = mypageMapper.getAttempedProblems(userId);      // 시도한 카드에 대한 설명 가져오기
+        for (MyPageResponse.AttemptedProblem problem : problems) {
+            // imageUrl이 null이 아닐 때만 presignedUrl 생성
+            if (problem.getImageUrl() != null && !problem.getImageUrl().trim().isEmpty()) {
+                String presignedUrl = s3Service.generatePresignedUrl(problem.getImageUrl());
+                problem.setImageUrl(presignedUrl);
+            }
+        }
+
         MyPageResponse.MyPageInfo response = MyPageResponse.MyPageInfo.builder().userInfo(userInfo).attemptedProblems(problems).build();
         return response;
     }
@@ -73,6 +83,9 @@ public class MyPageService {
         }
 
         MyPageResponse.LogDetail response = mypageMapper.getLogDetail(userId, cardId);
+        String presignedUrl = s3Service.generatePresignedUrl(response.getImageUrl());
+        response.setImageUrl(presignedUrl);
+
         if (response == null) {
             throw new NotFoundCardException("풀이기록에 없는 카드입니다.");
         }

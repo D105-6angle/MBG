@@ -30,6 +30,7 @@ public class MyPageResponse {
 
     // 시도한 문제
     @Getter
+    @Setter
     @NoArgsConstructor
     public static class AttemptedProblem {
         private Long cardId;
@@ -39,6 +40,7 @@ public class MyPageResponse {
     }
 
     @Getter
+    @Setter
     @NoArgsConstructor
     public static class LogDetail {
         private String cardName;
