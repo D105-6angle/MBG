@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardCornerRadius="16dp"
-        app:cardBackgroundColor="#FFF3E0"
+        app:cardBackgroundColor="@color/background"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -27,7 +27,7 @@
                 android:text="설정"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="#000000"
+                android:textColor="@android:color/black"
                 android:layout_marginBottom="16dp"/>
 
             <!-- 첫 번째 섹션 - 이메일과 이름 -->
@@ -50,14 +50,14 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/my_email"
-                        android:textColor="#333333"/>
+                        android:textColor="@color/setting_text"/>
 
                     <TextView
                         android:id="@+id/logoutButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="로그아웃"
-                        android:textColor="#FF5722"
+                        android:textColor="@color/setting_sign_out_text"
                         android:textSize="12sp"
                         android:padding="4dp"/>
                 </LinearLayout>
@@ -74,14 +74,14 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/my_name"
-                        android:textColor="#333333"/>
+                        android:textColor="@color/setting_text"/>
 
                     <TextView
                         android:id="@+id/withdrawButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/register_out"
-                        android:textColor="#FF0000"
+                        android:textColor="@color/setting_sign_out_text"
                         android:textSize="12sp"
                         android:padding="4dp"/>
                 </LinearLayout>
@@ -103,7 +103,7 @@
                     android:layout_weight="1"
                     android:background="@null"
                     android:text="@string/my_nick"
-                    android:textColorHint="#666666"
+                    android:textColorHint="@color/setting_text"
                     android:textSize="14sp"/>
 
                 <TextView

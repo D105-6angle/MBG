@@ -45,17 +45,17 @@
     <fragment
         android:id="@+id/pageFragment"
         android:name="com.ssafy.mbg.ui.page.PageFragment"
-        android:label="Page" >
+        android:label="Page">
         <action
             android:id="@+id/action_pageFragment_to_historyDetailFragment"
             app:destination="@id/historyDetailFragment"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_pageFragment_to_satisfactionFragment"
             app:destination="@id/satisfactionFragment"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <!-- FAQ 아이콘 -->
@@ -80,9 +80,8 @@
             android:id="@+id/action_satisfactionFragment_to_pageFragment"
             app:destination="@id/pageFragment"
             app:popUpTo="@id/pageFragment"
-            app:popUpToInclusive="true"/>
+            app:popUpToInclusive="false" />
     </fragment>
-
 
 
     <!-- 문제 풀이 기록 상세 보기 -->
@@ -92,13 +91,13 @@
         android:label="HistoryDetailFragment">
         <argument
             android:name="cardId"
-            app:argType="long"/>
+            app:argType="long" />
         <!-- 뒤로가기 action 추가 (PageFragment로 복귀) -->
         <action
             android:id="@+id/action_historyDetailFragment_to_pageFragment"
             app:destination="@id/pageFragment"
             app:popUpTo="@id/pageFragment"
-            app:popUpToInclusive="true"/>
+            app:popUpToInclusive="true" />
     </fragment>
 
     <!-- RoomList Fragment 추가 -->

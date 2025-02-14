@@ -9,6 +9,7 @@
     tools:context="com.ssafy.mbg.ui.main.MainActivity">
 
     <!-- NavHostFragment: Jetpack Navigation의 컨테이너 -->
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
@@ -22,7 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:backgroundTint="#689661"
+        app:backgroundTint="@color/bottom_bar_background"
         app:fabAlignmentMode="center"
         app:fabCradleMargin="4dp"
         app:fabCradleRoundedCornerRadius="20dp"
@@ -35,13 +36,14 @@
             android:layout_marginEnd="16dp"
             android:background="@android:color/transparent"
             app:itemIconSize="24dp"
-            app:itemIconTint="#FFFFFF"
+            app:itemIconTint="@color/bottom_nav_item_color"
             app:labelVisibilityMode="unlabeled"
             app:menu="@menu/bottom_nav_menu"
             app:itemPaddingTop="8dp"
             app:itemPaddingBottom="8dp"
-            app:itemHorizontalTranslationEnabled="true"
-            app:itemRippleColor="@android:color/transparent"/>
+            app:itemRippleColor="@android:color/transparent"
+            app:itemActiveIndicatorStyle="@null"
+            app:itemBackground="@null" />
 
     </com.google.android.material.bottomappbar.BottomAppBar>
 
@@ -51,13 +53,13 @@
         android:layout_height="wrap_content"
         android:contentDescription="문방구"
         android:src="@drawable/ic_map"
-        app:backgroundTint="#325C43"
+        app:backgroundTint="@color/bottom_bar_fab_background_unselected"
         app:fabCustomSize="70dp"
         app:maxImageSize="32dp"
         app:layout_anchor="@id/bottomAppBar"
         app:layout_anchorGravity="center"
         app:shapeAppearanceOverlay="@style/CustomBottomAppBarStyle"
         app:rippleColor="@android:color/transparent"
-        app:tint="#FFFFFF" />
+        app:tint="@color/bottom_bar_fab_icon_color" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

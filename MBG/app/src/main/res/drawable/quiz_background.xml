@@ -3,9 +3,9 @@
     <gradient
         android:angle="135"
         android:type="linear"
-        android:startColor="#FFFFFF"
-        android:centerColor="#F6DFC3"
-        android:endColor="#F5F9FF" />
+        android:startColor="@color/quiz_background_start_color"
+        android:centerColor="@color/quiz_background_center_color"
+        android:endColor="@color/quiz_background_end_color" />
 
     <item>
         <bitmap
