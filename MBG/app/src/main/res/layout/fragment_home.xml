@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="80dp" />
+        app:layout_constraintGuide_begin="90dp" />
 
     <!-- 중앙 세로 가이드라인 -->
     <androidx.constraintlayout.widget.Guideline
@@ -36,10 +36,11 @@
 
     <TextView
         android:id="@+id/locationText"
+        android:layout_marginTop="33dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        android:textSize="18sp"
+        android:textSize="22sp"
         android:drawableEnd="@drawable/ic_dropdown"
         android:drawablePadding="4dp"
         android:textColor="@color/text_black"
