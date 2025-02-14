@@ -17,6 +17,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/api/missions/photo/{roomId}/{missionId}")
 @RequiredArgsConstructor
@@ -60,20 +62,18 @@ public class PhotoMissionController {
 //    }
 
 
+    @Operation(summary = "사진 등록", description = "해당 미션에 대해 사진 파일을 업로드합니다.")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadPhoto(@AuthenticationPrincipal String providerId, @ModelAttribute MissionRequest.PhotoUpload request) throws IOException  {
+        User user = authService.findUser(providerId);
+        PhotoUploadResponse response = photoMissionService.uploadPhoto(
+                request.getRoomId(),
+                request.getMissionId(),
+                request.getGroupNo(),
+                request.getPhoto(),
+                user.getUserId()
+        );
 
-    // 수정 시작하자.
-//    @Operation(summary = "사진 등록", description = "해당 미션에 대해 사진 파일을 업로드합니다.")
-//    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    public ResponseEntity<?> uploadPhoto(@AuthenticationPrincipal String providerId, @ModelAttribute MissionRequest.PhotoUpload request) {
-//        User user = authService.findUser(providerId);
-////        PhotoUploadResponse response = photoMissionService.uploadPhoto(
-////                request.getRoomId(),
-////                request.getMissionId(),
-////                request.getGroupNo(),
-////                request.getPhoto(),
-////                user.getUserId()
-////        );
-//
-//        return ResponseEntity.ok(response);
-//    }
+        return ResponseEntity.ok(response);
+    }
 }

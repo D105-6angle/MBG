@@ -19,7 +19,7 @@ public class GroupController {
     @GetMapping("/{groupNo}")
     public ResponseEntity<?> getGroupDetail(@PathVariable long roomId,
                                             @PathVariable int groupNo) {
-        var detail = groupService.getGroupDetail(roomId, groupNo);
+        GroupDetailResponse detail = groupService.getGroupDetail(roomId, groupNo);
         return ResponseEntity.ok(detail);
     }
 

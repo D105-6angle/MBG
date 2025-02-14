@@ -88,8 +88,9 @@ public class HeritageMissionService {
 
 
         // 꾸미백과 (풀이 기록) 저장
-        Log log = heritageMissionMapper.findByLog(request.getUserId(), quiz.getCardId());
-        if (log == null) {
+        Log myLog = heritageMissionMapper.findByLog(request.getUserId(), quiz.getCardId());
+        log.error("FindByLog result: " + myLog);
+        if (myLog == null) {
             heritageMissionMapper.insertLog(request.getUserId(), quiz.getCardId(), isCorrect);
         }
 
