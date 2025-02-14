@@ -14,6 +14,9 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.time.Duration;
@@ -26,6 +29,9 @@ public class S3Service {
     private final S3Client s3Client;
     private final AwsBasicCredentials credentials;
     private S3Presigner presigner;
+    // 캐시 추가 (만료시간인 1시간보다 적은 50분으로)
+    private final Cache<String, String> urlCache = Caffeine.newBuilder().expireAfterWrite(Duration.ofMinutes(50)).maximumSize(1000).recordStats().build();
+
 
     @PostConstruct
     public void init() {
@@ -35,18 +41,6 @@ public class S3Service {
 
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucket;
-
-    // 파일 업로드
-//    public String uploadFile(MultipartFile file, String dirName) throws IOException {
-//        String fileName = createFileName(file.getOriginalFilename());
-//        String fileKey = dirName + "/" + fileName;
-//
-//        PutObjectRequest putObjectRequest = PutObjectRequest.builder().bucket(bucket).key(fileKey)
-//                .contentType(file.getContentType()).build();
-//
-//        s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
-//        return fileKey;
-//    }
 
     public String uploadFile(MultipartFile file, String dirName) throws IOException {
         // 1. 입력값 로깅
@@ -87,27 +81,61 @@ public class S3Service {
         return fileKey;
     }
 
-    // Presigned URL 생성
     public String generatePresignedUrl(String fileKey) {
         if (fileKey == null) {
             log.error("null 값을 PresignedURL으로 만들려고 시도했습니다.");
             return null;
         }
 
-        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                .bucket(bucket)
-                .key(fileKey)
-                .responseContentDisposition("inline")
-                .build();
+        // 캐시된 URL 확인
+        long startTime = System.currentTimeMillis();
+        String cachedUrl = urlCache.getIfPresent(fileKey);
+        if (cachedUrl != null) {
+            log.info("Cache hit for key: {}", fileKey);
+            long endTime = System.currentTimeMillis();
+            log.warn("PresignedURL 생성 시간: {}ms, ObjectKey: {}, Cache Status: {}", endTime - startTime, fileKey, urlCache.stats());
+            return cachedUrl;
+        }
 
-        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofHours(1))
-                .getObjectRequest(getObjectRequest)
-                .build();
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(bucket).key(fileKey)
+                .responseContentDisposition("inline").build();
+
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder().signatureDuration(Duration.ofHours(1))
+                .getObjectRequest(getObjectRequest).build();
 
         String presignedUrl = presigner.presignGetObject(presignRequest).url().toString();
+        urlCache.put(fileKey, presignedUrl);    // 생성된 URL을 캐시에 저장
+
+        long endTime = System.currentTimeMillis();
+        log.warn("PresignedURL 생성 시간: {}ms, ObjectKey: {}, Cache Status: {}", endTime - startTime, fileKey, urlCache.stats());
         return presignedUrl;
     }
+
+//    // Presigned URL 생성
+//    public String generatePresignedUrl(String fileKey) {
+//        if (fileKey == null) {
+//            log.error("null 값을 PresignedURL으로 만들려고 시도했습니다.");
+//            return null;
+//        }
+//
+//        long startTime = System.currentTimeMillis();
+//        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+//                .bucket(bucket)
+//                .key(fileKey)
+//                .responseContentDisposition("inline")
+//                .build();
+//
+//        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+//                .signatureDuration(Duration.ofHours(1))
+//                .getObjectRequest(getObjectRequest)
+//                .build();
+//
+//        String presignedUrl = presigner.presignGetObject(presignRequest).url().toString();
+//        long endTime = System.currentTimeMillis();
+//
+//        log.warn("PresignedURL 생성 시간: {}ms, ObjectKey: {}", endTime - startTime, fileKey);
+//        return presignedUrl;
+//    }
 
     private String createFileName(String originalFileName) {
         return UUID.randomUUID().toString() + "_" + originalFileName;
