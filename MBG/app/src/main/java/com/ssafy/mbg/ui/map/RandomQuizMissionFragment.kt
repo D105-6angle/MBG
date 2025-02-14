@@ -21,6 +21,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -33,6 +34,10 @@ class RandomQuizMissionFragment : DialogFragment() {
     lateinit var userPreferences: com.ssafy.mbg.di.UserPreferences
 
     companion object {
+        /**
+         * missionId: 해당 미션의 ID
+         * codeId, positionName, placeName: 나중에 다른 용도로 필요할 수 있으므로 그대로 전달
+         */
         fun newInstance(missionId: Int, codeId: String, positionName: String, placeName: String): RandomQuizMissionFragment {
             val fragment = RandomQuizMissionFragment()
             val args = Bundle().apply {
@@ -60,6 +65,7 @@ class RandomQuizMissionFragment : DialogFragment() {
         val cardImageUrl: String
     )
 
+    private lateinit var blackIconImageView: ImageView
     private lateinit var quizTitleTextView: TextView
     private lateinit var quizContentTextView: TextView
     private lateinit var hintTextView: TextView
@@ -77,6 +83,7 @@ class RandomQuizMissionFragment : DialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         postponeEnterTransition()
         val view = inflater.inflate(R.layout.fragment_random_quiz_mission, container, false)
+        blackIconImageView = view.findViewById(R.id.blackIconImageView)
         quizTitleTextView = view.findViewById(R.id.quizTitleTextView)
         quizContentTextView = view.findViewById(R.id.quizContentTextView)
         hintTextView = view.findViewById(R.id.hintTextView)
@@ -99,7 +106,6 @@ class RandomQuizMissionFragment : DialogFragment() {
         } else {
             fetchRandomQuiz(missionId)
         }
-
         return view
     }
 
@@ -155,15 +161,33 @@ class RandomQuizMissionFragment : DialogFragment() {
     }
 
     private fun updateUIWithRandomQuiz(randomQuiz: RandomQuizResponse) {
-        // content는 "타이틀|||문제 내용" 형식
+        // content 형식: "타이틀|||문제 내용"
         val parts = randomQuiz.content.split("|||")
         val title = if (parts.isNotEmpty()) parts[0] else ""
         val content = if (parts.size > 1) parts[1] else ""
         quizTitleTextView.text = title
         quizContentTextView.text = content
         hintTextView.text = "힌트: ${randomQuiz.initial}"
-        // (필요시 randomQuiz.blackIconUrl로 이미지 로드 가능)
-        startPostponedEnterTransition()
+
+        // blackIconUrl 로드 (HeritageQuizMissionFragment와 동일한 로직)
+        Glide.with(this)
+            .load(randomQuiz.blackIconUrl)
+            .error(R.drawable.cultural_1)
+            .listener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(
+                    e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean
+                ): Boolean {
+                    startPostponedEnterTransition()
+                    return false
+                }
+                override fun onResourceReady(
+                    resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean
+                ): Boolean {
+                    startPostponedEnterTransition()
+                    return false
+                }
+            })
+            .into(blackIconImageView)
     }
 
     private fun submitAnswer(answer: String) {
