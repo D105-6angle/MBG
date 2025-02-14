@@ -424,7 +424,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         when (mission.codeId) {
             "M001" -> {
                 // M001: 문화재 미션 발생! / "[positionName] 관련 문제를 풀고 역사 카드를 얻어봐"
-                val popup = MissionExplainFragment.newInstance("M001", mission.positionName ?: "미지정", "")
+                val popup = MissionExplainFragment.newInstance("M001", mission.positionName ?: "미지정", "", mission.missionId)
                 popup.show(parentFragmentManager, "M001Popup")
             }
             "M002" -> {
@@ -511,7 +511,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 targetPoint
             }
             val arrowBitmapDescriptor = getArrowBitmap()
-            val arrowCap = CustomCap(arrowBitmapDescriptor, 15f)
+            val arrowCap = CustomCap(arrowBitmapDescriptor, 10f)
             nearestLine = googleMap.addPolyline(
                 PolylineOptions()
                     .add(userLatLng, lineEndPoint)

@@ -12,12 +12,14 @@ import com.ssafy.mbg.R
 class MissionExplainFragment : DialogFragment() {
 
     companion object {
-        fun newInstance(codeId: String, positionName: String, placeName: String): MissionExplainFragment {
+        // missionId 기본값은 -1 (전달되지 않은 경우)
+        fun newInstance(codeId: String, positionName: String, placeName: String, missionId: Int = -1): MissionExplainFragment {
             val fragment = MissionExplainFragment()
             val args = Bundle().apply {
                 putString("codeId", codeId)
                 putString("positionName", positionName)
                 putString("placeName", placeName)
+                putInt("missionId", missionId)
             }
             fragment.arguments = args
             return fragment
@@ -78,7 +80,8 @@ class MissionExplainFragment : DialogFragment() {
             when (codeId) {
                 "M001" -> {
                     // M001: 문화재 퀴즈 미션 팝업
-                    val popup = HeritageQuizMissionFragment.newInstance(codeId, positionName, "")
+                    val missionId = arguments?.getInt("missionId") ?: 1
+                    val popup = HeritageQuizMissionFragment.newInstance(missionId)
                     popup.show(parentFragmentManager, "M001Popup")
                 }
                 "M002" -> {
@@ -92,8 +95,8 @@ class MissionExplainFragment : DialogFragment() {
                     popup.show(parentFragmentManager, "M003Popup")
                 }
                 else -> {
-                    // 기본 퀴즈 팝업
-                    val popup = HeritageQuizMissionFragment.newInstance("default", positionName, "")
+                    // 기본 퀴즈 팝업, missionId를 0으로 설정 (기본값)
+                    val popup = HeritageQuizMissionFragment.newInstance(0)
                     popup.show(parentFragmentManager, "DefaultPopup")
                 }
             }
