@@ -64,6 +64,7 @@ public class HeritageMissionService {
     }
     @Transactional
     public HeritageMissionAnswerResponse submitHeritageMission(Long missionId, HeritageMissionAnswerRequest request) {
+
         if (request.getUserId() == null || request.getAnswers() == null) {
             throw new InvalidRequestException("유저 ID와 정답은 필수값입니다.");
         }
@@ -76,16 +77,15 @@ public class HeritageMissionService {
         if (isCorrect) {
             // 카드 도감 등록
             int insertedRows = heritageMissionMapper.insertHeritageBook(request.getUserId(), quiz.getCardId());
-
             if (insertedRows == 0) {
                 log.info("카드 도감 등록 여부: 이미 등록됨");
+                heritageMissionMapper.insertLog(request.getUserId(), quiz.getCardId(), isCorrect);
                 return new HeritageMissionAnswerResponse(true, quiz.getObjectImageUrl());
             }
-
             log.info("카드 도감 등록 여부: 성공");
         }
 
-        // 꾸미백과 (풀이 기록) 저장
+        // 꾸미백과(풀이 기록) 저장
         heritageMissionMapper.insertLog(request.getUserId(), quiz.getCardId(), isCorrect);
         log.info("꾸미백과 등록 여부: 성공");
 

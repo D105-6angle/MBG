@@ -15,4 +15,7 @@ public interface HeritagebookMapper {
     // 특정 카드 조회
     HeritageBook findByUserIdAndCardId(@Param("userId") Long userId, @Param("cardId") Long cardId);
 
+    // 수정: 정답 로그 존재 여부 확인
+    int existsCorrectLog(@Param("userId") Long userId, @Param("cardId") Long cardId);
+
 }

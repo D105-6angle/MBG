@@ -51,4 +51,20 @@
         VALUES (#{userId}, #{cardId}, #{result}, NOW());
     </insert>
 
+    <!-- 정답 로그 확인 -->
+    <select id="existsCorrectLog" resultType="int">
+        SELECT COUNT(*) FROM logs
+        WHERE user_id = #{userId}
+          AND card_id = #{cardId}
+          AND result = true
+    </select>
+
+    <!-- 마지막 오답 제출 시간 확인 -->
+    <select id="getLastIncorrectLogTime" resultType="java.util.Date">
+        SELECT MAX(created_at) FROM logs
+        WHERE user_id = #{userId} AND card_id = #{cardId} AND result = false
+    </select>
+
+
+
 </mapper>
