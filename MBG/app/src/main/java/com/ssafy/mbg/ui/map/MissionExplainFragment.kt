@@ -92,8 +92,10 @@ class MissionExplainFragment : DialogFragment() {
                 }
                 "M003" -> {
                     // M003: 인증샷 미션 팝업
-                    val popup = PhotoMissionFragment.newInstance(codeId, positionName, "")
-                    popup.show(parentFragmentManager, "M003Popup")
+                    val missionId = arguments?.getInt("missionId") ?: 0
+                    val photoFragment = PhotoMissionFragment.newInstance("M003", positionName, placeName, missionId)
+                    photoFragment.show(parentFragmentManager, "PhotoMissionFragment")
+
                 }
                 else -> {
                     // 기본 퀴즈 팝업, missionId를 0으로 설정 (기본값)

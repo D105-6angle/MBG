@@ -10,35 +10,23 @@
 
     <!-- 미션 제목 -->
     <TextView
-        android:id="@+id/missionTitle"
+        android:id="@+id/photoMissionTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="인증샷 미션"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:gravity="center"
         android:layout_marginBottom="16dp"
         android:textColor="@android:color/black" />
 
-    <!-- 미션 설명 -->
-    <TextView
-        android:id="@+id/missionText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="인증샷을 찍어서 업로드 해주세요."
-        android:textSize="16sp"
-        android:gravity="center"
-        android:layout_marginBottom="16dp"
-        android:textColor="@android:color/black" />
-
-    <!-- 사진 미리보기 ImageView -->
+    <!-- 선택한 사진 미리보기 -->
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/imageViewUpload"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:layout_marginBottom="16dp"
         android:scaleType="centerCrop"
-        android:background="@android:color/darker_gray" />
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/ic_book" />
 
     <!-- 사진 선택 버튼 -->
     <Button
@@ -46,14 +34,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="사진 선택"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="8dp"/>
 
-    <!-- 업로드(가자!) 버튼 -->
+    <!-- 사진 업로드 버튼 -->
     <Button
-        android:id="@+id/btnConfirm"
+        android:id="@+id/btnUploadPhoto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="가자!"
-        android:backgroundTint="@android:color/holo_blue_light"
-        android:textColor="@android:color/white"/>
+        android:text="사진 업로드"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- 진행 상황 표시용 ProgressBar -->
+    <ProgressBar
+        android:id="@+id/uploadProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
 </LinearLayout>

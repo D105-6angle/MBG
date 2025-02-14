@@ -436,8 +436,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
             "M003" -> {
                 // M003: 인증샷 미션 발생! / "인증샷을 찍어서 업로드 해주세요"
-                val popup = MissionExplainFragment.newInstance("M003", mission.positionName ?: "미지정", "")
-                popup.show(parentFragmentManager, "M003Popup")
+                // M003: 인증샷 미션 팝업
+                val missionId = arguments?.getInt("missionId") ?: 0
+                val photoFragment = PhotoMissionFragment.newInstance("M003", mission.positionName ?: "미지정", userPreferences.location, mission.missionId)
+                photoFragment.show(parentFragmentManager, "PhotoMissionFragment")
             }
             else -> {
                 val popup = MissionExplainFragment.newInstance("default", mission.positionName ?: "미지정", "")
