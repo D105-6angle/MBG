@@ -94,7 +94,7 @@ public class HeritageMissionService {
         }
 
 //        log.info("꾸미백과 등록 여부: 성공");
-        return new HeritageMissionAnswerResponse(isCorrect, isCorrect ? quiz.getObjectImageUrl() : null);
+        return new HeritageMissionAnswerResponse(isCorrect, quiz.getObjectImageUrl());
     }
 
 }
