@@ -38,18 +38,40 @@ public class S3Service {
     // Presigned URL 생성
     public String generatePresignedUrl(String fileKey) {
         S3Presigner presigner = S3Presigner.builder()
-                .region(s3Client.serviceClientConfiguration().region()).build();
+                .region(s3Client.serviceClientConfiguration().region())
+                .build();
 
-        GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(bucket).key(fileKey).build();
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(bucket)
+                .key(fileKey)
+                .responseContentDisposition("inline")  // 브라우저에서 바로 보기 가능하도록
+                .responseContentType("image/jpeg")     // 이미지 타입 지정
+                .build();
 
-        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder().signatureDuration(Duration.ofHours(1))
-                .getObjectRequest(getObjectRequest).build();
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofHours(1))
+                .getObjectRequest(getObjectRequest)
+                .build();
 
         String presignedUrl = presigner.presignGetObject(presignRequest).url().toString();
         presigner.close();
 
         return presignedUrl;
     }
+//    public String generatePresignedUrl(String fileKey) {
+//        S3Presigner presigner = S3Presigner.builder()
+//                .region(s3Client.serviceClientConfiguration().region()).build();
+//
+//        GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(bucket).key(fileKey).build();
+//
+//        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder().signatureDuration(Duration.ofHours(1))
+//                .getObjectRequest(getObjectRequest).build();
+//
+//        String presignedUrl = presigner.presignGetObject(presignRequest).url().toString();
+//        presigner.close();
+//
+//        return presignedUrl;
+//    }
 
     private String createFileName(String originalFileName) {
         return UUID.randomUUID().toString() + "_" + originalFileName;
