@@ -99,11 +99,19 @@ class AdminMainFragment : Fragment() {
             }
             // 공지사항 클릭 시 실행될 액션
             btnNotice.setOnClickListener {
-                findNavController().navigate(R.id.action_adminMain_to_notice)
+                if (mainViewModel.roomId.value != -1) {
+                    findNavController().navigate(R.id.action_adminMain_to_notice)
+                } else {
+                    Toast.makeText(context, "방을 먼저 생성해주세요", Toast.LENGTH_SHORT).show()
+                }
             }
             // 미션 클릭 시 실행될 액션
             btnMission.setOnClickListener {
-                findNavController().navigate(R.id.action_adminMain_to_mission)
+                if (mainViewModel.roomId.value != -1) {
+                    findNavController().navigate(R.id.action_adminMain_to_mission)
+                } else {
+                    Toast.makeText(context, "방을 먼저 생성해주세요", Toast.LENGTH_SHORT).show()
+                }
             }
             // 일정 관리 버튼 클릭 처리
             btnSchedule.setOnClickListener {
@@ -115,15 +123,16 @@ class AdminMainFragment : Fragment() {
             }
             // 보고서 클릭 시 실행될 액션
             btnReport.setOnClickListener {
-                findNavController().navigate(R.id.action_adminMain_to_report)
+                if (mainViewModel.roomId.value != -1) {
+                    findNavController().navigate(R.id.action_adminMain_to_report)
+                } else {
+                    Toast.makeText(context, "방을 먼저 생성해주세요", Toast.LENGTH_SHORT).show()
+                }
             }
 
             // 설정 클릭 시 실행될 액션
             btnSetting.setOnClickListener{
                 showProfileModal()
-            }
-            clearTeam.setOnClickListener{
-                mainViewModel.clearRoomId()
             }
         }
     }
@@ -131,14 +140,6 @@ class AdminMainFragment : Fragment() {
     private fun showProfileModal() {
         val profileModal = ProfileModal(
             context = requireContext(),
-            email = "kimssafy@ssafy.com",
-            name = "김싸피",
-            currentNickname = "김싸피",
-            onConfirm = { newNickname ->
-                // 닉네임 변경 처리
-                binding.progressBar.visibility = View.VISIBLE  // 로딩 표시 추가 필요
-                authViewModel.updateNickname(newNickname)
-            },
             onLogout = {
                 authViewModel.logout()
             },

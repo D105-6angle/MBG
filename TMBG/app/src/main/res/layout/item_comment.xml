@@ -13,6 +13,6 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textSize="14sp"
-        android:textColor="#666666"/>
+        android:textColor="@color/confirm_withdraw"/>
 
 </LinearLayout>

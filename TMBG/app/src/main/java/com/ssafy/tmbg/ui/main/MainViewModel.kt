@@ -1,6 +1,7 @@
 package com.ssafy.tmbg.ui.main
 
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -32,6 +33,7 @@ class MainViewModel @Inject constructor(
     fun clearRoomId() {
         _roomId.value = -1
         // SharedPreferences에서 roomId 제거
-        sharedPreferences.edit().remove(KEY_ROOM_ID).apply()
+        sharedPreferences.edit().remove(KEY_ROOM_ID).commit()
+        Log.d("ClearTeam", "작동 됨?")
     }
 }

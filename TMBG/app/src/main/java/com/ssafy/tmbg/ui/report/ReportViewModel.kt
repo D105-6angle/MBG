@@ -1,5 +1,6 @@
 package com.ssafy.tmbg.ui.report
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.tmbg.data.report.repositoy.ReportRepository
@@ -26,31 +27,31 @@ class ReportViewModel @Inject constructor(
     val state: StateFlow<ReportState> = _state.asStateFlow()
 
     private var updateJob: Job? = null
-    private val _roomId = MutableStateFlow<Int>(-1)
-    val roomId = _roomId.asStateFlow()
+    private var currentRoomId: Int = -1
 
-    fun setRoomId(id: Int) {
-        _roomId.value = id
-    }
-
-    fun startAutoUpdate() {
+    fun startAutoUpdate(roomId: Int) {
+        Log.d("ReportViewModel", "startAutoUpdate called with roomId: $roomId")
+        currentRoomId = roomId
         updateJob?.cancel()
         updateJob = viewModelScope.launch {
             while (true) {
-                fetchReport()
+                val result = fetchReport()
+                Log.d("ReportViewModel", "fetchReport result: $result, currentRoomId: $currentRoomId")
                 delay(10000)
             }
         }
     }
 
-    private fun stopAutoUpdate() {
-        updateJob?.cancel()
-        updateJob = null
+    fun clearRoomId() {
+        Log.d("ReportViewModel", "clearRoomId called, previous roomId: $currentRoomId")
+        currentRoomId = -1
+        stopAutoUpdate()
+        _state.value = ReportState.Initial
     }
 
     private suspend fun fetchReport(): Boolean {
         try {
-            val currentRoomId = _roomId.value
+            Log.d("ReportViewModel", "fetchReport started with currentRoomId: $currentRoomId")
             if (currentRoomId == -1) return false
 
             val result = reportRepositoryImpl.getReport(currentRoomId)
@@ -68,6 +69,7 @@ class ReportViewModel @Inject constructor(
                 }
             }
         } catch (e: Exception) {
+            Log.e("ReportViewModel", "Error in fetchReport", e)
             if (_state.value !is ReportState.Success) {
                 _state.value = ReportState.Error(e.message ?: "알 수 없는 오류가 발생했어요")
             }
@@ -76,7 +78,14 @@ class ReportViewModel @Inject constructor(
     }
 
     override fun onCleared() {
+        Log.d("ReportViewModel", "onCleared called with currentRoomId: $currentRoomId")
         super.onCleared()
         stopAutoUpdate()
+    }
+
+    private fun stopAutoUpdate() {
+        Log.d("ReportViewModel", "stopAutoUpdate called")
+        updateJob?.cancel()
+        updateJob = null
     }
 }
