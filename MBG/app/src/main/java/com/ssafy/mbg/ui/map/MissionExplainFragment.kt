@@ -54,7 +54,7 @@ class MissionExplainFragment : DialogFragment() {
         when (codeId) {
             "M001" -> {
                 quizTitle.text = "문화재 미션 발생!"
-                quizText.text = "$positionName 관련\n문제를 풀고\n문화재 카드를 얻어봐"
+                quizText.text = "$positionName 관련\n문제를 풀고\n 문화재 카드를 얻어봐"
             }
             "M002" -> {
                 quizTitle.text = "랜덤 미션 발생!"
