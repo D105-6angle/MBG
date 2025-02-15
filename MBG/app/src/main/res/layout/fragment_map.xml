@@ -151,7 +151,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- 컨테이너: 피커 목록과 거리 정보를 블록처럼 배치 (애니메이션 적용) -->
+        <!-- 컨테이너: 피커 목록과 거리 정보를 배치 (animateLayoutChanges 제거) -->
         <LinearLayout
             android:id="@+id/bottomSheetContainer"
             android:layout_width="0dp"

@@ -72,11 +72,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     // 데이터 클래스: Picker (이름과 좌표)
     data class Picker(val name: String, val location: LatLng)
 
-    // 미션 정보를 Picker로 변환하는 함수
+    // 미션 정보를 Picker로 변환하는 함수 (완료된 미션은 제외)
     private fun getMissionPickers(): List<Picker> {
-        return missionList.map { mission ->
-            Picker(mission.positionName ?: "미지정", mission.getCenterPointLatLng())
-        }
+        return missionList.filter { !it.correct }
+            .map { mission ->
+                Picker(mission.positionName ?: "미지정", mission.getCenterPointLatLng())
+            }
     }
 
     // 추가된 피커 리스트 (동적으로 추가됨)
@@ -128,6 +129,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        // fragment_map.xml에는 지도, Pick Location 버튼, 토글 버튼, 화살표(GridLayout) 버튼, Bottom Sheet가 포함됨
         return inflater.inflate(R.layout.fragment_map, container, false)
     }
 
@@ -203,7 +205,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.map_style)
             )
             if (!success) {
-                // 스타일 적용 실패
+                // 스타일 적용 실패 시 로그 남김
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -394,14 +396,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     /**
-     * 피커 목록과 거리 정보를 동적으로 업데이트하여 바텀 시트 컨테이너에 추가합니다.
-     * 각 항목은 bg_distance_item 배경을 가지며 가운데 정렬되어 있습니다.
-     * animateLayoutChanges가 적용되어 있으므로 순서 변경 시 부드럽게 이동합니다.
+     * 미션 목록 중, 완료되지 않은 미션( correct == false )과 추가 피커 목록을 이용하여
+     * 거리를 계산하고, 바텀 시트 컨테이너에 항목들을 추가합니다.
      */
     private fun updateDistanceDisplay(userLatLng: LatLng? = null) {
         val currentLocation = userLatLng ?: userMarker?.position
         bottomSheetContainer.removeAllViews()
-
         if (currentLocation == null) {
             val tv = AppCompatTextView(requireContext())
             tv.text = "위치 조회중..."
@@ -430,9 +430,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 text = "$name: $distanceText"
                 gravity = Gravity.CENTER
                 setPadding(16, 16, 16, 16)
-                // bg_distance_item.xml을 배경으로 사용
                 setBackgroundResource(R.drawable.bg_distance_item)
-                // 레이아웃 파라미터로 마진 추가
                 val params = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -445,7 +443,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     /**
-     * 피커 중 가장 가까운 대상으로 사용자 위치에서 해당 피커 방향으로 일정 길이(예, 30m)만큼의 선과 화살표 표시
+     * 사용자 위치에서 가장 가까운 피커 방향으로 선을 그리고, 화살표를 표시합니다.
      */
     private fun drawLineToNearestTarget(userLatLng: LatLng) {
         var nearestDistance = Double.MAX_VALUE
@@ -503,6 +501,21 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val green = Color.green(color)
         val blue = Color.blue(color)
         return Color.argb(alpha, red, green, blue)
+    }
+
+    // 완료된 미션에 대해서 회색 마커 아이콘을 생성하는 함수
+    private fun getGrayMarker(): BitmapDescriptor {
+        val drawable: Drawable? = ContextCompat.getDrawable(requireContext(), R.drawable.target_marker)
+        return if (drawable != null) {
+            drawable.setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN)
+            drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+            val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            drawable.draw(canvas)
+            BitmapDescriptorFactory.fromBitmap(bitmap)
+        } else {
+            BitmapDescriptorFactory.defaultMarker(0f)
+        }
     }
 
     /**
@@ -575,11 +588,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         drawnPolygons.forEach { it.remove() }
         drawnPolygons.clear()
         missionList.forEach { mission ->
-            val (strokeColor, fillColor) = when (mission.codeId) {
-                "M001" -> Pair(Color.BLUE, Color.argb(34, 0, 0, 255))
-                "M002" -> Pair(Color.YELLOW, Color.argb(34, 255, 255, 0))
-                "M003" -> Pair(Color.MAGENTA, Color.argb(34, 255, 0, 255))
-                else -> Pair(Color.GRAY, Color.argb(34, 128, 128, 128))
+            val (strokeColor, fillColor) = if (mission.correct) {
+                Pair(Color.GRAY, Color.argb(34, 128, 128, 128))
+            } else {
+                when (mission.codeId) {
+                    "M001" -> Pair(Color.BLUE, Color.argb(34, 0, 0, 255))
+                    "M002" -> Pair(Color.YELLOW, Color.argb(34, 255, 255, 0))
+                    "M003" -> Pair(Color.MAGENTA, Color.argb(34, 255, 0, 255))
+                    else -> Pair(Color.RED, Color.argb(34, 255, 0, 0))
+                }
             }
             val poly = googleMap.addPolygon(
                 PolygonOptions()
@@ -594,18 +611,21 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun addInitialPickerMarkers() {
         missionList.forEach { mission ->
-            val markerColor = when (mission.codeId) {
-                "M001" -> BitmapDescriptorFactory.HUE_BLUE
-                "M002" -> BitmapDescriptorFactory.HUE_YELLOW
-                "M003" -> BitmapDescriptorFactory.HUE_VIOLET
-                else -> BitmapDescriptorFactory.HUE_RED
-            }
-            googleMap.addMarker(
-                MarkerOptions()
-                    .position(mission.getCenterPointLatLng())
-                    .title(mission.positionName ?: "미지정")
+            val markerOptions = MarkerOptions().position(mission.getCenterPointLatLng())
+            if (mission.correct) {
+                markerOptions.title("수행한 미션")
+                    .icon(getGrayMarker())
+            } else {
+                val markerColor = when (mission.codeId) {
+                    "M001" -> BitmapDescriptorFactory.HUE_BLUE
+                    "M002" -> BitmapDescriptorFactory.HUE_YELLOW
+                    "M003" -> BitmapDescriptorFactory.HUE_VIOLET
+                    else -> BitmapDescriptorFactory.HUE_RED
+                }
+                markerOptions.title(mission.positionName ?: "미지정")
                     .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
-            )
+            }
+            googleMap.addMarker(markerOptions)
         }
     }
 
