@@ -1,6 +1,7 @@
 package com.ssafy.mbg.ui.book
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,13 +22,24 @@ class CardPopupFragment : DialogFragment() {
 
     private val viewModel: BookViewModel by viewModels()
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentCardPopupBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val cardId = arguments?.getLong(ARG_CARD_ID) ?: return
         val imageUrl = arguments?.getString(ARG_IMAGE_URL) ?: return
 
-        // API 호출 제거
+        // 디버그 로그 추가
+        Log.d("CardPopupFragment", "Loading image with URL: $imageUrl")
+
         updatePopupContent(imageUrl)
 
         // 팝업 외부 클릭 시 닫기
@@ -39,10 +51,15 @@ class CardPopupFragment : DialogFragment() {
     }
 
     private fun updatePopupContent(imageUrl: String) {
-        // Glide를 사용하여 이미지 로드
-        Glide.with(this)
+        // Glide 오류 처리 추가
+        Glide.with(requireContext())
             .load(imageUrl)
             .into(binding.popupCardImage)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {

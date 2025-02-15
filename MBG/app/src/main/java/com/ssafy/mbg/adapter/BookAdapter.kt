@@ -3,6 +3,7 @@ package com.ssafy.mbg.adapter
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.media.MediaPlayer
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -52,6 +53,7 @@ class BookAdapter(
 
             binding.imageView.apply {
                 if (isUnlocked) {
+                    Log.d("BookAdapter", "Card Image URL: ${bookCard.imageUrl}")
                     // 실제 카드 이미지 로드
                     Glide.with(this)
                         .load(bookCard.imageUrl)
@@ -86,6 +88,7 @@ class BookAdapter(
                     override fun onAnimationStart(animation: Animator) {
                         flipSound.start()
                         itemView.postDelayed({
+                            Log.d("BookAdapter", "Card Image URL: ${bookCard.imageUrl}")
                             binding.imageView.setImageResource(R.drawable.card_back)
                         }, 150)
                     }
