@@ -74,7 +74,7 @@ public class S3Service {
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucket)
                 .key(fileKey)
-                .contentType(file.getContentType())
+                .contentType("image/png")
                 .build();
 
         s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
@@ -98,7 +98,7 @@ public class S3Service {
         }
 
         GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(bucket).key(fileKey)
-                .responseContentDisposition("inline").build();
+                .responseContentDisposition("inline").responseContentType("image/png").build();
 
         GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder().signatureDuration(Duration.ofHours(1))
                 .getObjectRequest(getObjectRequest).build();
