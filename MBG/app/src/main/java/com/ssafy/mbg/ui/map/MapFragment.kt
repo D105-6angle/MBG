@@ -146,13 +146,29 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val arrowContainer: GridLayout = view.findViewById(R.id.arrow_container)
         arrowContainer.visibility = View.VISIBLE
 
-        toggleMode.setOnCheckedChangeListener { _, isChecked ->
+//        toggleMode.setOnCheckedChangeListener { _, isChecked ->
+//            isPickerModeEnabled = isChecked
+//            if (isPickerModeEnabled) {
+//                arrowContainer.visibility = View.VISIBLE
+//                Toast.makeText(requireContext(), "Picker Mode 활성화", Toast.LENGTH_SHORT).show()
+//            } else {
+//                arrowContainer.visibility = View.GONE
+//                Toast.makeText(requireContext(), "Auto Mode 활성화", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+
+        // 토글 버튼을 클릭했을 때, Picker Mode이면 버튼은 보이고, Auto Mode이면 버튼을 감춥니다.
+        toggleMode.setOnCheckedChangeListener { buttonView, isChecked ->
             isPickerModeEnabled = isChecked
-            if (isPickerModeEnabled) {
+            if (isChecked) {
                 arrowContainer.visibility = View.VISIBLE
+                // Picker Mode일 때 토글 버튼은 보임
+                buttonView.visibility = View.VISIBLE
                 Toast.makeText(requireContext(), "Picker Mode 활성화", Toast.LENGTH_SHORT).show()
             } else {
                 arrowContainer.visibility = View.GONE
+                // Auto Mode일 때 토글 버튼을 감춤 (투명하게)
+                buttonView.visibility = View.GONE
                 Toast.makeText(requireContext(), "Auto Mode 활성화", Toast.LENGTH_SHORT).show()
             }
         }
@@ -353,8 +369,25 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private val missionPopupShownMap = mutableMapOf<Int, Boolean>()
 
+//    private fun checkIfInsidePolygon(userLatLng: LatLng) {
+//        missionList.forEach { mission ->
+//            val key = mission.missionId
+//            val isInside = PolyUtil.containsLocation(userLatLng, mission.getEdgePointsLatLng(), true)
+//            if (isInside) {
+//                if (missionPopupShownMap[key] != true) {
+//                    showMissionPopup(mission)
+//                    missionPopupShownMap[key] = true
+//                }
+//            } else {
+//                missionPopupShownMap[key] = false
+//            }
+//        }
+//    }
+
     private fun checkIfInsidePolygon(userLatLng: LatLng) {
+        // 여기서는 완료된 미션(correct==true)은 무시합니다.
         missionList.forEach { mission ->
+            if (mission.correct) return@forEach
             val key = mission.missionId
             val isInside = PolyUtil.containsLocation(userLatLng, mission.getEdgePointsLatLng(), true)
             if (isInside) {
@@ -367,7 +400,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
         }
     }
-
     private fun showMissionPopup(mission: Mission) {
         when (mission.codeId) {
             "M001" -> {
