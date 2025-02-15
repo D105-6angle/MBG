@@ -54,11 +54,11 @@ class MissionExplainFragment : DialogFragment() {
         when (codeId) {
             "M001" -> {
                 quizTitle.text = "문화재 미션 발생!"
-                quizText.text = "$positionName 관련 문제를 풀고 역사 카드를 얻어봐"
+                quizText.text = "$positionName 관련\n문제를 풀고\n 문화재 카드를 얻어봐"
             }
             "M002" -> {
                 quizTitle.text = "랜덤 미션 발생!"
-                quizText.text = "$placeName 관련 문화재 관련 랜덤 퀴즈를 풀고 역사 카드를 얻어봐"
+                quizText.text = "$placeName 관련\n랜덤 퀴즈를 풀고\n일화 카드를 얻어봐"
             }
             "M003" -> {
                 quizTitle.text = "인증샷 미션 발생!"
@@ -92,8 +92,10 @@ class MissionExplainFragment : DialogFragment() {
                 }
                 "M003" -> {
                     // M003: 인증샷 미션 팝업
-                    val popup = PhotoMissionFragment.newInstance(codeId, positionName, "")
-                    popup.show(parentFragmentManager, "M003Popup")
+                    val missionId = arguments?.getInt("missionId") ?: 0
+                    val photoFragment = PhotoMissionFragment.newInstance("M003", positionName, placeName, missionId)
+                    photoFragment.show(parentFragmentManager, "PhotoMissionFragment")
+
                 }
                 else -> {
                     // 기본 퀴즈 팝업, missionId를 0으로 설정 (기본값)

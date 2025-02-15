@@ -10,11 +10,13 @@ import android.graphics.drawable.Drawable
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.GridLayout
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.Toast
 import android.widget.ToggleButton
 import androidx.appcompat.widget.AppCompatTextView
@@ -64,15 +66,18 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     // 미션의 폴리곤들을 저장할 리스트
     private val drawnPolygons = mutableListOf<Polygon>()
 
-    // Bottom Sheet 내 텍스트뷰 (피커 리스트와 거리 표시)
-    private lateinit var bottomSheetTextView: AppCompatTextView
+    // 바텀 시트 내 컨테이너 (피커 리스트와 거리 표시)
+    private lateinit var bottomSheetContainer: LinearLayout
 
     // 데이터 클래스: Picker (이름과 좌표)
     data class Picker(val name: String, val location: LatLng)
 
-    // 미션 정보를 Picker로 변환하는 함수
+    // 미션 정보를 Picker로 변환하는 함수 (완료된 미션은 제외)
     private fun getMissionPickers(): List<Picker> {
-        return missionList.map { mission -> Picker(mission.positionName ?: "미지정", mission.getCenterPointLatLng()) }
+        return missionList.filter { !it.correct }
+            .map { mission ->
+                Picker(mission.positionName ?: "미지정", mission.getCenterPointLatLng())
+            }
     }
 
     // 추가된 피커 리스트 (동적으로 추가됨)
@@ -98,9 +103,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var isPickerModeEnabled = true
 
     // Picker Mode의 고정 초기 위치 (경복궁)
-//    private val INITIAL_PICKER_LATLNG = LatLng(37.57640594972532, 126.97686654390287)
     private val INITIAL_PICKER_LATLNG = LatLng(37.579050513803224, 126.97762422651554)
-
 
     // API 응답 JSON과 매핑되는 미션 데이터 모델 (centerPoint와 edgePoints는 [lat, lng] 배열)
     data class Mission(
@@ -133,36 +136,48 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        bottomSheetTextView = view.findViewById(R.id.bottomSheetTitleTextView)
+        bottomSheetContainer = view.findViewById(R.id.bottomSheetContainer)
 
-        // 지도 Fragment 초기화
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
 
-        // Picker Mode가 기본이므로 토글 버튼을 기본 체크 상태로 설정
         val toggleMode: ToggleButton = view.findViewById(R.id.toggle_mode)
-        toggleMode.isChecked = true  // 기본: Picker Mode
-        // arrow_container를 GridLayout으로 참조 (XML에 정의된 GridLayout)
+        toggleMode.isChecked = true
         val arrowContainer: GridLayout = view.findViewById(R.id.arrow_container)
         arrowContainer.visibility = View.VISIBLE
 
-        toggleMode.setOnCheckedChangeListener { _, isChecked ->
+//        toggleMode.setOnCheckedChangeListener { _, isChecked ->
+//            isPickerModeEnabled = isChecked
+//            if (isPickerModeEnabled) {
+//                arrowContainer.visibility = View.VISIBLE
+//                Toast.makeText(requireContext(), "Picker Mode 활성화", Toast.LENGTH_SHORT).show()
+//            } else {
+//                arrowContainer.visibility = View.GONE
+//                Toast.makeText(requireContext(), "Auto Mode 활성화", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+
+        // 토글 버튼을 클릭했을 때, Picker Mode이면 버튼은 보이고, Auto Mode이면 버튼을 감춥니다.
+        toggleMode.setOnCheckedChangeListener { buttonView, isChecked ->
             isPickerModeEnabled = isChecked
-            if (isPickerModeEnabled) {
+            if (isChecked) {
                 arrowContainer.visibility = View.VISIBLE
+                // Picker Mode일 때 토글 버튼은 보임
+                buttonView.visibility = View.VISIBLE
                 Toast.makeText(requireContext(), "Picker Mode 활성화", Toast.LENGTH_SHORT).show()
             } else {
                 arrowContainer.visibility = View.GONE
+                // Auto Mode일 때 토글 버튼을 감춤 (투명하게)
+                buttonView.visibility = View.GONE
                 Toast.makeText(requireContext(), "Auto Mode 활성화", Toast.LENGTH_SHORT).show()
             }
         }
 
-        // 화살표 버튼 리스너 (Picker Mode에서 내 위치 피커를 직접 이동)
         val btnArrowUp: ImageButton = view.findViewById(R.id.btn_arrow_up)
         val btnArrowDown: ImageButton = view.findViewById(R.id.btn_arrow_down)
         val btnArrowLeft: ImageButton = view.findViewById(R.id.btn_arrow_left)
         val btnArrowRight: ImageButton = view.findViewById(R.id.btn_arrow_right)
-        val moveDistance = 10.0  // 10미터씩 이동
+        val moveDistance = 10.0
 
         btnArrowUp.setOnClickListener {
             userMarker?.let {
@@ -170,7 +185,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 it.position = newPos
                 updateDistanceDisplay(newPos)
                 drawLineToNearestTarget(newPos)
-                checkIfInsidePolygon(newPos) // 추가: picker mode 위치도 체크
+                checkIfInsidePolygon(newPos)
             }
         }
         btnArrowDown.setOnClickListener {
@@ -201,8 +216,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
-
-        // 적용할 맵 스타일: 기본 POI 제거를 위한 스타일 적용
         try {
             val success = googleMap.setMapStyle(
                 MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.map_style)
@@ -213,18 +226,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
-        // 지도 유형 설정 (예: MAP_TYPE_NORMAL)
         googleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
 
         setupMap()
-        // 정적 데이터 대신 API로 미션 정보를 가져옴
         fetchMissionPickers()
 
-        // 지도 클릭 시 – Picker Mode에서 추가 피커 등록
         googleMap.setOnMapClickListener { latLng ->
             if (isPickMode) {
-                isPickMode = false  // 선택 모드 해제
+                isPickMode = false
                 val newPickerName = "추가 피커 $additionalPickerCount"
                 additionalPickerCount++
                 additionalPickerList.add(Picker(newPickerName, latLng))
@@ -250,7 +259,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
         googleMap.setOnMarkerClickListener { false }
 
-        // Picker Mode인 경우, 초기 내 위치 설정
         if (userMarker == null) {
             googleMap.moveCamera(
                 CameraUpdateFactory.newLatLngZoom(INITIAL_PICKER_LATLNG, 18f)
@@ -289,8 +297,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun startLocationUpdates() {
         locationRequest = LocationRequest.create().apply {
-            interval = 10000         // 10초 간격
-            fastestInterval = 5000     // 최소 5초 간격
+            interval = 10000
+            fastestInterval = 5000
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
         locationCallback = object : LocationCallback() {
@@ -320,7 +328,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         )
     }
 
-    // Auto Mode일 때 내 위치 업데이트 (Picker Mode에서는 고정된 위치 유지)
     private fun updateUserLocation(userLatLng: LatLng) {
         if (userMarker == null) {
             val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.target_marker)
@@ -360,87 +367,55 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-//    private var isInsidePolygonToastShown = false
-//
-//    private fun checkIfInsidePolygon(userLatLng: LatLng) {
-//        var isUserInside = false
-//
-//        missionList.forEach { mission ->
-//            if (PolyUtil.containsLocation(userLatLng, mission.getEdgePointsLatLng(), true)) {
-//                isUserInside = true
-//                if (!isInsidePolygonToastShown) {
-//                    Toast.makeText(requireContext(), "You are in ${mission.positionName ?: "미지정"}", Toast.LENGTH_SHORT).show()
-//                    isInsidePolygonToastShown = true
-//                }
-//            }
-//        }
-//
-//        if (!isUserInside) {
-//            isInsidePolygonToastShown = false
-//        }
-//    }
-
-//    // 각 미션(폴리곤) 이름과 토스트 표시 여부를 기록하는 맵
-//    private val polygonToastShownMap = mutableMapOf<String, Boolean>()
-//
-//    private fun checkIfInsidePolygon(userLatLng: LatLng) {
-//        missionList.forEach { mission ->
-//            // 미션 이름이 없으면 "미지정"으로 대체
-//            val polygonName = mission.positionName ?: "미지정"
-//            val isInside = PolyUtil.containsLocation(userLatLng, mission.getEdgePointsLatLng(), true)
-//
-//            if (isInside) {
-//                // 해당 폴리곤에 대해 아직 토스트가 띄워지지 않았다면
-//                if (polygonToastShownMap[polygonName] != true) {
-//                    Toast.makeText(requireContext(), "You are in $polygonName", Toast.LENGTH_SHORT).show()
-//                    polygonToastShownMap[polygonName] = true
-//                }
-//            } else {
-//                // 사용자가 폴리곤 밖으로 나가면, 다시 토스트를 띄울 수 있도록 플래그를 리셋 (원한다면)
-//                polygonToastShownMap[polygonName] = false
-//            }
-//        }
-//    }
-
-    // 각 미션(폴리곤)의 missionId를 키로 하여, 해당 미션에 대해 팝업을 이미 띄웠는지 여부를 기록하는 맵
     private val missionPopupShownMap = mutableMapOf<Int, Boolean>()
 
+//    private fun checkIfInsidePolygon(userLatLng: LatLng) {
+//        missionList.forEach { mission ->
+//            val key = mission.missionId
+//            val isInside = PolyUtil.containsLocation(userLatLng, mission.getEdgePointsLatLng(), true)
+//            if (isInside) {
+//                if (missionPopupShownMap[key] != true) {
+//                    showMissionPopup(mission)
+//                    missionPopupShownMap[key] = true
+//                }
+//            } else {
+//                missionPopupShownMap[key] = false
+//            }
+//        }
+//    }
+
     private fun checkIfInsidePolygon(userLatLng: LatLng) {
+        // 여기서는 완료된 미션(correct==true)은 무시합니다.
         missionList.forEach { mission ->
+            if (mission.correct) return@forEach
             val key = mission.missionId
             val isInside = PolyUtil.containsLocation(userLatLng, mission.getEdgePointsLatLng(), true)
             if (isInside) {
-                // 해당 미션에 대해 아직 팝업이 띄워지지 않았다면
                 if (missionPopupShownMap[key] != true) {
                     showMissionPopup(mission)
                     missionPopupShownMap[key] = true
                 }
             } else {
-                // 미션 영역 밖에 나가면, 다음번 재진입 시 다시 팝업이 뜰 수 있도록 리셋
                 missionPopupShownMap[key] = false
             }
         }
     }
-
     private fun showMissionPopup(mission: Mission) {
         when (mission.codeId) {
             "M001" -> {
-                // M001: 문화재 미션 발생! / "[positionName] 관련 문제를 풀고 역사 카드를 얻어봐"
                 val popup = MissionExplainFragment.newInstance("M001", mission.positionName ?: "미지정", "", mission.missionId)
                 popup.show(parentFragmentManager, "M001Popup")
             }
             "M002" -> {
-                // M002 분기도 missionId를 전달하도록 수정
                 val popup = MissionExplainFragment.newInstance("M002", mission.positionName ?: "미지정", userPreferences.location, mission.missionId)
                 popup.show(parentFragmentManager, "M002Popup")
             }
             "M003" -> {
-                // M003: 인증샷 미션 발생! / "인증샷을 찍어서 업로드 해주세요"
-                val popup = MissionExplainFragment.newInstance("M003", mission.positionName ?: "미지정", "")
-                popup.show(parentFragmentManager, "M003Popup")
+                val photoFragment = PhotoMissionFragment.newInstance("M003", mission.positionName ?: "미지정", userPreferences.location, mission.missionId)
+                photoFragment.show(parentFragmentManager, "PhotoMissionFragment")
             }
             else -> {
-                val popup = MissionExplainFragment.newInstance("default", mission.positionName ?: "미지정", "")
+                val popup = MissionExplainFragment.newInstance("default", mission.positionName ?: "미지정", "", mission.missionId)
                 popup.show(parentFragmentManager, "DefaultPopup")
             }
         }
@@ -452,10 +427,18 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         quizFragment.show(parentFragmentManager, "QuizFragment")
     }
 
+    /**
+     * 미션 목록 중, 완료되지 않은 미션( correct == false )과 추가 피커 목록을 이용하여
+     * 거리를 계산하고, 바텀 시트 컨테이너에 항목들을 추가합니다.
+     */
     private fun updateDistanceDisplay(userLatLng: LatLng? = null) {
         val currentLocation = userLatLng ?: userMarker?.position
+        bottomSheetContainer.removeAllViews()
         if (currentLocation == null) {
-            bottomSheetTextView.text = "위치 조회중..."
+            val tv = AppCompatTextView(requireContext())
+            tv.text = "위치 조회중..."
+            tv.gravity = Gravity.CENTER
+            bottomSheetContainer.addView(tv)
             return
         }
         val combinedPickerList = getMissionPickers() + additionalPickerList
@@ -468,25 +451,35 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             )
             Triple(picker.name, results[0].toDouble(), picker.location)
         }
-        val sb = StringBuilder()
-        for ((name, distance, _) in pickerDistances.sortedWith(compareBy({ it.second }, { it.first }))) {
+        val sortedList = pickerDistances.sortedWith(compareBy({ it.second }, { it.first }))
+        for ((name, distance, _) in sortedList) {
             val distanceText = if (distance < 1000) {
                 String.format("%.0f m", distance)
             } else {
                 String.format("%.2f km", distance / 1000)
             }
-            sb.append("$name: $distanceText\n")
+            val tv = AppCompatTextView(requireContext()).apply {
+                text = "$name: $distanceText"
+                gravity = Gravity.CENTER
+                setPadding(16, 16, 16, 16)
+                setBackgroundResource(R.drawable.bg_distance_item)
+                val params = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                params.setMargins(8, 8, 8, 8)
+                layoutParams = params
+            }
+            bottomSheetContainer.addView(tv)
         }
-        bottomSheetTextView.text = sb.toString().trim()
     }
 
     /**
-     * 피커 중 가장 가까운 대상으로 사용자 위치에서 해당 피커 방향으로 일정 길이(예, 30m)만큼의 선과 화살표 표시
+     * 사용자 위치에서 가장 가까운 피커 방향으로 선을 그리고, 화살표를 표시합니다.
      */
     private fun drawLineToNearestTarget(userLatLng: LatLng) {
         var nearestDistance = Double.MAX_VALUE
         var nearestTargetPoint: LatLng? = null
-        var nearestTargetName = ""
         val combinedPickerList = getMissionPickers() + additionalPickerList
         for (picker in combinedPickerList) {
             val results = FloatArray(1)
@@ -499,12 +492,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             if (d < nearestDistance) {
                 nearestDistance = d
                 nearestTargetPoint = picker.location
-                nearestTargetName = picker.name
             }
         }
         nearestTargetPoint?.let { targetPoint ->
             nearestLine?.remove()
-            val arrowLineLength = 30.0  // 표시할 선 길이 (미터)
+            val arrowLineLength = 30.0
             val actualDistance = SphericalUtil.computeDistanceBetween(userLatLng, targetPoint)
             val heading = SphericalUtil.computeHeading(userLatLng, targetPoint)
             val lineEndPoint = if (actualDistance > arrowLineLength) {
@@ -543,18 +535,31 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         return Color.argb(alpha, red, green, blue)
     }
 
+    // 완료된 미션에 대해서 회색 마커 아이콘을 생성하는 함수
+    private fun getGrayMarker(): BitmapDescriptor {
+        val drawable: Drawable? = ContextCompat.getDrawable(requireContext(), R.drawable.target_marker)
+        return if (drawable != null) {
+            drawable.setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN)
+            drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+            val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            drawable.draw(canvas)
+            BitmapDescriptorFactory.fromBitmap(bitmap)
+        } else {
+            BitmapDescriptorFactory.defaultMarker(0f)
+        }
+    }
+
     /**
-     * API를 통해 POST /api/mission/pickers 요청을 보내 미션 정보를 받아옴.
-     * 요청 본문은 userPreferences의 userId, roomId, location(문화유산 장소명) 값을 사용.
-     * 응답 성공 시 missionList를 업데이트한 후 폴리곤과 피커를 지도에 그린다.
+     * API를 통해 POST /api/mission/pickers 요청을 보내 미션 정보를 받아오고,
+     * 응답 성공 시 missionList를 업데이트한 후 폴리곤과 피커를 지도에 그립니다.
      */
     private fun fetchMissionPickers() {
         val userId = userPreferences.userId
         val roomId = userPreferences.roomId
-        val placeName = userPreferences.location  // 문화유산 장소명
+        val placeName = userPreferences.location
 
         Log.d("Map", "Response Code: ${userId} ${roomId} ${placeName}")
-
 
         if (userId == null || roomId == null || placeName.isEmpty()) {
             Toast.makeText(requireContext(), "필요한 사용자 정보가 없습니다.", Toast.LENGTH_SHORT).show()
@@ -611,16 +616,19 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         })
     }
 
-    // API로 받아온 미션 정보를 기준으로 폴리곤을 그린다.
     private fun drawMissionPolygons() {
         drawnPolygons.forEach { it.remove() }
         drawnPolygons.clear()
         missionList.forEach { mission ->
-            val (strokeColor, fillColor) = when (mission.codeId) {
-                "M001" -> Pair(Color.BLUE, Color.argb(34, 0, 0, 255))
-                "M002" -> Pair(Color.YELLOW, Color.argb(34, 255, 255, 0))
-                "M003" -> Pair(Color.MAGENTA, Color.argb(34, 255, 0, 255))
-                else -> Pair(Color.GRAY, Color.argb(34, 128, 128, 128))
+            val (strokeColor, fillColor) = if (mission.correct) {
+                Pair(Color.GRAY, Color.argb(34, 128, 128, 128))
+            } else {
+                when (mission.codeId) {
+                    "M001" -> Pair(Color.BLUE, Color.argb(34, 0, 0, 255))
+                    "M002" -> Pair(Color.YELLOW, Color.argb(34, 255, 255, 0))
+                    "M003" -> Pair(Color.MAGENTA, Color.argb(34, 255, 0, 255))
+                    else -> Pair(Color.RED, Color.argb(34, 255, 0, 0))
+                }
             }
             val poly = googleMap.addPolygon(
                 PolygonOptions()
@@ -633,21 +641,23 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    // API로 받아온 미션 정보를 기준으로 각 미션의 중심에 마커를 표시한다.
     private fun addInitialPickerMarkers() {
         missionList.forEach { mission ->
-            val markerColor = when (mission.codeId) {
-                "M001" -> BitmapDescriptorFactory.HUE_BLUE
-                "M002" -> BitmapDescriptorFactory.HUE_YELLOW
-                "M003" -> BitmapDescriptorFactory.HUE_VIOLET
-                else -> BitmapDescriptorFactory.HUE_RED
-            }
-            googleMap.addMarker(
-                MarkerOptions()
-                    .position(mission.getCenterPointLatLng())
-                    .title(mission.positionName ?: "미지정")
+            val markerOptions = MarkerOptions().position(mission.getCenterPointLatLng())
+            if (mission.correct) {
+                markerOptions.title("수행한 미션")
+                    .icon(getGrayMarker())
+            } else {
+                val markerColor = when (mission.codeId) {
+                    "M001" -> BitmapDescriptorFactory.HUE_BLUE
+                    "M002" -> BitmapDescriptorFactory.HUE_YELLOW
+                    "M003" -> BitmapDescriptorFactory.HUE_VIOLET
+                    else -> BitmapDescriptorFactory.HUE_RED
+                }
+                markerOptions.title(mission.positionName ?: "미지정")
                     .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
-            )
+            }
+            googleMap.addMarker(markerOptions)
         }
     }
 
