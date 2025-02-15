@@ -71,7 +71,7 @@
                     android:layout_height="wrap_content"
                     android:text="뒤주"
                     android:textColor="@color/text_black"
-                    android:textSize="18sp"
+                    android:textSize="24sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -101,7 +101,7 @@
                     android:layout_marginTop="16dp"
                     android:text="2025-02-02"
                     android:textColor="@color/history_detail_cardview_date_text"
-                    android:textSize="14sp"
+                    android:textSize="18sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/imageCardView" />
 
@@ -113,7 +113,7 @@
                     android:lineSpacingExtra="6dp"
                     android:text="이방원쓰 철퇴"
                     android:textColor="@color/history_detail_cardview_description_text"
-                    android:textSize="14sp"
+                    android:textSize="20sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

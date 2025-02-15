@@ -17,19 +17,21 @@
         app:layout_constraintEnd_toEndOf="parent"/>
 
 <!--  Task 프래그먼트 메인  -->
+    <!--  나의 팀  -->
     <TextView
-        android:layout_marginTop="20dp"
         android:id="@+id/titleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
         android:text="@string/task_main"
-        android:textSize="18sp"
+        android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-         />
-<!--  나의 팀  -->
+        app:layout_goneMarginTop="16dp" />
+
     <TextView
         android:id="@+id/myTeamTitle"
         android:layout_width="wrap_content"

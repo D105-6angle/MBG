@@ -123,7 +123,7 @@ class AdminMainFragment : Fragment() {
             }
 
             btnSchedule.setOnClickListener {
-               viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.lifecycleScope.launch {
                     sharedViewModel.roomId.collect { roomId ->
                         if (roomId != -1) {
                             findNavController().navigate(R.id.action_adminMain_to_schedule)

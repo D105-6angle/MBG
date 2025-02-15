@@ -88,6 +88,7 @@
 
         <!-- 전체 공지 -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/btn_notice"
             android:layout_width="0dp"
             android:layout_height="100dp"
             android:layout_columnWeight="1"
@@ -109,7 +110,6 @@
                     android:layout_marginBottom="8dp"/>
 
                 <TextView
-                    android:id="@+id/btn_notice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="전체 공지"
@@ -119,6 +119,7 @@
 
         <!-- 일정 관리 -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/btn_schedule"
             android:layout_width="0dp"
             android:layout_height="100dp"
             android:layout_columnWeight="1"
@@ -140,7 +141,6 @@
                     android:layout_marginBottom="8dp"/>
 
                 <TextView
-                    android:id="@+id/btn_schedule"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="일정 관리"
@@ -150,6 +150,8 @@
 
         <!-- 보고서 관리 -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/btn_report"
+
             android:layout_width="0dp"
             android:layout_height="100dp"
             android:layout_columnWeight="1"
@@ -171,7 +173,6 @@
                     android:layout_marginBottom="8dp"/>
 
                 <TextView
-                    android:id="@+id/btn_report"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="보고서 관리"
@@ -181,6 +182,8 @@
 
         <!-- 미션 관리 -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/btn_mission"
+
             android:layout_width="0dp"
             android:layout_height="100dp"
             android:layout_columnWeight="1"
@@ -202,7 +205,6 @@
                     android:layout_marginBottom="8dp"/>
 
                 <TextView
-                    android:id="@+id/btn_mission"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="미션 관리"
