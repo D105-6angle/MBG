@@ -19,5 +19,18 @@ class NoticeFragment : Fragment() {
     ): View {
         binding = FragmentNoticeBinding.inflate(inflater, container, false)
         return binding.root
+
+
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupClickListeners()
+    }
+
+    private fun setupClickListeners() {
+        binding.btnBack.setOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
     }
 }

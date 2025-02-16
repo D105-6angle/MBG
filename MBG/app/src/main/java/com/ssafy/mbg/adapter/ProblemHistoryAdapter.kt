@@ -25,6 +25,7 @@ class ProblemHistoryAdapter(
                     .load(history.imageUrl)
                     .placeholder(R.drawable.placeholder_image)
                     .error(R.drawable.error_image)
+                    .centerCrop()
                     .into(itemIcon)
 
                 // 제목 설정

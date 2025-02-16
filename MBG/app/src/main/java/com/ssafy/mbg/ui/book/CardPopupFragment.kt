@@ -5,10 +5,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.snackbar.Snackbar
 import com.ssafy.mbg.R
 import com.ssafy.mbg.databinding.FragmentCardPopupBinding
@@ -22,11 +24,17 @@ class CardPopupFragment : DialogFragment() {
 
     private val viewModel: BookViewModel by viewModels()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NO_FRAME, R.style.FullScreenDialog)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
         _binding = FragmentCardPopupBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -37,23 +45,31 @@ class CardPopupFragment : DialogFragment() {
         val cardId = arguments?.getLong(ARG_CARD_ID) ?: return
         val imageUrl = arguments?.getString(ARG_IMAGE_URL) ?: return
 
-        // 디버그 로그 추가
         Log.d("CardPopupFragment", "Loading image with URL: $imageUrl")
 
         updatePopupContent(imageUrl)
 
-        // 팝업 외부 클릭 시 닫기
         dialog?.window?.decorView?.setOnClickListener {
             dismiss()
         }
-        // 팝업 내부 클릭은 이벤트 소비
         binding.root.setOnClickListener { }
     }
 
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.setLayout(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+    }
+
     private fun updatePopupContent(imageUrl: String) {
-        // Glide 오류 처리 추가
+        binding.popupCardImage.scaleType = ImageView.ScaleType.FIT_XY
+
         Glide.with(requireContext())
             .load(imageUrl)
+            .skipMemoryCache(true)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
             .into(binding.popupCardImage)
     }
 
