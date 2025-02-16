@@ -90,6 +90,10 @@ class TeamFragment : Fragment() {
                 }
             }
         }
+
+        binding.btnBack.setOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
     }
 
     private fun setupObservers() {

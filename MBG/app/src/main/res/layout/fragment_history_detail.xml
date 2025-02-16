@@ -90,6 +90,7 @@
                     <ImageView
                         android:id="@+id/culturalImage"
                         android:layout_width="match_parent"
+                        android:background="@android:color/transparent"
                         android:layout_height="200dp"
                         android:src="@drawable/cultural_1" />
                 </androidx.cardview.widget.CardView>
