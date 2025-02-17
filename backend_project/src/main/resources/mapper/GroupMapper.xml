@@ -23,7 +23,7 @@
     <select id="countCompletedMissions" parameterType="map" resultType="int">
         SELECT COUNT(DISTINCT p.mission_id)
         FROM pictures p
-                 JOIN memberships m ON p.user_id = m.user_id
+                 JOIN memberships m ON p.user_id = m.user_id AND p.room_id = m.room_id
                  JOIN mission_positions mp ON p.mission_id = mp.mission_id
         WHERE m.room_id = #{roomId}
           AND m.group_no = #{groupNo}
