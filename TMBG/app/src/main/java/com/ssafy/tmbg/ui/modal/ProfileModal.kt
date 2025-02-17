@@ -12,7 +12,9 @@ import com.ssafy.tmbg.databinding.ModalProfileBinding
 class ProfileModal(
     context: Context,
     private val onLogout: () -> Unit,
-    private val onWithdraw: () -> Unit
+    private val onWithdraw: () -> Unit,
+    private val userName : String,
+    private val userEmail : String
 ) : Dialog(context) {
 
     private var _binding: ModalProfileBinding? = null
@@ -47,6 +49,8 @@ class ProfileModal(
             // 초기값 설정
 
             // 닉네임 입력 필드 설정
+            profileName.text = userName
+            profileEmail.text = userEmail
 
             // 클릭 리스너 설정
 
