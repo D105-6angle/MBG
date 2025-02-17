@@ -66,7 +66,7 @@ class MissionExplainFragment : DialogFragment() {
             }
             else -> {
                 quizTitle.text = "퀴즈 발생!"
-                quizText.text = "퀴즈를 풀어보세요"
+                quizText.text = "퀴즈를 풀어보세요! else"
             }
         }
 
