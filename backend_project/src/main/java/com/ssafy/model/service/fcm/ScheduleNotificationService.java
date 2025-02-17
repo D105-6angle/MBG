@@ -21,17 +21,20 @@ public class ScheduleNotificationService {
     private final ScheduleMapper scheduleMapper;
     private final FcmService fcmService;
     private final FirebaseCloudMessageService firebaseCloudMessageService;
-    private final AlarmMapper alarmMapper;  // AlarmMapper 주입 추가
+    private final AlarmMapper alarmMapper;
 
-    @Scheduled(fixedRate = 60000) // 1분마다 실행
+    @Scheduled(fixedRate = 60000)
     public void checkUpcomingSchedules() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime tenMinutesLater = now.plusMinutes(10);
 
-        log.info("Checking schedules between {} and {}", now, tenMinutesLater);
+        // 현재 시간으로부터 9분~10분 사이에 있는 일정들만 조회하도록 수정
+        LocalDateTime nineMinutesLater = now.plusMinutes(9);
 
-        // 현재 시간으로부터 10분 후에 있는 일정들을 조회
-        List<Schedule> upcomingSchedules = scheduleMapper.findUpcomingSchedules(now, tenMinutesLater);
+        log.info("Checking schedules between {} and {}", nineMinutesLater, tenMinutesLater);
+
+        // 9분~10분 사이의 일정만 조회하도록 수정
+        List<Schedule> upcomingSchedules = scheduleMapper.findUpcomingSchedules(nineMinutesLater, tenMinutesLater);
         log.info("Found {} upcoming schedules", upcomingSchedules.size());
 
         for (Schedule schedule : upcomingSchedules) {
@@ -41,14 +44,12 @@ public class ScheduleNotificationService {
 
     private void sendScheduleNotification(Schedule schedule) {
         try {
-            // 해당 방의 모든 사용자 토큰 조회
             List<String> tokens = fcmService.getTokensByRoomId(schedule.getRoomId());
             List<Long> memberIds = fcmService.getStudentIdsByRoomId(schedule.getRoomId());
 
             String title = "일정 알림";
             String body = String.format("%s 일정이 10분 후에 시작됩니다.", schedule.getContent());
 
-            // 각 토큰에 대해 알림 전송
             for (String token : tokens) {
                 try {
                     firebaseCloudMessageService.sendMessageTo(token, title, body);
@@ -58,15 +59,14 @@ public class ScheduleNotificationService {
                 }
             }
 
-            // 각 멤버별로 알람 저장
             for (Long userId : memberIds) {
                 Alarm alarm = Alarm.builder()
-                        .userId(userId)  // userId 필수
+                        .userId(userId)
                         .title(title)
                         .content(body)
                         .build();
 
-                alarmMapper.insert(alarm);  // insertAlarm 메서드명 수정
+                alarmMapper.insert(alarm);
                 log.info("Saved alarm for user {}: alarmId={}", userId, alarm.getAlarmId());
             }
         } catch (Exception e) {
