@@ -11,7 +11,8 @@ import dagger.hilt.android.HiltAndroidApp
 class TmbgApplication : Application(){
     override fun onCreate() {
         super.onCreate()
-        KeyHashUtil.getKeyHash(this)
+//        KeyHashUtil.getKeyHash(this)
+        KeyHashUtil.getReleaseKeyHash(this)
 
         // application 실행 시, 카카오 SDK, 네이버 SDK 초기화
         try {

@@ -3,12 +3,15 @@ package com.ssafy.tmbg.di
 import android.content.Context
 import android.content.SharedPreferences
 import com.ssafy.tmbg.api.AuthApi
+import com.ssafy.tmbg.api.ProfileApi
 import com.ssafy.tmbg.api.ReportApi
 import com.ssafy.tmbg.api.ScheduleApi
 import com.ssafy.tmbg.data.auth.repository.AuthRepository
 import com.ssafy.tmbg.data.auth.repository.AuthRepositoryImpl
 import com.ssafy.tmbg.data.auth.repository.KakaoLoginRepositoryImpl
 import com.ssafy.tmbg.data.auth.repository.SocialLoginRepository
+import com.ssafy.tmbg.data.profile.repository.ProfileRepository
+import com.ssafy.tmbg.data.profile.repository.ProfileRepositoryImpl
 import com.ssafy.tmbg.data.report.repositoy.ReportRepository
 import com.ssafy.tmbg.data.report.repositoy.ReportRepositoryImpl
 import dagger.Module
@@ -58,6 +61,20 @@ object AppModule {
     @Singleton
     fun provideScheduleApi(retrofit: Retrofit): ScheduleApi {
         return retrofit.create(ScheduleApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideProfileApi(retrofit: Retrofit) : ProfileApi {
+        return retrofit.create(ProfileApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideProfileRepository(
+        profileApi: ProfileApi
+    ) : ProfileRepository {
+        return ProfileRepositoryImpl(profileApi)
     }
 
     @Provides
