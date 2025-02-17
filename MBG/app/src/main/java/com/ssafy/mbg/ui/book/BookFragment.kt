@@ -11,6 +11,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.snackbar.Snackbar
 import com.ssafy.mbg.R
 import com.ssafy.mbg.adapter.BookPagerAdapter
+import com.ssafy.mbg.data.book.response.BookResponse
 import com.ssafy.mbg.databinding.FragmentBookBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -43,8 +44,13 @@ class BookFragment : Fragment() {
     private fun setupViewPager() {
         binding.viewPager.apply {
             adapter = BookPagerAdapter(this@BookFragment).apply {
-                // 초기 데이터 설정
-                updateData(emptyList())
+                // 초기 데이터 설정 - 빈 BookResponse 객체 생성
+                updateData(BookResponse(
+                    totalCards = 0,
+                    totalHeritageCards = 0,
+                    totalStoryCards = 0,
+                    cards = emptyList()
+                ))
             }
             offscreenPageLimit = 2
 
@@ -76,8 +82,11 @@ class BookFragment : Fragment() {
                     is BookState.Success -> {
                         binding.progressBar.visibility = View.GONE
                         binding.viewPager.visibility = View.VISIBLE
-                        // ViewPager의 현재 페이지에 데이터 전달
-                        (binding.viewPager.adapter as? BookPagerAdapter)?.updateData(state.bookResponse.cards)
+                        // BookResponse 전체를 전달
+                        (binding.viewPager.adapter as? BookPagerAdapter)?.updateData(state.bookResponse)
+                        val bookAdapter = binding.viewPager.adapter as BookPagerAdapter
+                        val heritageCount = bookAdapter.getHeritageCardsCount()
+                        val storyCount = bookAdapter.getStoryCardsCount()
                     }
                     is BookState.Error -> {
                         binding.progressBar.visibility = View.GONE
@@ -95,8 +104,6 @@ class BookFragment : Fragment() {
             }
         }
     }
-
-
 
     private fun setupTabButtons() {
         binding.culturalTab.setOnClickListener {

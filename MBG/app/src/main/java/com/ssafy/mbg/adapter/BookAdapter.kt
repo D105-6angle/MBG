@@ -17,14 +17,25 @@ import com.ssafy.mbg.databinding.ItemCardBinding
 import com.ssafy.mbg.ui.book.CardPopupFragment
 import com.bumptech.glide.Glide
 import com.ssafy.mbg.data.book.dao.CardCollection
+import com.ssafy.mbg.data.book.response.BookResponse
 
 class BookAdapter(
-    private val fragmentManager: FragmentManager
+    private val fragmentManager: FragmentManager,
+    private val cardType: String  // "M001" 또는 "M002"
 ) : RecyclerView.Adapter<BookAdapter.CardViewHolder>() {
-    private var bookCards: List<CardCollection> = emptyList()
+    private var collectedCards: List<CardCollection> = emptyList()
+    private var totalCardCount: Int = 0
 
-    fun setCards(newBookCards: List<CardCollection>?) {
-        bookCards = newBookCards ?: emptyList()
+    fun setData(response: BookResponse) {
+        // cardType에 따라 전체 카드 개수 설정
+        totalCardCount = when (cardType) {
+            "M001" -> response.totalHeritageCards
+            "M002" -> response.totalStoryCards
+            else -> 0
+        }
+        
+        // 해당 타입의 획득한 카드만 필터링
+        collectedCards = response.cards.filter { it.codeId == cardType }
         notifyDataSetChanged()
     }
 
@@ -38,44 +49,46 @@ class BookAdapter(
     }
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
-        holder.bind(bookCards[position], fragmentManager)
+        // position이 획득한 카드 범위 내에 있는지 확인
+        if (position < collectedCards.size) {
+            // 획득한 카드는 앞면 표시
+            holder.bind(collectedCards[position], true, fragmentManager)
+        } else {
+            // 미획득 카드는 뒷면 표시
+            holder.bind(null, false, fragmentManager)
+        }
     }
 
-    override fun getItemCount(): Int = bookCards.size
+    override fun getItemCount(): Int = totalCardCount
 
     class CardViewHolder(
         private val binding: ItemCardBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(bookCard: CardCollection, fragmentManager: FragmentManager) {
-            // collectedAt이 null이 아니면 카드가 수집된 것으로 간주
-            val isUnlocked = bookCard.collectedAt != null
-
+        fun bind(bookCard: CardCollection?, isCollected: Boolean, fragmentManager: FragmentManager) {
             binding.imageView.apply {
-                if (isUnlocked) {
-                    Log.d("BookAdapter", "Card Image URL: ${bookCard.imageUrl}")
-                    // 실제 카드 이미지 로드
+                if (isCollected && bookCard != null) {
+                    // 획득한 카드는 실제 이미지 로드
                     Glide.with(this)
                         .load(bookCard.imageUrl)
                         .placeholder(R.drawable.card_back)
                         .error(R.drawable.card_back)
                         .into(this)
+                    
+                    // 클릭 리스너 설정
+                    setOnClickListener {
+                        animateCardFlip(itemView, bookCard, fragmentManager)
+                    }
                 } else {
-                    // 잠긴 카드는 카드 뒷면 이미지 표시
+                    // 미획득 카드는 뒷면 이미지 표시
                     setImageResource(R.drawable.card_back)
+                    setOnClickListener(null)  // 클릭 불가능하게 설정
                 }
                 scaleType = ImageView.ScaleType.FIT_XY
             }
-
-            // 잠금 해제된 카드만 클릭 가능
-            if (isUnlocked) {
-                itemView.setOnClickListener {
-                    animateCardFlip(itemView, bookCard, fragmentManager)
-                }
-            }
         }
 
-        private fun animateCardFlip(itemView: View, bookCard: CardCollection, fragmentManager: FragmentManager) {
+        private fun animateCardFlip(itemView: View, bookCard: CardCollection?, fragmentManager: FragmentManager) {
             val flipSound = MediaPlayer.create(itemView.context, R.raw.card_flip)
 
             itemView.cameraDistance = 8000 * itemView.resources.displayMetrics.density
@@ -88,7 +101,7 @@ class BookAdapter(
                     override fun onAnimationStart(animation: Animator) {
                         flipSound.start()
                         itemView.postDelayed({
-                            Log.d("BookAdapter", "Card Image URL: ${bookCard.imageUrl}")
+                            Log.d("BookAdapter", "Card Image URL: ${bookCard?.imageUrl}")
                             binding.imageView.setImageResource(R.drawable.card_back)
                         }, 150)
                     }
@@ -104,7 +117,7 @@ class BookAdapter(
                                     itemView.postDelayed({
                                         // 실제 카드 이미지 다시 로드
                                         Glide.with(binding.imageView)
-                                            .load(bookCard.imageUrl)
+                                            .load(bookCard?.imageUrl)
                                             .into(binding.imageView)
                                     }, 150)
                                 }
@@ -121,10 +134,10 @@ class BookAdapter(
                 .start()
         }
 
-        private fun showPopupDirectly(bookCard: CardCollection, fragmentManager: FragmentManager) {
+        private fun showPopupDirectly(bookCard: CardCollection?, fragmentManager: FragmentManager) {
             val popupFragment = CardPopupFragment.newInstance(
-                cardId = bookCard.cardId,
-                imageUrl = bookCard.imageUrl  // 이미지 URL 추가
+                cardId = bookCard?.cardId ?: -1L,
+                imageUrl = bookCard?.imageUrl ?: ""
             )
             popupFragment.show(fragmentManager, "CardPopupFragment")
         }

@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.ssafy.mbg.adapter.BookAdapter
 import com.ssafy.mbg.data.book.dao.CardCollection
+import com.ssafy.mbg.data.book.response.BookResponse
 import com.ssafy.mbg.databinding.FragmentBookListBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -23,15 +24,15 @@ class BookListFragment : Fragment() {
     private val viewModel: BookViewModel by viewModels()
     private lateinit var bookAdapter: BookAdapter
 
-    private var isCultural: Boolean = false
+    private var cardType: String = "M001"  // 기본값
 
     companion object {
-        private const val ARG_IS_CULTURAL = "is_cultural"
+        private const val ARG_CARD_TYPE = "card_type"
 
-        fun newInstance(isCultural: Boolean): BookListFragment {
+        fun newInstance(cardType: String): BookListFragment {
             return BookListFragment().apply {
                 arguments = Bundle().apply {
-                    putBoolean(ARG_IS_CULTURAL, isCultural)
+                    putString(ARG_CARD_TYPE, cardType)
                 }
             }
         }
@@ -39,9 +40,7 @@ class BookListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.getBoolean(ARG_IS_CULTURAL)?.let {
-            isCultural = it
-        }
+        cardType = arguments?.getString(ARG_CARD_TYPE) ?: "M001"
     }
 
     override fun onCreateView(
@@ -61,7 +60,7 @@ class BookListFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        bookAdapter = BookAdapter(parentFragmentManager)
+        bookAdapter = BookAdapter(parentFragmentManager, cardType)
         binding.bookRecyclerView.apply {
             adapter = bookAdapter
             layoutManager = GridLayoutManager(context, 3)
@@ -79,16 +78,7 @@ class BookListFragment : Fragment() {
                     is BookState.Success -> {
                         binding.progressBar.visibility = View.GONE
                         binding.bookRecyclerView.visibility = View.VISIBLE
-
-                        val cards = state.bookResponse.cards.filter { card ->
-                            if (state.bookResponse.cards.isEmpty()) false
-                            else {
-                                // isCultural이 true면 M001, false면 M002 코드를 가진 카드들 필터링
-                                card.codeId == if (isCultural) "M001" else "M002"
-                            }
-                        }
-
-                        bookAdapter.setCards(cards)
+                        bookAdapter.setData(state.bookResponse)
                     }
                     is BookState.Error -> {
                         binding.progressBar.visibility = View.GONE
@@ -105,17 +95,6 @@ class BookListFragment : Fragment() {
         }
     }
 
-    fun setCards(newBookCards: List<CardCollection>) {
-        if (!isAdded) return
-
-        // 문화재(M001) 또는 이야기(M002) 카드 필터링
-        val filteredCards = newBookCards.filter {
-            it.codeId == if (isCultural) "M001" else "M002"
-        }
-
-        bookAdapter.setCards(filteredCards)
-    }
-
     private fun loadCards() {
         if (!isAdded) return
 
@@ -129,6 +108,11 @@ class BookListFragment : Fragment() {
     fun refreshCards() {
         if (!isAdded) return
         loadCards()
+    }
+
+    fun updateData(response: BookResponse) {
+        if (!isAdded) return
+        bookAdapter.setData(response)
     }
 
     override fun onDestroyView() {
