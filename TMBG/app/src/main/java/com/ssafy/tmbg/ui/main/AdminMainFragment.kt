@@ -110,14 +110,11 @@ class AdminMainFragment : Fragment() {
             }
 
             btnNotice.setOnClickListener {
-                viewLifecycleOwner.lifecycleScope.launch {
-                    sharedViewModel.roomId.collect { roomId ->
-                        if (roomId != -1) {
-                            findNavController().navigate(R.id.action_adminMain_to_notice)
-                        } else {
-                            Toast.makeText(context, "방을 먼저 생성해주세요", Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                val currentRoomId = sharedViewModel.roomId.value
+                if (currentRoomId != -1) {
+                    findNavController().navigate(R.id.action_adminMain_to_notice)
+                } else {
+                    Toast.makeText(context, "방을 먼저 생성해주세요", Toast.LENGTH_SHORT).show()
                 }
             }
 

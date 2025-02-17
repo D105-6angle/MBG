@@ -1,10 +1,14 @@
 package com.ssafy.tmbg.ui.team
 
+import android.app.AlertDialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -12,9 +16,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.ssafy.tmbg.R
 import com.ssafy.tmbg.databinding.FragmentTeamBinding
 import com.ssafy.tmbg.adapter.TeamAdapter
 import com.ssafy.tmbg.ui.SharedViewModel
+import com.ssafy.tmbg.ui.notice.NoticeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -24,6 +30,7 @@ class TeamFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var teamAdapter: TeamAdapter
     private val viewModel: TeamViewModel by viewModels()
+    private val noticeViewModel : NoticeViewModel by viewModels()
     private val sharedViewModel: SharedViewModel by activityViewModels()  // MainViewModel -> SharedViewModel
 
     override fun onCreateView(
@@ -89,6 +96,31 @@ class TeamFragment : Fragment() {
                     Log.e("TeamFragment", "roomId가 -1입니다")
                 }
             }
+        }
+        binding.btnFinishGrading.setOnClickListener {
+            val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_satisfaction_notice, null)
+
+            val dialog = AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .create()
+
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+            dialogView.findViewById<Button>(R.id.btnConfirm).setOnClickListener {
+                viewLifecycleOwner.lifecycleScope.launch {
+                    val roomId = sharedViewModel.roomId.value
+                    if (roomId != -1) {
+                        noticeViewModel.createSatisfactionNotice(roomId.toLong())
+                    }
+                }
+                dialog.dismiss()
+            }
+
+            dialogView.findViewById<Button>(R.id.btnCancel).setOnClickListener {
+                dialog.dismiss()
+            }
+
+            dialog.show()
         }
 
         binding.btnBack.setOnClickListener {

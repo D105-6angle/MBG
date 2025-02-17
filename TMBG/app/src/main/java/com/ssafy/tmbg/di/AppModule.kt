@@ -3,6 +3,7 @@ package com.ssafy.tmbg.di
 import android.content.Context
 import android.content.SharedPreferences
 import com.ssafy.tmbg.api.AuthApi
+import com.ssafy.tmbg.api.NoticeApi
 import com.ssafy.tmbg.api.ProfileApi
 import com.ssafy.tmbg.api.ReportApi
 import com.ssafy.tmbg.api.ScheduleApi
@@ -10,6 +11,8 @@ import com.ssafy.tmbg.data.auth.repository.AuthRepository
 import com.ssafy.tmbg.data.auth.repository.AuthRepositoryImpl
 import com.ssafy.tmbg.data.auth.repository.KakaoLoginRepositoryImpl
 import com.ssafy.tmbg.data.auth.repository.SocialLoginRepository
+import com.ssafy.tmbg.data.notice.repository.NoticeRepository
+import com.ssafy.tmbg.data.notice.repository.NoticeRepositoryImpl
 import com.ssafy.tmbg.data.profile.repository.ProfileRepository
 import com.ssafy.tmbg.data.profile.repository.ProfileRepositoryImpl
 import com.ssafy.tmbg.data.report.repositoy.ReportRepository
@@ -81,6 +84,20 @@ object AppModule {
     @Singleton
     fun providerUserPreferences(@ApplicationContext context: Context) : UserPreferences {
         return UserPreferences(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideNoticeRepository(
+        noticeApi: NoticeApi
+    ) : NoticeRepository {
+        return NoticeRepositoryImpl(noticeApi)
+    }
+
+    @Provides
+    @Singleton
+    fun provideNoticeApi(retrofit: Retrofit) : NoticeApi {
+        return retrofit.create(NoticeApi::class.java)
     }
 
     @Provides
