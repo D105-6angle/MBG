@@ -15,10 +15,19 @@ public class HeritagebookService {
 
     private final HeritagebookMapper heritagebookMapper;
 
+
+
     public HeritagebookResponse.ListResponse getAllCards(Long userId) {
         List<HeritageBook> cards = heritagebookMapper.findAllByUserId(userId);
+
+        // 문화재별, 일화별 카드 조회
+        int totalHeritageCards = heritagebookMapper.countCardsByType("M001");
+        int totalStoryCards = heritagebookMapper.countCardsByType("M002");
+
         return HeritagebookResponse.ListResponse.builder()
                 .totalCards(cards.size())
+                .totalHeritageCards(totalHeritageCards)
+                .totalStoryCards(totalStoryCards)
                 .cards(cards.stream().map(this::toResponse).collect(Collectors.toList()))
                 .build();
     }

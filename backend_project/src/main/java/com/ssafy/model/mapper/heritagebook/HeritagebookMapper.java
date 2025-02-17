@@ -12,4 +12,6 @@ public interface HeritagebookMapper {
     // 전체 도감 조회
     List<HeritageBook> findAllByUserId(@Param("userId") Long userId);
 
+    int countCardsByType(@Param("codeId") String codeId);
+
 }

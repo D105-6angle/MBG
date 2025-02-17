@@ -13,6 +13,8 @@ public class HeritagebookResponse {
     @Builder
     public static class ListResponse {
         private int totalCards;
+        private int totalStoryCards;
+        private int totalHeritageCards;
         private List<DetailResponse> cards;
     }
 

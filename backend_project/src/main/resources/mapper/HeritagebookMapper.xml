@@ -26,5 +26,10 @@
         ORDER BY hb.created_at DESC
     </select>
 
+    <!-- 전체 카드 개수 조회 : code_id로 구별 -->
+    <select id="countCardsByType" resultType="int">
+        SELECT COUNT(*) FROM cards WHERE code_id = #{codeId}
+    </select>
+
 
 </mapper>
