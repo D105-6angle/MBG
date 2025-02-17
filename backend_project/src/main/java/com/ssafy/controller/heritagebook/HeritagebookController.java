@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.model.service.heritagebook.HeritagebookService;
 
-import java.util.stream.Collectors;
-
 @RestController
 @RequestMapping("/api/users/{userId}/heritagebook")
 @RequiredArgsConstructor
