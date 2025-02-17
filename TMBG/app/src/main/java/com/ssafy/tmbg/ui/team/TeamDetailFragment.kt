@@ -26,6 +26,13 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.ssafy.tmbg.ui.SharedViewModel
 import kotlinx.coroutines.launch
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import com.bumptech.glide.Glide
+import com.ssafy.tmbg.databinding.DialogPhotoDetailBinding
+import java.text.SimpleDateFormat
+import java.util.*
 
 @AndroidEntryPoint
 class TeamDetailFragment : Fragment() {
@@ -73,58 +80,41 @@ class TeamDetailFragment : Fragment() {
                 binding.progressPercent.text = "${detail.progress}%"
 
                 // 멤버 리스트를 조장과 조원으로 분리
-                val leader = detail.members.find { it.codeId == "J001" }
-                val members = detail.members.filter { it.codeId != "J001" }
+                val leaders = detail.members.filter { it.codeId == "J001" }  // 조장
+                val members = detail.members.filter { it.codeId == "J002" }  // 조원
 
                 // 조장 리사이클러뷰 업데이트
                 binding.rvLeader.adapter = TeamMemberAdapter(
-                    members = listOfNotNull(leader),
-                    onDeleteClick = { userId ->
-                        // Flow로 roomId 수집
-                        viewLifecycleOwner.lifecycleScope.launch {
-                            sharedViewModel.roomId.collect { roomId ->
-                                if (roomId != -1) {
-                                    teamViewModel.deleteMember(roomId, args.groupNumber, userId)
-                                }
-                            }
-                        }
-                    }
+                    members = leaders
                 )
 
                 // 조원 리사이클러뷰 업데이트
-                memberAdapter = TeamMemberAdapter(
-                    members = detail.members.filter { it.codeId != "J001" },
-                    onDeleteClick = { userId ->
-                        viewLifecycleOwner.lifecycleScope.launch {
-                            sharedViewModel.roomId.collect { roomId ->
-                                if (roomId != -1) {
-                                    teamViewModel.deleteMember(roomId, args.groupNumber, userId)
-                                }
-                            }
-                        }
-                    }
+                binding.rvMembers.adapter = TeamMemberAdapter(
+                    members = members
                 )
-                binding.rvMembers.adapter = memberAdapter
 
                 // 방문 장소 리사이클러뷰 업데이트
                 binding.rvPlaces.adapter = TeamPlaceAdapter(detail.visitedPlaces)
+
+                // 인증 사진 리사이클러뷰 업데이트
+                setupPhotoRecyclerView(detail.verificationPhotos)
             }
         }
 
-        // 삭제 버튼 클릭 처리
-        binding.btnDelete.setOnClickListener {
-            isDeleteMode = !isDeleteMode
-            memberAdapter.setDeleteMode(isDeleteMode)
-            (binding.rvLeader.adapter as? TeamMemberAdapter)?.setDeleteMode(isDeleteMode)
-            
-            // 삭제 모드일 때 버튼 색상 변경
-            binding.btnDelete.setColorFilter(
-                if (isDeleteMode) 
-                    ContextCompat.getColor(requireContext(), R.color.red)
-                else 
-                    ContextCompat.getColor(requireContext(), R.color.gray)
-            )
-        }
+//        // 삭제 버튼 클릭 처리
+//        binding.btnDelete.setOnClickListener {
+//            isDeleteMode = !isDeleteMode
+//            memberAdapter.setDeleteMode(isDeleteMode)
+//            (binding.rvLeader.adapter as? TeamMemberAdapter)?.setDeleteMode(isDeleteMode)
+//
+//            // 삭제 모드일 때 버튼 색상 변경
+//            binding.btnDelete.setColorFilter(
+//                if (isDeleteMode)
+//                    ContextCompat.getColor(requireContext(), R.color.red)
+//                else
+//                    ContextCompat.getColor(requireContext(), R.color.gray)
+//            )
+//        }
     }
 
     private fun setupUI() {
@@ -143,12 +133,11 @@ class TeamDetailFragment : Fragment() {
         val photoAdapter = TeamPhotoAdapter(
             photos = photos,
             onPhotoClick = { photo -> 
-                // 사진 클릭 시 처리
-                // 예: 상세 보기 다이얼로그 표시
+                showPhotoDetailDialog(photo)
             }
         )
 
-        binding.rvPhotos.apply {  // photoRecyclerView -> rvPhotos로 변경
+        binding.rvPhotos.apply {
             adapter = photoAdapter
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             addItemDecoration(object : RecyclerView.ItemDecoration() {
@@ -161,6 +150,47 @@ class TeamDetailFragment : Fragment() {
                     outRect.right = resources.getDimensionPixelSize(R.dimen.recycler_item_spacing)
                 }
             })
+        }
+    }
+
+    private fun showPhotoDetailDialog(photo: VerificationPhotos) {
+        val dialog = Dialog(requireContext())
+        val binding = DialogPhotoDetailBinding.inflate(layoutInflater)
+        dialog.setContentView(binding.root)
+
+        // 이미지 로드
+        Glide.with(requireContext())
+            .load(photo.pictureUrl)
+            .centerCrop()
+            .into(binding.ivPhotoDetail)
+
+        // 완료 시간 표시
+        binding.tvCompletionTimeDetail.text = formatDateTime(photo.completionTime)
+
+        // 다이얼로그 크기 설정
+        dialog.window?.apply {
+            setLayout(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
+
+        // 다이얼로그 외부 클릭 시 닫기
+        dialog.setCanceledOnTouchOutside(true)
+        
+        dialog.show()
+    }
+
+    private fun formatDateTime(dateTimeStr: String): String {
+        try {
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            val date = inputFormat.parse(dateTimeStr) ?: return dateTimeStr
+            
+            val outputFormat = SimpleDateFormat("M월 d일 a h시 mm분", Locale.KOREAN)
+            return outputFormat.format(date)
+        } catch (e: Exception) {
+            return dateTimeStr
         }
     }
 
