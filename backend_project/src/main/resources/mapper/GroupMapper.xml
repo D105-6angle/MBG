@@ -54,7 +54,8 @@
             p.mission_id     AS missionId,
             DATE_FORMAT(p.completion_time, '%Y-%m-%d %H:%i:%s') AS completionTime
         FROM pictures p
-                 JOIN memberships m ON p.user_id = m.user_id
+                JOIN memberships m ON p.user_id = m.user_id
+                                   AND p.room_id = m.room_id
         WHERE m.room_id = #{roomId}
           AND m.group_no = #{groupNo}
     </select>
@@ -69,6 +70,7 @@
             DATE_FORMAT(p.completion_time, '%Y-%m-%d %H:%i:%s') AS completedAt
         FROM pictures p
                  JOIN memberships m ON p.user_id = m.user_id
+                                    AND p.room_id = m.room_id
                  JOIN mission_positions mp ON p.mission_id = mp.mission_id
         WHERE m.room_id = #{roomId}
           AND m.group_no = #{groupNo}
