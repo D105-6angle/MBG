@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import com.ssafy.mbg.ui.modal.ProfileModal
 import com.ssafy.tmbg.R
 import com.ssafy.tmbg.databinding.FragmentAdminMainBinding
+import com.ssafy.tmbg.di.UserPreferences
 import com.ssafy.tmbg.ui.SharedViewModel
 import com.ssafy.tmbg.ui.auth.AuthState
 import com.ssafy.tmbg.ui.auth.AuthViewModel
@@ -23,6 +24,7 @@ import com.ssafy.tmbg.ui.team.TeamCreateDialog
 import com.ssafy.tmbg.ui.team.TeamViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AdminMainFragment : Fragment() {
@@ -31,6 +33,13 @@ class AdminMainFragment : Fragment() {
     private val teamViewModel: TeamViewModel by viewModels()
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private val authViewModel: AuthViewModel by viewModels()
+    private val profileViewModel : ProfileViewModel by viewModels()
+
+    @Inject
+    lateinit var userPreferences: UserPreferences
+
+    private var currentEmail : String = ""
+    private var currentName : String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,6 +54,8 @@ class AdminMainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupClickListeners()
         observeAuthState()
+        observeProfileState()
+        loadProfile()
 
         // SharedViewModel의 roomId Flow 수집
         viewLifecycleOwner.lifecycleScope.launch {
@@ -99,14 +110,11 @@ class AdminMainFragment : Fragment() {
             }
 
             btnNotice.setOnClickListener {
-                viewLifecycleOwner.lifecycleScope.launch {
-                    sharedViewModel.roomId.collect { roomId ->
-                        if (roomId != -1) {
-                            findNavController().navigate(R.id.action_adminMain_to_notice)
-                        } else {
-                            Toast.makeText(context, "방을 먼저 생성해주세요", Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                val currentRoomId = sharedViewModel.roomId.value
+                if (currentRoomId != -1) {
+                    findNavController().navigate(R.id.action_adminMain_to_notice)
+                } else {
+                    Toast.makeText(context, "방을 먼저 생성해주세요", Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -153,6 +161,7 @@ class AdminMainFragment : Fragment() {
     }
 
     private fun showProfileModal() {
+        Log.d("ProfileDebug", "Showing modal with name: $currentName, email: $currentEmail")
         val profileModal = ProfileModal(
             context = requireContext(),
             onLogout = {
@@ -160,7 +169,9 @@ class AdminMainFragment : Fragment() {
             },
             onWithdraw = {
                 authViewModel.withDraw()
-            }
+            },
+            userName = currentName,
+            userEmail = currentEmail
         )
         profileModal.show()
     }
@@ -193,6 +204,54 @@ class AdminMainFragment : Fragment() {
                     }
                     else -> {}
                 }
+            }
+        }
+    }
+
+    private fun observeProfileState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            profileViewModel.uiState.collect { state ->
+                Log.d("ProfileDebug", "Profile state changed: $state")
+                when(state) {
+                    is ProfileState.Loading -> {
+                        Log.d("ProfileDebug", "Profile loading...")
+                        binding.progressBar.visibility = View.VISIBLE
+                    }
+                    is ProfileState.Success -> {
+                        Log.d("ProfileDebug", "Profile loaded successfully")
+                        binding.progressBar.visibility = View.GONE
+                        state.profileResponse?.let { profile ->
+                            profile.userInfo.let { userInfo ->
+                                Log.d("ProfileDebug", "Name: ${userInfo.name}, Email: ${userInfo.email}")
+                                currentName = userInfo.name
+                                currentEmail = userInfo.email
+                                // 값이 설정된 후 바로 확인
+                                Log.d("ProfileDebug", "Current name: $currentName, Current email: $currentEmail")
+                            }
+                        }
+                    }
+                    is ProfileState.Error -> {
+                        Log.d("ProfileDebug", "Profile error: ${state.message}")
+                        binding.progressBar.visibility = View.GONE
+                        Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                    }
+                    else -> {
+                        Log.d("ProfileDebug", "Other state: $state")
+                        binding.progressBar.visibility = View.GONE
+                    }
+                }
+            }
+        }
+    }
+
+    private fun loadProfile() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            userPreferences.userId?.let { userId ->
+                Log.d("ProfileDebug", "Loading profile for userId: $userId")
+                profileViewModel.getProfile(userId, null)
+            } ?: run {
+                Log.d("ProfileDebug", "userId is null")
+                Toast.makeText(context, "사용자 정보를 찾을 수 없습니다", Toast.LENGTH_SHORT).show()
             }
         }
     }

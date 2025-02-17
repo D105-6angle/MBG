@@ -213,8 +213,12 @@
   <component name="ChangeListManager">
     <list default="true" id="db4e149f-3cf5-43c3-bfbb-fc103ac6d4b2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/adapter/BookAdapter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/adapter/BookAdapter.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/ui/book/CardPopupFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ssafy/mbg/ui/book/CardPopupFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/TmbgApplication.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/TmbgApplication.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/di/AppModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/di/AppModule.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/main/AdminMainFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/main/AdminMainFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/modal/ProfileModal.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/modal/ProfileModal.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/util/KeyHashUtil.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/util/KeyHashUtil.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/res/layout/modal_profile.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/res/layout/modal_profile.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -224,7 +228,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=Default, isTemplate=false, identifier=serial=172.16.101.8:41813;connection=3e1287af)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=Default, isTemplate=false, identifier=serial=192.168.100.218:38917;connection=f4285619)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -305,38 +309,38 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Android App.app.executor": "Run",
-    "DEBUGGABLE_DEVICE": "samsung-sm_g991n-adb-R3CR70TZQ5Y-i0lsD7._adb-tls-connect._tcp.",
-    "DEBUGGABLE_PROCESS": "com.ssafy.mbg",
-    "DEBUGGER_ID": "Auto",
-    "Gradle.MBG [signingReport].executor": "Run",
-    "Gradle.MBG [signing].executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "SHOW_ALL_PROCESSES": "false",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "frontend__develop",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/SSAFY/Desktop/S12P11D106/MBG/app/src/main/res/drawable",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.17",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "AndroidSdkUpdater",
-    "show.do.not.copy.http.proxy.settings.to.gradle": "true",
-    "show.migrate.to.gradle.popup": "false"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Android App.app.executor&quot;: &quot;Run&quot;,
+    &quot;DEBUGGABLE_DEVICE&quot;: &quot;samsung-sm_g991n-adb-R3CR70TZQ5Y-i0lsD7._adb-tls-connect._tcp.&quot;,
+    &quot;DEBUGGABLE_PROCESS&quot;: &quot;com.ssafy.mbg&quot;,
+    &quot;DEBUGGER_ID&quot;: &quot;Auto&quot;,
+    &quot;Gradle.MBG [signingReport].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.MBG [signing].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;SHOW_ALL_PROCESSES&quot;: &quot;false&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;frontend__develop&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/SSAFY/Desktop/S12P11D106/MBG/app/src/main/res/drawable&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.17&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;AndroidSdkUpdater&quot;,
+    &quot;show.do.not.copy.http.proxy.settings.to.gradle&quot;: &quot;true&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
   },
-  "keyToStringList": {
-    "kotlin-gradle-user-dirs": [
-      "C:\\Users\\SSAFY\\.gradle"
+  &quot;keyToStringList&quot;: {
+    &quot;kotlin-gradle-user-dirs&quot;: [
+      &quot;C:\\Users\\SSAFY\\.gradle&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\SSAFY\Desktop\S12P11D106\MBG\app\src\main\res\drawable" />
