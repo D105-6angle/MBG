@@ -12,10 +12,11 @@
         android:id="@+id/headerCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="16dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="2dp"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginTop="8dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:cardUseCompatPadding="true"
         app:cardBackgroundColor="#FFFFFF"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -33,7 +34,7 @@
                 android:padding="4dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintBottom_toBottomOf="parent" />
 
             <TextView
                 android:id="@+id/toolbarTitle"
@@ -46,7 +47,7 @@
                 app:layout_constraintStart_toEndOf="@id/btnBack"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginStart="16dp"/>
+                android:layout_marginStart="16dp" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
@@ -54,7 +55,9 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
+        android:paddingBottom="16dp"
+        android:clipToPadding="false"
         app:layout_constraintTop_toBottomOf="@id/headerCard"
         app:layout_constraintBottom_toBottomOf="parent">
 
@@ -62,16 +65,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingHorizontal="8dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="16dp">
 
             <!-- 조장 섹션 카드 -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp"
+                app:cardUseCompatPadding="true"
                 app:cardBackgroundColor="#FFFFFF"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="8dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -92,18 +98,8 @@
                             android:textStyle="bold"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent"/>
+                            app:layout_constraintBottom_toBottomOf="parent" />
 
-                        <ImageButton
-                            android:id="@+id/btn_delete"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:src="@drawable/ic_delete"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:padding="4dp"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent"/>
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.recyclerview.widget.RecyclerView
@@ -113,7 +109,7 @@
                         android:layout_marginTop="12dp"
                         android:orientation="horizontal"
                         android:clipToPadding="false"
-                        android:paddingHorizontal="4dp"/>
+                        android:paddingHorizontal="4dp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -121,10 +117,11 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp"
+                app:cardUseCompatPadding="true"
                 app:cardBackgroundColor="#FFFFFF"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="8dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -138,7 +135,7 @@
                         android:text="@string/team_members"
                         android:textColor="#2C3E50"
                         android:textSize="20sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvMembers"
@@ -147,7 +144,7 @@
                         android:layout_marginTop="12dp"
                         android:orientation="horizontal"
                         android:clipToPadding="false"
-                        android:paddingHorizontal="4dp"/>
+                        android:paddingHorizontal="4dp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -155,10 +152,11 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp"
+                app:cardUseCompatPadding="true"
                 app:cardBackgroundColor="#FFFFFF"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="8dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -174,7 +172,7 @@
                         android:textSize="20sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"/>
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
                         android:id="@+id/progressPercent"
@@ -184,7 +182,7 @@
                         android:textSize="16sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@id/progressLabel"
-                        tools:text="60%"/>
+                        tools:text="60%" />
 
                     <ProgressBar
                         android:id="@+id/progressBar"
@@ -194,7 +192,7 @@
                         android:layout_marginTop="12dp"
                         android:progressTint="@color/progress_bar_color"
                         android:max="100"
-                        app:layout_constraintTop_toBottomOf="@id/progressLabel"/>
+                        app:layout_constraintTop_toBottomOf="@id/progressLabel" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
@@ -202,10 +200,11 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp"
+                app:cardUseCompatPadding="true"
                 app:cardBackgroundColor="#FFFFFF"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="8dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -219,7 +218,7 @@
                         android:text="@string/team_picture"
                         android:textColor="#2C3E50"
                         android:textSize="20sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvPhotos"
@@ -228,7 +227,7 @@
                         android:layout_marginTop="12dp"
                         android:orientation="horizontal"
                         android:clipToPadding="false"
-                        android:paddingHorizontal="4dp"/>
+                        android:paddingHorizontal="4dp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -236,9 +235,11 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="#FFFFFF">
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp"
+                app:cardUseCompatPadding="true"
+                app:cardBackgroundColor="#FFFFFF"
+                android:layout_marginBottom="8dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -252,13 +253,13 @@
                         android:text="@string/never_visit_again"
                         android:textColor="#2C3E50"
                         android:textSize="20sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvPlaces"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"/>
+                        android:layout_marginTop="12dp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
