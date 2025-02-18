@@ -120,7 +120,7 @@ class TeamCreateDialog : DialogFragment() {
 
             val displayMetrics = requireContext().resources.displayMetrics
             val width = (displayMetrics.widthPixels * 0.8).toInt()
-            val height = (displayMetrics.heightPixels * 0.6).toInt()
+            val height = (displayMetrics.heightPixels * 0.65).toInt()
 
             setLayout(width, height)
         }

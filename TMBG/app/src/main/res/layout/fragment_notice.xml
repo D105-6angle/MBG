@@ -82,7 +82,7 @@
                 android:layout_height="wrap_content"
                 android:text="공지 알림"
                 android:textColor="#2C3E50"
-                android:textSize="16sp"
+                android:textSize="20sp"
                 android:textStyle="bold"/>
 
             <LinearLayout
@@ -97,7 +97,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@null"
-                    android:hint="여기에 공지사항이 들어갑니다."
+                    android:hint="공지사항 입력하기"
+                    android:textSize="18sp"
                     android:textColor="#2C3E50"
                     android:enabled="false"/>
 
@@ -105,8 +106,8 @@
                     android:id="@+id/btnEditCurrentNotice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="수정"
-                    android:textSize="12sp"
+                    android:text="작성하기"
+                    android:textSize="18sp"
                     android:backgroundTint="#2196F3"
                     android:layout_marginStart="8dp"/>
             </LinearLayout>
@@ -137,7 +138,7 @@
                 android:layout_height="wrap_content"
                 android:text="이전 공지"
                 android:textColor="#2C3E50"
-                android:textSize="16sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="16dp"/>
 
