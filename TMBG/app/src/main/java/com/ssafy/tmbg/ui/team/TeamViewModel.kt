@@ -135,28 +135,28 @@ class TeamViewModel @Inject constructor(
         }
     }
 
-    fun deleteMember(roomId: Int, groupNo: Int, userId: Long) {
-        viewModelScope.launch {
-            try {
-                Log.d(
-                    "TeamViewModel",
-                    "deleteMember 호출 - roomId: $roomId, groupNo: $groupNo, userId: $userId"
-                )
-                val response = repository.deleteMember(roomId, groupNo, userId)
-                Log.d("TeamViewModel", "deleteMember 응답: $response")
-
-                if (response.isSuccessful) {
-                    Log.d("TeamViewModel", "멤버 삭제 성공")
-                    getGroupDetail(roomId, groupNo)
-                } else {
-                    val errorBody = response.errorBody()?.string()
-                    Log.e("TeamViewModel", "멤버 삭제 실패 - HTTP ${response.code()}, Error: $errorBody")
-                    _error.value = "멤버 삭제에 실패했습니다 (${response.code()})"
-                }
-            } catch (e: Exception) {
-                Log.e("TeamViewModel", "deleteMember 에러", e)
-                _error.value = "네트워크 오류: ${e.message}"
-            }
-        }
-    }
+//    fun deleteMember(roomId: Int, groupNo: Int, userId: Long) {
+//        viewModelScope.launch {
+//            try {
+//                Log.d(
+//                    "TeamViewModel",
+//                    "deleteMember 호출 - roomId: $roomId, groupNo: $groupNo, userId: $userId"
+//                )
+//                val response = repository.deleteMember(roomId, groupNo, userId)
+//                Log.d("TeamViewModel", "deleteMember 응답: $response")
+//
+//                if (response.isSuccessful) {
+//                    Log.d("TeamViewModel", "멤버 삭제 성공")
+//                    getGroupDetail(roomId, groupNo)
+//                } else {
+//                    val errorBody = response.errorBody()?.string()
+//                    Log.e("TeamViewModel", "멤버 삭제 실패 - HTTP ${response.code()}, Error: $errorBody")
+//                    _error.value = "멤버 삭제에 실패했습니다 (${response.code()})"
+//                }
+//            } catch (e: Exception) {
+//                Log.e("TeamViewModel", "deleteMember 에러", e)
+//                _error.value = "네트워크 오류: ${e.message}"
+//            }
+//        }
+//    }
 }

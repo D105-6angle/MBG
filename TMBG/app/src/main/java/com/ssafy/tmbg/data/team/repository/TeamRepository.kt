@@ -33,8 +33,8 @@ class TeamRepository @Inject constructor(
         return teamApi.addGroup(roomId)
     }
 
-    /** 조원 삭제 */
-    suspend fun deleteMember(roomId: Int, groupNo: Int, userId: Long): Response<Unit> {
-        return teamApi.deleteMember(roomId, groupNo, userId)
-    }
+//    /** 조원 삭제 */
+//    suspend fun deleteMember(roomId: Int, groupNo: Int, userId: Long): Response<Unit> {
+//        return teamApi.deleteMember(roomId, groupNo, userId)
+//    }
 }

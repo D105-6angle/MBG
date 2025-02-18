@@ -213,12 +213,7 @@
   <component name="ChangeListManager">
     <list default="true" id="db4e149f-3cf5-43c3-bfbb-fc103ac6d4b2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/TmbgApplication.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/TmbgApplication.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/di/AppModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/di/AppModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/main/AdminMainFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/main/AdminMainFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/modal/ProfileModal.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/ui/modal/ProfileModal.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/util/KeyHashUtil.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/java/com/ssafy/tmbg/util/KeyHashUtil.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/res/layout/modal_profile.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/res/layout/modal_profile.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TMBG/app/src/main/res/layout/fragment_notice.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../TMBG/app/src/main/res/layout/fragment_notice.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -228,7 +223,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=Default, isTemplate=false, identifier=serial=192.168.100.218:38917;connection=f4285619)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=R3CN309CCPV)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -325,7 +320,7 @@
     &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
     &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;frontend__develop&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/S12P11D106-99-home-ui-fe&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/SSAFY/Desktop/S12P11D106/MBG/app/src/main/res/drawable&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,

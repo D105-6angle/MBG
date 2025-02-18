@@ -40,18 +40,20 @@
         android:textStyle="bold"
         android:gravity="center"
         android:lineSpacingExtra="4dp"
-        android:padding="16dp"
+        android:layout_marginTop="26dp"
         app:layout_constraintTop_toBottomOf="@id/btn_setting" />
 
+    <!-- 팀 관리 버튼 -->
     <ImageView
         android:id="@+id/illustration"
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:src="@drawable/illustration_desk"
+        android:layout_width="294dp"
+        android:layout_height="180dp"
         android:scaleType="fitCenter"
+        android:src="@drawable/illustration_desk"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title_text" />
 
-    <!-- 팀 관리 버튼 -->
     <androidx.cardview.widget.CardView
         android:id="@+id/card_team"
         android:layout_width="match_parent"
@@ -68,7 +70,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="팀 관리"
-            android:textSize="16sp"
+            android:textSize="22sp"
             android:gravity="center"
             android:background="?attr/selectableItemBackground" />
     </androidx.cardview.widget.CardView>
@@ -93,6 +95,7 @@
             android:layout_height="100dp"
             android:layout_columnWeight="1"
             android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             app:cardCornerRadius="12dp"
             app:cardBackgroundColor="#FFFFFF"
             app:cardElevation="2dp">
@@ -113,7 +116,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="전체 공지"
-                    android:textSize="14sp"/>
+                    android:textSize="22sp"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -144,7 +147,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="일정 관리"
-                    android:textSize="14sp"/>
+                    android:textSize="22sp"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -176,7 +179,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="보고서 관리"
-                    android:textSize="14sp"/>
+                    android:textSize="22sp"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -208,7 +211,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="미션 관리"
-                    android:textSize="14sp"/>
+                    android:textSize="22sp"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 

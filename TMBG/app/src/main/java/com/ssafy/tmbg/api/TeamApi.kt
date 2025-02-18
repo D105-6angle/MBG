@@ -35,13 +35,13 @@ interface TeamApi {
     suspend fun addGroup(
         @Path("roomId") roomId: Int
     ): Response<Unit>
-
-    /** 조원 삭제 */
-    @DELETE("rooms/{roomId}/groups/{groupNo}/members/{userId}")
-    suspend fun deleteMember(
-        @Path("roomId") roomId: Int,
-        @Path("groupNo") groupNo: Int,
-        @Path("userId") userId: Long
-    ): Response<Unit>
+//
+//    /** 조원 삭제 */
+//    @DELETE("rooms/{roomId}/groups/{groupNo}/members/{userId}")
+//    suspend fun deleteMember(
+//        @Path("roomId") roomId: Int,
+//        @Path("groupNo") groupNo: Int,
+//        @Path("userId") userId: Long
+//    ): Response<Unit>
 
 }
