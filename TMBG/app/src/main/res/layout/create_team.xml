@@ -3,13 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="400dp"
     android:layout_height="600dp"
-    android:background="#F5F6F8"
+    android:background="@drawable/dialog_background"
     android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="24dp">
+
+        <TextView
+            android:id="@+id/createTeamTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="팀 생성하기"
+            android:textSize="28dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/destinationCard"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+        />
 
         <!-- 목적지 선택 카드 -->
         <androidx.cardview.widget.CardView
@@ -21,7 +33,7 @@
             app:cardCornerRadius="12dp"
             app:cardElevation="2dp"
             app:cardBackgroundColor="#FFFFFF"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="@id/createTeamTitle">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -52,7 +64,7 @@
                         android:padding="12dp"
                         android:background="@android:color/transparent"
                         android:completionThreshold="1"
-                        android:hint="@string/team_location_dropdown"/>
+                        android:hint="@string/team_location_dropdown" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
@@ -139,13 +151,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="40dp"
-            android:layout_marginBottom="24dp"
+            android:layout_marginTop="20dp"
             app:cardCornerRadius="12dp"
             app:cardElevation="2dp"
             app:cardBackgroundColor="#E3F2FD"
             app:layout_constraintTop_toBottomOf="@id/teamCountCard"
-            app:layout_constraintBottom_toBottomOf="parent">
+            >
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/submitButton"
@@ -154,6 +165,7 @@
                 android:background="@android:color/transparent"
                 android:padding="16dp"
                 android:text="@string/team_create"
+                android:textSize="20sp"
                 android:textColor="#2C3E50" />
         </androidx.cardview.widget.CardView>
 

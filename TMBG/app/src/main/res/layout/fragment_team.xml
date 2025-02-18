@@ -106,6 +106,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/invite_code"
                 android:textColor="#2C3E50"
+                android:textSize="20sp"
                 android:background="@android:color/transparent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -164,6 +165,7 @@
             android:layout_height="wrap_content"
             android:text="@string/end_experience"
             android:textColor="#2C3E50"
+            android:textSize="20sp"
             android:background="@android:color/transparent"
             android:padding="16dp"/>
     </androidx.cardview.widget.CardView>

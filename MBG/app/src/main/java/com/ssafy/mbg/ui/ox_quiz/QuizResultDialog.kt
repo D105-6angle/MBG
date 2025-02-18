@@ -24,7 +24,15 @@ class QuizResultDialog(
         setContentView(binding.root)
 
         // 다이얼로그 배경을 투명하게 설정
-        window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        window?.apply {
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            
+            // 다이얼로그 크기를 화면의 80% x 70%로 설정
+            setLayout(
+                (context.resources.displayMetrics.widthPixels * 0.8).toInt(),
+                (context.resources.displayMetrics.heightPixels * 0.4).toInt()
+            )
+        }
 
         with(binding) {
             if (isCorrect) {
