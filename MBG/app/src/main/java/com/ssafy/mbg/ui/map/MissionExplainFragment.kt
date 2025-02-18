@@ -1,6 +1,8 @@
 package com.ssafy.mbg.ui.map
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.*
 import android.widget.Button
 import android.widget.ImageView
@@ -26,10 +28,17 @@ class MissionExplainFragment : DialogFragment() {
         }
     }
 
+    // Handler와 Runnable을 이용한 타이핑 애니메이션
+    private var typewriterHandler = Handler(Looper.getMainLooper())
+    private var typewriterRunnable: Runnable? = null
+
+    // quizText는 onCreateView에서 초기화됨
+    private lateinit var quizText: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.RoundedCornerDialog)
-        // 이 옵션을 통해서 외부영역 터치 + 뒤로가기로 취소 안되게 함
+        // 외부 터치 및 뒤로가기 버튼으로 닫히지 않도록 설정
         isCancelable = false
     }
 
@@ -41,7 +50,7 @@ class MissionExplainFragment : DialogFragment() {
         val view = inflater.inflate(R.layout.fragment_mission_explain, container, false)
 
         val quizTitle: TextView = view.findViewById(R.id.quizTitle)
-        val quizText: TextView = view.findViewById(R.id.quizText)
+        quizText = view.findViewById(R.id.quizText)
         val btnConfirm: Button = view.findViewById(R.id.btnConfirm)
         val imageView: ImageView = view.findViewById(R.id.imageView)
 
@@ -54,19 +63,24 @@ class MissionExplainFragment : DialogFragment() {
         when (codeId) {
             "M001" -> {
                 quizTitle.text = "문화재 미션 발생!"
-                quizText.text = "$positionName 관련\n문제를 풀고\n 문화재 카드를 얻어봐"
+//                quizText.text = "$positionName 관련\n문제를 풀고\n 문화재 카드를 얻어봐"
+                startTypewriterAnimation("$positionName 관련\n문제를 풀고\n문화재 카드를 얻어봐")
+
             }
             "M002" -> {
                 quizTitle.text = "랜덤 미션 발생!"
-                quizText.text = "$placeName 관련\n랜덤 퀴즈를 풀고\n일화 카드를 얻어봐"
+//                quizText.text = "$placeName 관련\n랜덤 퀴즈를 풀고\n일화 카드를 얻어봐"
+                startTypewriterAnimation("$placeName 관련\n랜덤 퀴즈를 풀고\n일화 카드를 얻어봐")
+
             }
             "M003" -> {
                 quizTitle.text = "인증샷 미션 발생!"
-                quizText.text = "인증샷을 찍어서 업로드 해주세요"
+                // 타이핑 애니메이션 효과로 텍스트 표시
+                startTypewriterAnimation("인증샷을 찍어서 업로드 해주세요")
             }
             else -> {
                 quizTitle.text = "퀴즈 발생!"
-                quizText.text = "퀴즈를 풀어보세요"
+                quizText.text = "퀴즈를 풀어보세요! else"
             }
         }
 
@@ -95,7 +109,6 @@ class MissionExplainFragment : DialogFragment() {
                     val missionId = arguments?.getInt("missionId") ?: 0
                     val photoFragment = PhotoMissionFragment.newInstance("M003", positionName, placeName, missionId)
                     photoFragment.show(parentFragmentManager, "PhotoMissionFragment")
-
                 }
                 else -> {
                     // 기본 퀴즈 팝업, missionId를 0으로 설정 (기본값)
@@ -109,11 +122,36 @@ class MissionExplainFragment : DialogFragment() {
         return view
     }
 
+    /**
+     * startTypewriterAnimation
+     * quizText에 전달된 텍스트를 한 글자씩 표시하는 타이핑 애니메이션 효과 함수
+     */
+    private fun startTypewriterAnimation(text: String) {
+        var currentIndex = 0
+        quizText.text = ""
+        typewriterRunnable = object : Runnable {
+            override fun run() {
+                if (currentIndex < text.length) {
+                    quizText.append(text[currentIndex].toString())
+                    currentIndex++
+                    typewriterHandler.postDelayed(this, 50) // 50ms 딜레이
+                }
+            }
+        }
+        typewriterHandler.post(typewriterRunnable!!)
+    }
+
     override fun onStart() {
         super.onStart()
         dialog?.window?.setLayout(
             (resources.displayMetrics.widthPixels * 0.85).toInt(),
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // 애니메이션이 진행 중이면 콜백 제거
+        typewriterRunnable?.let { typewriterHandler.removeCallbacks(it) }
     }
 }

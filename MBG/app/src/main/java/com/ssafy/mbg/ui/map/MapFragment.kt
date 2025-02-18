@@ -103,7 +103,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var isPickerModeEnabled = true
 
     // Picker Mode의 고정 초기 위치 (경복궁)
-    private val INITIAL_PICKER_LATLNG = LatLng(37.579050513803224, 126.97762422651554)
+//    private val INITIAL_PICKER_LATLNG = LatLng(37.579050513803224, 126.97762422651554)
+    private val INITIAL_PICKER_LATLNG = LatLng(36.107153667264036, 128.4163848449371)
 
     // API 응답 JSON과 매핑되는 미션 데이터 모델 (centerPoint와 edgePoints는 [lat, lng] 배열)
     data class Mission(
@@ -306,7 +307,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 for (location in locationResult.locations) {
                     val userLatLng = LatLng(location.latitude, location.longitude)
                     updateUserLocation(userLatLng)
-                    checkIfWithinRadius(userLatLng)
+//                    checkIfWithinRadius(userLatLng)
                     checkIfInsidePolygon(userLatLng)
                     updateDistanceDisplay(userLatLng)
                     drawLineToNearestTarget(userLatLng)
@@ -351,21 +352,21 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun checkIfWithinRadius(userLatLng: LatLng) {
-        val combinedPickerList = getMissionPickers() + additionalPickerList
-        for (picker in combinedPickerList) {
-            val results = FloatArray(1)
-            Location.distanceBetween(
-                userLatLng.latitude, userLatLng.longitude,
-                picker.location.latitude, picker.location.longitude,
-                results
-            )
-            if (results[0] <= quizRadiusInMeters && !isQuizFragmentShown) {
-                showQuizFragment()
-                break
-            }
-        }
-    }
+//    private fun checkIfWithinRadius(userLatLng: LatLng) {
+//        val combinedPickerList = getMissionPickers() + additionalPickerList
+//        for (picker in combinedPickerList) {
+//            val results = FloatArray(1)
+//            Location.distanceBetween(
+//                userLatLng.latitude, userLatLng.longitude,
+//                picker.location.latitude, picker.location.longitude,
+//                results
+//            )
+//            if (results[0] <= quizRadiusInMeters && !isQuizFragmentShown) {
+//                showQuizFragment()
+//                break
+//            }
+//        }
+//    }
 
     private val missionPopupShownMap = mutableMapOf<Int, Boolean>()
 
@@ -411,13 +412,25 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 popup.show(parentFragmentManager, "M002Popup")
             }
             "M003" -> {
-                val photoFragment = PhotoMissionFragment.newInstance("M003", mission.positionName ?: "미지정", userPreferences.location, mission.missionId)
-                photoFragment.show(parentFragmentManager, "PhotoMissionFragment")
+
+                // M003 미션은 조장(j001)에게만 팝업을 띄웁니다.
+                if (userPreferences.codeId == "J001") {
+                    val photoFragment = PhotoMissionFragment.newInstance(
+                        "M003",
+                        mission.positionName ?: "미지정",
+                        userPreferences.location,
+                        mission.missionId
+                    )
+                    photoFragment.show(parentFragmentManager, "PhotoMissionFragment")
+                } else {
+                    // 조원(j002)은 팝업이 뜨지 않도록 처리합니다.
+//                    Toast.makeText(requireContext(), "이 미션은 조장 전용입니다.", Toast.LENGTH_SHORT).show()
+                }
             }
-            else -> {
-                val popup = MissionExplainFragment.newInstance("default", mission.positionName ?: "미지정", "", mission.missionId)
-                popup.show(parentFragmentManager, "DefaultPopup")
-            }
+//            else -> {
+//                val popup = MissionExplainFragment.newInstance("default", mission.positionName ?: "미지정", "", mission.missionId)
+//                popup.show(parentFragmentManager, "DefaultPopup")
+//            }
         }
     }
 

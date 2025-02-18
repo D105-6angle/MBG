@@ -41,12 +41,18 @@ class QuizMissionResultFragment : DialogFragment() {
         val objectImageUrl = arguments?.getString("objectImageUrl") ?: ""
         val correct = arguments?.getBoolean("correct") ?: false
 
-        Glide.with(this)
-            .load(objectImageUrl)
-            .error(R.drawable.cultural_1)
-            .into(resultImageView)
-
-        resultTextView.text = if (correct) "정답입니다!" else "오답입니다."
+        if (correct) {
+            resultTextView.text = "정답입니다!"
+            Glide.with(this)
+                .load(objectImageUrl)
+                .error(R.drawable.cultural_1)
+                .into(resultImageView)
+        } else {
+            resultTextView.text = "오답입니다."
+            Glide.with(this)
+                .load(R.drawable.wrong_answer_ggumi)
+                .into(resultImageView)
+        }
 
         return view
     }

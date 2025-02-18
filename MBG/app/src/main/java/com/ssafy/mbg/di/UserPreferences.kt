@@ -50,7 +50,7 @@ class UserPreferences(
     var groupNo: Int
         get() = prefs.getInt("group_no", 0)
         set(value) = prefs.edit().putInt("group_no", value).apply()
-
+    // J001 조장 , J002 조원 -> 인증샷 미션 조장만 활성화
     var codeId: String
         get() = prefs.getString("code_id", "") ?: ""
         set(value) = prefs.edit().putString("code_id", value).apply()
