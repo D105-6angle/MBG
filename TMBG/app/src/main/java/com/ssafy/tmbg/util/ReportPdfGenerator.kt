@@ -19,6 +19,7 @@ class ReportPdfGenerator(private val context: Context) {
     private val pageWidth = 595 // A4 width in points
     private val pageHeight = 842 // A4 height in points
     private val margin = 50f
+    private val textSpacing = 200f // 텍스트 간격 증가
 
     fun generatePdf(
         className: String,
@@ -53,8 +54,6 @@ class ReportPdfGenerator(private val context: Context) {
         }
         canvas.drawText("학급: $className", margin, yPosition + 24f, paint)
         yPosition += 30f
-//        canvas.drawText("장소: $location", margin, yPosition + 24f, paint)
-//        yPosition += 30f
         canvas.drawText("날짜: ${getCurrentDate()}", margin, yPosition + 24f, paint)
         yPosition += 50f
 
@@ -67,14 +66,14 @@ class ReportPdfGenerator(private val context: Context) {
         paint.textSize = 14f
 
         // 문항 1
-        if (yPosition + 300 > pageHeight - margin) { // 새 페이지 필요
+        if (yPosition + 300 > pageHeight - margin) {
             pdfDocument.finishPage(page)
             pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pdfDocument.pages.size + 1).create()
             page = pdfDocument.startPage(pageInfo)
             canvas = page.canvas
             yPosition = margin
         }
-        yPosition = drawQuestionWithChart(canvas, "1. 현장 체험 학습이 학생들의 학습에 도움이 되었다고 생각하십니까?",
+        yPosition = drawQuestionWithChart(canvas, "1. 현재 학습 목표에 두고있는 학습의 난이도 차이가 있었습니까?",
             question1Data, charts[0], yPosition)
         yPosition += 30f
 
@@ -86,7 +85,7 @@ class ReportPdfGenerator(private val context: Context) {
             canvas = page.canvas
             yPosition = margin
         }
-        yPosition = drawQuestionWithChart(canvas, "2. 코스 및 활동 프로그램 내용에 대하여 전체적으로 만족하십니까?",
+        yPosition = drawQuestionWithChart(canvas, "2. 현재 학습의 난이도가 목표로 한 학습과 동일하다고 생각하십니까?",
             question2Data, charts[1], yPosition)
         yPosition += 30f
 
@@ -98,7 +97,7 @@ class ReportPdfGenerator(private val context: Context) {
             canvas = page.canvas
             yPosition = margin
         }
-        yPosition = drawQuestionWithChart(canvas, "3. 안전사고에 대한 교육과 대비는 잘 되었다고 생각하십니까?",
+        yPosition = drawQuestionWithChart(canvas, "3. 이 문화재를 다시 방문할 계획이 있나요?",
             question3Data, charts[2], yPosition)
         yPosition += 50f
 
@@ -116,16 +115,16 @@ class ReportPdfGenerator(private val context: Context) {
         yPosition += 40f
 
         paint.textSize = 14f
-        studentList.chunked(3).forEach { rowStudents ->
-            val row = rowStudents.joinToString("     ")
+        // 한 줄에 2명씩 표시하도록 수정
+        studentList.chunked(2).forEach { rowStudents ->
+            val row = rowStudents.joinToString("          ")  // 간격 늘림
             canvas.drawText(row, margin, yPosition, paint)
             yPosition += 25f
         }
 
         // 건의 사항
-        yPosition += 30f  // 간격 추가
+        yPosition += 30f
 
-// 건의사항 및 기타 의견 섹션
         if (yPosition + 50 > pageHeight - margin) {
             pdfDocument.finishPage(page)
             pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pdfDocument.pages.size + 1).create()
@@ -135,12 +134,11 @@ class ReportPdfGenerator(private val context: Context) {
         }
 
         paint.textSize = 18f
-        canvas.drawText("건의사항 및 기타 의견", margin, yPosition + 24f, paint)
+        canvas.drawText("4. 학습목표 작성과 다른 곤란해진 점이 있었나요?", margin, yPosition + 24f, paint)
         yPosition += 40f
 
         paint.textSize = 14f
         comments.forEach { comment ->
-            // 긴 댓글 처리를 위한 줄바꿈 로직
             val maxWidth = pageWidth - (margin * 2)
             val words = comment.split(" ")
             var currentLine = ""
@@ -150,12 +148,10 @@ class ReportPdfGenerator(private val context: Context) {
                 val measureWidth = paint.measureText(testLine)
 
                 if (measureWidth > maxWidth) {
-                    // 현재 줄 그리기
                     canvas.drawText(currentLine, margin, yPosition, paint)
                     yPosition += 20f
                     currentLine = word
 
-                    // 페이지 넘김 체크
                     if (yPosition + 20f > pageHeight - margin) {
                         pdfDocument.finishPage(page)
                         pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pdfDocument.pages.size + 1).create()
@@ -168,13 +164,11 @@ class ReportPdfGenerator(private val context: Context) {
                 }
             }
 
-            // 마지막 줄 그리기
             if (currentLine.isNotEmpty()) {
                 canvas.drawText(currentLine, margin, yPosition, paint)
-                yPosition += 30f  // 댓글 간 간격
+                yPosition += 30f
             }
 
-            // 페이지 넘김 체크
             if (yPosition + 30f > pageHeight - margin) {
                 pdfDocument.finishPage(page)
                 pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pdfDocument.pages.size + 1).create()
@@ -183,8 +177,6 @@ class ReportPdfGenerator(private val context: Context) {
                 yPosition = margin
             }
         }
-
-
 
         pdfDocument.finishPage(page)
 
@@ -212,7 +204,7 @@ class ReportPdfGenerator(private val context: Context) {
 
         // 차트
         val chartBitmap = getBitmapFromView(chartView)
-        val chartSize = 250f
+        val chartSize = 200f  // 차트 크기를 250f에서 200f로 축소
         val scaledBitmap = Bitmap.createScaledBitmap(
             chartBitmap,
             chartSize.toInt(),
@@ -221,13 +213,16 @@ class ReportPdfGenerator(private val context: Context) {
         )
         canvas.drawBitmap(scaledBitmap, margin, yPosition, paint)
 
-        // 결과 텍스트
+        // 결과 텍스트 - 한 줄에 2개씩 표시하도록 수정
         yPosition += chartSize + 30f
-        var xPosition = margin
-        data.forEach { satisfaction ->
-            val text = "${satisfaction.type.text}: %.1f%%".format(satisfaction.percentage)
-            canvas.drawText(text, xPosition, yPosition, paint)
-            xPosition += 170f
+        data.chunked(2).forEach { rowData ->
+            var xPosition = margin
+            rowData.forEach { satisfaction ->
+                val text = "${satisfaction.type.text}: %.1f%%".format(satisfaction.percentage)
+                canvas.drawText(text, xPosition, yPosition, paint)
+                xPosition += textSpacing
+            }
+            yPosition += 25f
         }
 
         return yPosition
