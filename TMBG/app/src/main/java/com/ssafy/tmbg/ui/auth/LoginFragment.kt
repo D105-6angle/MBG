@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -36,6 +37,16 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupClickListeners()
         observeAuthState()
+
+        val fadeIn = AnimationUtils.loadAnimation(context, R.anim.fade_in)
+        binding.tvTitle.startAnimation(fadeIn)
+        binding.ivLogo.startAnimation(fadeIn)
+
+        val slideUp = AnimationUtils.loadAnimation(context, R.anim.slide_up)
+        binding.btnKakaoLogin.startAnimation(slideUp)
+        binding.btnNaverLogin.postDelayed({
+            binding.btnNaverLogin.startAnimation(slideUp)
+        }, 100)
     }
 
     // 버튼 클릭 리스너 설정
