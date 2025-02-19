@@ -5,12 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.ssafy.mbg.R
 import com.ssafy.mbg.databinding.FragmentSignUpBinding
 import com.ssafy.mbg.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,6 +38,34 @@ class SignupFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupClickListeners()
         observeAuthState()
+
+        val titleAnimation = AnimationUtils.loadAnimation(context, R.anim.title_animation)
+        binding.tvTitle.startAnimation(titleAnimation)
+
+        binding.signupForm.startAnimation(
+            AnimationUtils.loadAnimation(context, R.anim.form_slide_up)
+        )
+
+        val fadeIn = AnimationUtils.loadAnimation(context, R.anim.fade_in)
+        binding.tvNicknameLabel.startAnimation(fadeIn)
+
+        binding.nicknameInputLayout.postDelayed({
+            binding.nicknameInputLayout.startAnimation(fadeIn)
+        }, 200)
+
+        binding.tvNewUserQuestion.postDelayed({
+            binding.tvNewUserQuestion.startAnimation(fadeIn)
+        }, 400)
+
+        binding.btnSignUp.postDelayed({
+            binding.btnSignUp.startAnimation(fadeIn)
+        }, 600)
+
+        binding.etNickname.setOnFocusChangeListener { view, hasFocus ->
+            if (hasFocus) {
+                view.startAnimation(AnimationUtils.loadAnimation(context, R.anim.input_focus))
+            }
+        }
     }
 
 
