@@ -52,18 +52,18 @@
 
     <!-- 퀴즈 로그 저장 -->
     <insert id="insertQuizLog">
-        INSERT INTO logs (
-            user_id,
-            card_id,
-            result
-        ) VALUES (
-                     #{userId},
-                     #{cardId},
-                     #{result}
-                 )
+        INSERT INTO logs (user_id, card_id, result, created_at)
+        VALUES (#{userId}, #{cardId}, #{result}, CURRENT_TIMESTAMP)
             ON DUPLICATE KEY UPDATE
-                                 result = VALUES(result)
+                                 result = VALUES(result),
+                                 created_at = CURRENT_TIMESTAMP
     </insert>
+
+<!--    <insert id="insertQuizLog">-->
+<!--        INSERT INTO logs (user_id, card_id, result, created_at)-->
+<!--        VALUES (#{userId}, #{cardId}, #{result}, current_time)-->
+<!--            ON DUPLICATE KEY UPDATE result = VALUES(result)-->
+<!--    </insert>-->
 
     <!-- 꾸미백과 중복 체크 -->
     <select id="checkHeritageBookExists" resultType="int">
