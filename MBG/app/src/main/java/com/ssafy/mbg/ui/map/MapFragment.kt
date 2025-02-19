@@ -117,7 +117,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var nearestLine: Polyline? = null
 
     // 모드 토글: Picker Mode vs. Auto Mode (기본은 Picker Mode)
-    private var isPickerModeEnabled = true
+    private var isPickerModeEnabled = false
 
     // Picker Mode의 고정 초기 위치 (경복궁)
 //    private val INITIAL_PICKER_LATLNG = LatLng(37.579050513803224, 126.97762422651554)
@@ -160,9 +160,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mapFragment?.getMapAsync(this)
 
         val toggleMode: ToggleButton = view.findViewById(R.id.toggle_mode)
-        toggleMode.isChecked = true
+        toggleMode.isChecked = false
         val arrowContainer: GridLayout = view.findViewById(R.id.arrow_container)
-        arrowContainer.visibility = View.VISIBLE
+        arrowContainer.visibility = View.GONE
 
 //        toggleMode.setOnCheckedChangeListener { _, isChecked ->
 //            isPickerModeEnabled = isChecked
