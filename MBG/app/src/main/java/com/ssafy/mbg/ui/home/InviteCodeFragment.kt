@@ -212,7 +212,7 @@ class InviteCodeFragment : DialogFragment() {
         dialog?.window?.apply {
             setLayout(
                 (resources.displayMetrics.widthPixels * 0.9).toInt(),
-                WindowManager.LayoutParams.WRAP_CONTENT
+                (resources.displayMetrics.heightPixels * 0.45).toInt()
             )
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         }
