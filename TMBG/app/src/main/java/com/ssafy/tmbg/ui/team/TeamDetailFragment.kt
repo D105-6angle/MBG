@@ -33,6 +33,8 @@ import com.bumptech.glide.Glide
 import com.ssafy.tmbg.databinding.DialogPhotoDetailBinding
 import java.text.SimpleDateFormat
 import java.util.*
+import android.util.Log
+import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class TeamDetailFragment : Fragment() {
@@ -82,6 +84,7 @@ class TeamDetailFragment : Fragment() {
                 // 멤버 리스트를 조장과 조원으로 분리
                 val leaders = detail.members.filter { it.codeId == "J001" }  // 조장
                 val members = detail.members.filter { it.codeId == "J002" }  // 조원
+                
 
                 // 조장 리사이클러뷰 업데이트
                 binding.rvLeader.adapter = TeamMemberAdapter(
