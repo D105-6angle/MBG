@@ -44,11 +44,6 @@ class LoginFragment : Fragment() {
             // 뷰모델 에서 카카오 로그인 함수 호출
             viewModel.handleKakaoLogin()
         }
-        // 구글 로그인 버튼 눌러보세요 ㅋㅋ
-        binding.btnGoogleLogin.setOnClickListener {
-            // 여기다가 이스터에그 프래그먼트 띄워주고 싶엉 ㅋㅋ
-            EasterEggDialog().show(parentFragmentManager, "EasterEggDialog")
-        }
 
         // 네이버 로그인 버튼 클릭
         binding.btnNaverLogin.setOnClickListener {
