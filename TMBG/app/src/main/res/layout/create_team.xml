@@ -165,7 +165,7 @@
                 android:background="@android:color/transparent"
                 android:padding="16dp"
                 android:text="@string/team_create"
-                android:textSize="20sp"
+                android:textSize="20dp"
                 android:textColor="#2C3E50" />
         </androidx.cardview.widget.CardView>
 
