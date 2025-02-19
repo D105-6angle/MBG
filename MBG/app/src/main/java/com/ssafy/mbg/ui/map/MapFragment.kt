@@ -117,7 +117,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var nearestLine: Polyline? = null
 
     // 모드 토글: Picker Mode vs. Auto Mode (기본은 Picker Mode)
-    private var isPickerModeEnabled = false
+    // AutoMode 바꿔야 하는 부분 true -> false
+    private var isPickerModeEnabled = true
 
     // Picker Mode의 고정 초기 위치 (경복궁)
 //    private val INITIAL_PICKER_LATLNG = LatLng(37.579050513803224, 126.97762422651554)
@@ -160,9 +161,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mapFragment?.getMapAsync(this)
 
         val toggleMode: ToggleButton = view.findViewById(R.id.toggle_mode)
-        toggleMode.isChecked = false
+        // AutoMode 바꿔야 하는 부분 true -> false
+        toggleMode.isChecked = true
         val arrowContainer: GridLayout = view.findViewById(R.id.arrow_container)
-        arrowContainer.visibility = View.GONE
+        // AutoMode 바꿔야 하는 부분 VISIBLE -> GONE
+        arrowContainer.visibility = View.VISIBLE
 
 //        toggleMode.setOnCheckedChangeListener { _, isChecked ->
 //            isPickerModeEnabled = isChecked
@@ -631,7 +634,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 when (picker.codeId) {
                     "M001" -> setTextColor(Color.BLUE)
 //                    "M002" -> setTextColor(Color.YELLOW)
-                    "M002" -> setTextColor(Color.parseColor("#CCCC00"))
+                    "M002" -> setTextColor(Color.parseColor("#CEC93C"))
                     "M003" -> setTextColor(Color.MAGENTA)
                     else   -> setTextColor(Color.BLACK)
                 }
@@ -655,7 +658,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             bottomSheetContainer.addView(itemLayout)
         }
     }
-
 
     /**
      * 사용자 위치에서 가장 가까운 피커 방향으로 선을 그리고, 화살표를 표시합니다.
@@ -692,7 +694,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             nearestLine = googleMap.addPolyline(
                 PolylineOptions()
                     .add(userLatLng, lineEndPoint)
-                    .color(Color.YELLOW)
+                    .color(Color.GREEN)
                     .width(15f)
                     .endCap(arrowCap)
             )
@@ -702,7 +704,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun getArrowBitmap(): BitmapDescriptor {
         val drawable: Drawable = ContextCompat.getDrawable(requireContext(), android.R.drawable.arrow_up_float)
             ?: throw IllegalArgumentException("Arrow drawable not found")
-        drawable.setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_ATOP)
+        drawable.setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_ATOP)
         val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         drawable.setBounds(0, 0, canvas.width, canvas.height)
@@ -807,9 +809,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 Pair(Color.GRAY, Color.argb(34, 128, 128, 128))
             } else {
                 when (mission.codeId) {
-                    "M001" -> Pair(Color.BLUE, Color.argb(34, 0, 0, 255))
-                    "M002" -> Pair(Color.YELLOW, Color.argb(34, 255, 255, 0))
-                    "M003" -> Pair(Color.MAGENTA, Color.argb(34, 255, 0, 255))
+                    "M001" -> Pair(Color.CYAN, Color.argb(34, 0, 0, 255))
+                    "M002" -> Pair(Color.CYAN, Color.argb(34, 255, 255, 0))
+                    "M003" -> Pair(Color.CYAN, Color.argb(34, 255, 0, 255))
                     else -> Pair(Color.RED, Color.argb(34, 255, 0, 0))
                 }
             }
