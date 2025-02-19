@@ -30,7 +30,7 @@ class QuizResultDialog(
             // 다이얼로그 크기를 화면의 80% x 70%로 설정
             setLayout(
                 (context.resources.displayMetrics.widthPixels * 0.8).toInt(),
-                (context.resources.displayMetrics.heightPixels * 0.4).toInt()
+                (context.resources.displayMetrics.heightPixels * 0.43).toInt()
             )
         }
 
