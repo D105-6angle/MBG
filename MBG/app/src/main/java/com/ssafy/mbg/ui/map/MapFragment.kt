@@ -662,6 +662,30 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+//    private fun addInitialPickerMarkers() {
+//        // 기존 미션 마커 모두 제거
+//        missionMarkers.forEach { it.remove() }
+//        missionMarkers.clear()
+//
+//        missionList.forEach { mission ->
+//            val markerOptions = MarkerOptions().position(mission.getCenterPointLatLng())
+//            if (mission.correct) {
+//                markerOptions.title("수행한 미션")
+//                    .icon(getGrayMarker())
+//            } else {
+//                val markerColor = when (mission.codeId) {
+//                    "M001" -> BitmapDescriptorFactory.HUE_BLUE
+//                    "M002" -> BitmapDescriptorFactory.HUE_YELLOW
+//                    "M003" -> BitmapDescriptorFactory.HUE_VIOLET
+//                    else -> BitmapDescriptorFactory.HUE_RED
+//                }
+//                markerOptions.title(mission.positionName ?: "미지정")
+//                    .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
+//            }
+//            googleMap.addMarker(markerOptions)?.let { missionMarkers.add(it) }
+//        }
+//    }
+
     private fun addInitialPickerMarkers() {
         // 기존 미션 마커 모두 제거
         missionMarkers.forEach { it.remove() }
@@ -673,18 +697,45 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 markerOptions.title("수행한 미션")
                     .icon(getGrayMarker())
             } else {
-                val markerColor = when (mission.codeId) {
-                    "M001" -> BitmapDescriptorFactory.HUE_BLUE
-                    "M002" -> BitmapDescriptorFactory.HUE_YELLOW
-                    "M003" -> BitmapDescriptorFactory.HUE_VIOLET
-                    else -> BitmapDescriptorFactory.HUE_RED
-                }
                 markerOptions.title(mission.positionName ?: "미지정")
-                    .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
+                // 미션 코드에 따라 다른 아이콘 지정
+                val customIcon: BitmapDescriptor? = when (mission.codeId) {
+                    "M001" -> getBitmapDescriptorFromResource(R.drawable.heritage_picker)
+                    "M002" -> getBitmapDescriptorFromResource(R.drawable.random_picker)
+                    "M003" -> getBitmapDescriptorFromResource(R.drawable.camera_picker)
+                    else -> null
+                }
+                if (customIcon != null) {
+                    markerOptions.icon(customIcon)
+                } else {
+                    // 기본 마커 아이콘 처리
+                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                }
             }
             googleMap.addMarker(markerOptions)?.let { missionMarkers.add(it) }
         }
     }
+
+    // dp를 픽셀로 변환하는 함수
+    private fun dpToPx(dp: Int): Int {
+        return (dp * resources.displayMetrics.density).toInt()
+    }
+
+    // Drawable 리소스를 원하는 크기(dp 기준)로 BitmapDescriptor로 변환하는 함수
+    private fun getBitmapDescriptorFromResource(resId: Int): BitmapDescriptor {
+        val drawable = ContextCompat.getDrawable(requireContext(), resId)
+            ?: throw IllegalArgumentException("Resource not found")
+        // 원하는 마커 크기를 dp 단위로 설정 (예: 40dp x 40dp)
+        val markerWidth = dpToPx(60)
+        val markerHeight = dpToPx(60)
+        drawable.setBounds(0, 0, markerWidth, markerHeight)
+        val bitmap = Bitmap.createBitmap(markerWidth, markerHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        drawable.draw(canvas)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
+    }
+
+
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
