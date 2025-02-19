@@ -5,11 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.ssafy.mbg.R
 import com.ssafy.mbg.databinding.FragmentLoginBinding
 import com.ssafy.mbg.ui.easteregg.EasterEggDialog
 import com.ssafy.mbg.ui.main.MainActivity
@@ -35,6 +37,19 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupClickListeners()
         observeAuthState()
+
+        val fadeIn = AnimationUtils.loadAnimation(context, R.anim.fade_in)
+        binding.tvTitle.startAnimation(fadeIn)
+        binding.ivLogo.startAnimation(fadeIn)
+
+        val slideUp = AnimationUtils.loadAnimation(context, R.anim.slide_up)
+        binding.btnKakaoLogin.startAnimation(slideUp)
+        binding.btnGoogleLogin.postDelayed({
+            binding.btnGoogleLogin.startAnimation(slideUp)
+        }, 100)
+        binding.btnNaverLogin.postDelayed({
+            binding.btnNaverLogin.startAnimation(slideUp)
+        }, 200)
     }
 
     // 버튼 클릭 리스너 설정
