@@ -52,6 +52,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
 
+    // 미션 관련 마커들을 저장할 리스트 (추가)
+    private val missionMarkers = mutableListOf<Marker>()
+
     // 사용자 위치 마커
     private var userMarker: Marker? = null
     // QuizFragment를 한 번만 보여주기 위한 플래그
@@ -212,6 +215,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 updateDistanceDisplay(newPos)
                 drawLineToNearestTarget(newPos)
             }
+        }
+        // ★ 방법 2: parentFragmentManager 사용하여 "refreshMission" 이벤트 수신
+        parentFragmentManager.setFragmentResultListener("refreshMission", viewLifecycleOwner) { key, bundle ->
+            fetchMissionPickers()
+//            userMarker?.position?.let { checkIfInsidePolygon(it) }
         }
     }
 
@@ -655,6 +663,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun addInitialPickerMarkers() {
+        // 기존 미션 마커 모두 제거
+        missionMarkers.forEach { it.remove() }
+        missionMarkers.clear()
+
         missionList.forEach { mission ->
             val markerOptions = MarkerOptions().position(mission.getCenterPointLatLng())
             if (mission.correct) {
@@ -670,10 +682,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 markerOptions.title(mission.positionName ?: "미지정")
                     .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
             }
-            googleMap.addMarker(markerOptions)
+            googleMap.addMarker(markerOptions)?.let { missionMarkers.add(it) }
         }
     }
-
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {

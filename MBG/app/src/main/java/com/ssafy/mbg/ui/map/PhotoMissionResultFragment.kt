@@ -1,5 +1,6 @@
 package com.ssafy.mbg.ui.map
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -64,5 +65,11 @@ class PhotoMissionResultFragment : DialogFragment() {
             (resources.displayMetrics.widthPixels * 0.85).toInt(),
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
+    }
+
+    // 방법 2: parentFragmentManager 사용하여 "refreshMission" 이벤트 전달
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        parentFragmentManager.setFragmentResult("refreshMission", Bundle())
     }
 }
