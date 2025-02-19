@@ -42,6 +42,7 @@ public class QuizService {
 
         // 2. 정답 체크
         boolean isCorrect = userAnswer.equals(quizInfo.getAnswer());
+        log.warn("퀴즈 제출한 답: {}, 정답: {}, 정답 여부: {}", userAnswer, quizInfo.getAnswer(), isCorrect);
 
         // 3. 로그 저장
         oquizMapper.insertQuizLog(userId, quizInfo.getCardId(), isCorrect);
