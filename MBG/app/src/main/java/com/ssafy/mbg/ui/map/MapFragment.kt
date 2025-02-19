@@ -72,16 +72,30 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     // 바텀 시트 내 컨테이너 (피커 리스트와 거리 표시)
     private lateinit var bottomSheetContainer: LinearLayout
 
-    // 데이터 클래스: Picker (이름과 좌표)
-    data class Picker(val name: String, val location: LatLng)
+//    // 데이터 클래스: Picker (이름과 좌표)
+//    data class Picker(val name: String, val location: LatLng)
+
+    // 기존 Picker 클래스 선언 부분을 아래와 같이 변경
+    data class Picker(val name: String, val location: LatLng, val codeId: String? = null)
 
     // 미션 정보를 Picker로 변환하는 함수 (완료된 미션은 제외)
+//    private fun getMissionPickers(): List<Picker> {
+//        return missionList.filter { !it.correct }
+//            .map { mission ->
+//                Picker(mission.positionName ?: "미지정", mission.getCenterPointLatLng())
+//            }
+//    }
     private fun getMissionPickers(): List<Picker> {
         return missionList.filter { !it.correct }
             .map { mission ->
-                Picker(mission.positionName ?: "미지정", mission.getCenterPointLatLng())
+                Picker(
+                    mission.positionName ?: "미지정",
+                    mission.getCenterPointLatLng(),
+                    mission.codeId    // codeId를 추가합니다.
+                )
             }
     }
+
 
     // 추가된 피커 리스트 (동적으로 추가됨)
     private val additionalPickerList = mutableListOf<Picker>()
@@ -103,7 +117,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var nearestLine: Polyline? = null
 
     // 모드 토글: Picker Mode vs. Auto Mode (기본은 Picker Mode)
-    private var isPickerModeEnabled = true
+    private var isPickerModeEnabled = false
 
     // Picker Mode의 고정 초기 위치 (경복궁)
 //    private val INITIAL_PICKER_LATLNG = LatLng(37.579050513803224, 126.97762422651554)
@@ -146,9 +160,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mapFragment?.getMapAsync(this)
 
         val toggleMode: ToggleButton = view.findViewById(R.id.toggle_mode)
-        toggleMode.isChecked = true
+        toggleMode.isChecked = false
         val arrowContainer: GridLayout = view.findViewById(R.id.arrow_container)
-        arrowContainer.visibility = View.VISIBLE
+        arrowContainer.visibility = View.GONE
 
 //        toggleMode.setOnCheckedChangeListener { _, isChecked ->
 //            isPickerModeEnabled = isChecked
@@ -452,6 +466,120 @@ class MapFragment : Fragment(), OnMapReadyCallback {
      * 미션 목록 중, 완료되지 않은 미션( correct == false )과 추가 피커 목록을 이용하여
      * 거리를 계산하고, 바텀 시트 컨테이너에 항목들을 추가합니다.
      */
+//    private fun updateDistanceDisplay(userLatLng: LatLng? = null) {
+//        val currentLocation = userLatLng ?: userMarker?.position
+//        bottomSheetContainer.removeAllViews()
+//        if (currentLocation == null) {
+//            val tv = AppCompatTextView(requireContext())
+//            tv.text = "위치 조회중..."
+//            tv.gravity = Gravity.CENTER
+//            bottomSheetContainer.addView(tv)
+//            return
+//        }
+//        val combinedPickerList = getMissionPickers() + additionalPickerList
+//        val pickerDistances = combinedPickerList.map { picker ->
+//            val results = FloatArray(1)
+//            Location.distanceBetween(
+//                currentLocation.latitude, currentLocation.longitude,
+//                picker.location.latitude, picker.location.longitude,
+//                results
+//            )
+//            Triple(picker.name, results[0].toDouble(), picker.location)
+//        }
+//        val sortedList = pickerDistances.sortedWith(compareBy({ it.second }, { it.first }))
+//        for ((name, distance, _) in sortedList) {
+//            val distanceText = if (distance < 1000) {
+//                String.format("%.0f m", distance)
+//            } else {
+//                String.format("%.2f km", distance / 1000)
+//            }
+//            val tv = AppCompatTextView(requireContext()).apply {
+//                text = "$name: $distanceText"
+//                gravity = Gravity.CENTER
+//                setPadding(16, 16, 16, 16)
+//                setBackgroundResource(R.drawable.bg_distance_item)
+//                val params = LinearLayout.LayoutParams(
+//                    LinearLayout.LayoutParams.MATCH_PARENT,
+//                    LinearLayout.LayoutParams.WRAP_CONTENT
+//                )
+//                params.setMargins(8, 8, 8, 8)
+//                layoutParams = params
+//            }
+//            bottomSheetContainer.addView(tv)
+//        }
+//    }
+
+    // 위 버전이 원본 아래가 수정 버전
+//    private fun updateDistanceDisplay(userLatLng: LatLng? = null) {
+//        val currentLocation = userLatLng ?: userMarker?.position
+//        bottomSheetContainer.removeAllViews()
+//        if (currentLocation == null) {
+//            val tv = AppCompatTextView(requireContext())
+//            tv.text = "위치 조회중..."
+//            tv.gravity = Gravity.CENTER
+//            bottomSheetContainer.addView(tv)
+//            return
+//        }
+//        val combinedPickerList = getMissionPickers() + additionalPickerList
+//        val pickerDistances = combinedPickerList.map { picker ->
+//            val results = FloatArray(1)
+//            Location.distanceBetween(
+//                currentLocation.latitude, currentLocation.longitude,
+//                picker.location.latitude, picker.location.longitude,
+//                results
+//            )
+//            Triple(picker.name, results[0].toDouble(), picker.location)
+//        }
+//        val sortedList = pickerDistances.sortedWith(compareBy({ it.second }, { it.first }))
+//        for ((name, distance, _) in sortedList) {
+//            val distanceText = if (distance < 1000) {
+//                String.format("%.0f m", distance)
+//            } else {
+//                String.format("%.2f km", distance / 1000)
+//            }
+//
+//            // 수평 정렬 LinearLayout 생성
+//            val itemLayout = LinearLayout(requireContext()).apply {
+//                orientation = LinearLayout.HORIZONTAL
+//                layoutParams = LinearLayout.LayoutParams(
+//                    LinearLayout.LayoutParams.MATCH_PARENT,
+//                    LinearLayout.LayoutParams.WRAP_CONTENT
+//                ).apply {
+//                    setMargins(dpToPx(8), dpToPx(8), dpToPx(8), dpToPx(8))
+//                }
+//                setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16))
+//                setBackgroundResource(R.drawable.bg_distance_item)
+//            }
+//
+//            // 좌측에 이름 표시 TextView (Bold, 왼쪽 정렬, 가중치 1)
+//            val nameTextView = AppCompatTextView(requireContext()).apply {
+//                text = name
+//                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+//                gravity = Gravity.START or Gravity.CENTER_VERTICAL
+//                setTypeface(null, android.graphics.Typeface.BOLD)
+//                textSize = 16f
+//                setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+//            }
+//
+//            // 우측에 거리 표시 TextView (Bold, 오른쪽 정렬)
+//            val distanceTextView = AppCompatTextView(requireContext()).apply {
+//                text = distanceText
+//                layoutParams = LinearLayout.LayoutParams(
+//                    LinearLayout.LayoutParams.WRAP_CONTENT,
+//                    LinearLayout.LayoutParams.WRAP_CONTENT
+//                )
+//                gravity = Gravity.END or Gravity.CENTER_VERTICAL
+//                setTypeface(null, android.graphics.Typeface.BOLD)
+//                textSize = 16f
+//                setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+//            }
+//
+//            itemLayout.addView(nameTextView)
+//            itemLayout.addView(distanceTextView)
+//            bottomSheetContainer.addView(itemLayout)
+//        }
+//    }
+
     private fun updateDistanceDisplay(userLatLng: LatLng? = null) {
         val currentLocation = userLatLng ?: userMarker?.position
         bottomSheetContainer.removeAllViews()
@@ -470,30 +598,64 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 picker.location.latitude, picker.location.longitude,
                 results
             )
-            Triple(picker.name, results[0].toDouble(), picker.location)
+            Triple(picker, results[0].toDouble(), picker.location)
         }
-        val sortedList = pickerDistances.sortedWith(compareBy({ it.second }, { it.first }))
-        for ((name, distance, _) in sortedList) {
+        val sortedList = pickerDistances.sortedWith(compareBy({ it.second }, { it.first.name }))
+        for ((picker, distance, _) in sortedList) {
             val distanceText = if (distance < 1000) {
                 String.format("%.0f m", distance)
             } else {
                 String.format("%.2f km", distance / 1000)
             }
-            val tv = AppCompatTextView(requireContext()).apply {
-                text = "$name: $distanceText"
-                gravity = Gravity.CENTER
-                setPadding(16, 16, 16, 16)
-                setBackgroundResource(R.drawable.bg_distance_item)
-                val params = LinearLayout.LayoutParams(
+
+            // 수평 LinearLayout 생성
+            val itemLayout = LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.HORIZONTAL
+                layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
-                )
-                params.setMargins(8, 8, 8, 8)
-                layoutParams = params
+                ).apply {
+                    setMargins(dpToPx(8), dpToPx(8), dpToPx(8), dpToPx(8))
+                }
+                setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16))
+                setBackgroundResource(R.drawable.bg_distance_item)
             }
-            bottomSheetContainer.addView(tv)
+
+            // 좌측에 이름 표시 (Bold, 왼쪽 정렬) – codeId에 따라 색상 지정
+            val nameTextView = AppCompatTextView(requireContext()).apply {
+                text = picker.name
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                gravity = Gravity.START or Gravity.CENTER_VERTICAL
+                setTypeface(null, android.graphics.Typeface.BOLD)
+                textSize = 16f
+                when (picker.codeId) {
+                    "M001" -> setTextColor(Color.BLUE)
+//                    "M002" -> setTextColor(Color.YELLOW)
+                    "M002" -> setTextColor(Color.parseColor("#CCCC00"))
+                    "M003" -> setTextColor(Color.MAGENTA)
+                    else   -> setTextColor(Color.BLACK)
+                }
+            }
+
+            // 우측에 거리 표시 (Bold, 오른쪽 정렬)
+            val distanceTextView = AppCompatTextView(requireContext()).apply {
+                text = distanceText
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                gravity = Gravity.END or Gravity.CENTER_VERTICAL
+                setTypeface(null, android.graphics.Typeface.BOLD)
+                textSize = 16f
+                setTextColor(Color.BLACK)
+            }
+
+            itemLayout.addView(nameTextView)
+            itemLayout.addView(distanceTextView)
+            bottomSheetContainer.addView(itemLayout)
         }
     }
+
 
     /**
      * 사용자 위치에서 가장 가까운 피커 방향으로 선을 그리고, 화살표를 표시합니다.
@@ -662,6 +824,30 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+//    private fun addInitialPickerMarkers() {
+//        // 기존 미션 마커 모두 제거
+//        missionMarkers.forEach { it.remove() }
+//        missionMarkers.clear()
+//
+//        missionList.forEach { mission ->
+//            val markerOptions = MarkerOptions().position(mission.getCenterPointLatLng())
+//            if (mission.correct) {
+//                markerOptions.title("수행한 미션")
+//                    .icon(getGrayMarker())
+//            } else {
+//                val markerColor = when (mission.codeId) {
+//                    "M001" -> BitmapDescriptorFactory.HUE_BLUE
+//                    "M002" -> BitmapDescriptorFactory.HUE_YELLOW
+//                    "M003" -> BitmapDescriptorFactory.HUE_VIOLET
+//                    else -> BitmapDescriptorFactory.HUE_RED
+//                }
+//                markerOptions.title(mission.positionName ?: "미지정")
+//                    .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
+//            }
+//            googleMap.addMarker(markerOptions)?.let { missionMarkers.add(it) }
+//        }
+//    }
+
     private fun addInitialPickerMarkers() {
         // 기존 미션 마커 모두 제거
         missionMarkers.forEach { it.remove() }
@@ -673,18 +859,45 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 markerOptions.title("수행한 미션")
                     .icon(getGrayMarker())
             } else {
-                val markerColor = when (mission.codeId) {
-                    "M001" -> BitmapDescriptorFactory.HUE_BLUE
-                    "M002" -> BitmapDescriptorFactory.HUE_YELLOW
-                    "M003" -> BitmapDescriptorFactory.HUE_VIOLET
-                    else -> BitmapDescriptorFactory.HUE_RED
-                }
                 markerOptions.title(mission.positionName ?: "미지정")
-                    .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
+                // 미션 코드에 따라 다른 아이콘 지정
+                val customIcon: BitmapDescriptor? = when (mission.codeId) {
+                    "M001" -> getBitmapDescriptorFromResource(R.drawable.heritage_picker)
+                    "M002" -> getBitmapDescriptorFromResource(R.drawable.random_picker)
+                    "M003" -> getBitmapDescriptorFromResource(R.drawable.camera_picker)
+                    else -> null
+                }
+                if (customIcon != null) {
+                    markerOptions.icon(customIcon)
+                } else {
+                    // 기본 마커 아이콘 처리
+                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                }
             }
             googleMap.addMarker(markerOptions)?.let { missionMarkers.add(it) }
         }
     }
+
+    // dp를 픽셀로 변환하는 함수
+    private fun dpToPx(dp: Int): Int {
+        return (dp * resources.displayMetrics.density).toInt()
+    }
+
+    // Drawable 리소스를 원하는 크기(dp 기준)로 BitmapDescriptor로 변환하는 함수
+    private fun getBitmapDescriptorFromResource(resId: Int): BitmapDescriptor {
+        val drawable = ContextCompat.getDrawable(requireContext(), resId)
+            ?: throw IllegalArgumentException("Resource not found")
+        // 원하는 마커 크기를 dp 단위로 설정 (예: 40dp x 40dp)
+        val markerWidth = dpToPx(60)
+        val markerHeight = dpToPx(60)
+        drawable.setBounds(0, 0, markerWidth, markerHeight)
+        val bitmap = Bitmap.createBitmap(markerWidth, markerHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        drawable.draw(canvas)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
+    }
+
+
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {

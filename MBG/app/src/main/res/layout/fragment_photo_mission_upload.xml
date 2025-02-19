@@ -33,7 +33,15 @@
         android:id="@+id/btnSelectPhoto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="사진 선택"
+        android:text="갤러리에서 선택"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- 사진 촬영 버튼 -->
+    <Button
+        android:id="@+id/btnCapturePhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="카메라 촬영"
         android:layout_marginBottom="8dp"/>
 
     <!-- 사진 업로드 버튼 -->
@@ -49,6 +57,6 @@
         android:id="@+id/uploadProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
 </LinearLayout>

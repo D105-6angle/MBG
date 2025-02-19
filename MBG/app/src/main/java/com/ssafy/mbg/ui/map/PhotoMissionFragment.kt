@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
 import androidx.fragment.app.DialogFragment
 import com.google.gson.Gson
 import com.ssafy.mbg.R
@@ -46,7 +47,6 @@ class PhotoMissionFragment : DialogFragment() {
         }
     }
 
-    // Dagger-Hilt로 주입받음 (AppModule 등에서 OkHttpClient, UserPreferences 제공)
     @javax.inject.Inject
     lateinit var client: OkHttpClient
 
@@ -54,16 +54,28 @@ class PhotoMissionFragment : DialogFragment() {
     lateinit var userPreferences: UserPreferences
 
     private var selectedImageUri: Uri? = null
+    private var capturedImageUri: Uri? = null
     private lateinit var imageView: ImageView
     private lateinit var btnSelectPhoto: Button
+    private lateinit var btnCapturePhoto: Button
     private lateinit var btnUploadPhoto: Button
     private lateinit var progressBar: ProgressBar
 
-    // ActivityResult API를 통해 갤러리에서 이미지 선택
+    // 갤러리에서 사진 선택 ActivityResultLauncher
     private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
             selectedImageUri = it
             imageView.setImageURI(it)
+        }
+    }
+
+    // 카메라 촬영 ActivityResultLauncher (TakePicture는 결과를 저장할 URI가 필요)
+    private val takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success: Boolean ->
+        if (success) {
+            imageView.setImageURI(capturedImageUri)
+            selectedImageUri = capturedImageUri
+        } else {
+            Toast.makeText(requireContext(), "사진 촬영에 실패했습니다.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -82,13 +94,22 @@ class PhotoMissionFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         imageView = view.findViewById(R.id.imageViewUpload)
         btnSelectPhoto = view.findViewById(R.id.btnSelectPhoto)
+        btnCapturePhoto = view.findViewById(R.id.btnCapturePhoto)
         btnUploadPhoto = view.findViewById(R.id.btnUploadPhoto)
         progressBar = view.findViewById(R.id.uploadProgressBar)
         progressBar.visibility = View.GONE
 
         btnSelectPhoto.setOnClickListener {
-            // "image/*" MIME 타입으로 갤러리에서 사진 선택
+            // 갤러리에서 사진 선택 ("image/*" MIME 타입)
             getContent.launch("image/*")
+        }
+
+        btnCapturePhoto.setOnClickListener {
+            // 카메라로 사진 촬영하기 위해 임시 파일 생성 후 FileProvider로 URI 획득
+            val tempFile = File.createTempFile("captured_", ".jpg", requireContext().cacheDir)
+            // 여기서 "com.ssafy.mbg.fileprovider" 는 AndroidManifest.xml에 선언한 authorities와 일치해야 합니다.
+            capturedImageUri = FileProvider.getUriForFile(requireContext(), "com.ssafy.mbg.fileprovider", tempFile)
+            takePictureLauncher.launch(capturedImageUri)
         }
 
         btnUploadPhoto.setOnClickListener {
@@ -98,23 +119,22 @@ class PhotoMissionFragment : DialogFragment() {
 
     private fun uploadPhoto() {
         if (selectedImageUri == null) {
-            Toast.makeText(requireContext(), "사진을 선택해주세요.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "사진을 선택하거나 촬영해주세요.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // 업로드 진행중 UI 처리
+        // 업로드 진행 UI 처리
         progressBar.visibility = View.VISIBLE
         btnUploadPhoto.isEnabled = false
         btnSelectPhoto.isEnabled = false
+        btnCapturePhoto.isEnabled = false
 
-        // MissionExplainFragment에서 전달받은 missionId (없으면 에러 처리)
         val missionId = arguments?.getInt("missionId") ?: run {
             Toast.makeText(requireContext(), "미션 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
             dismiss()
             return
         }
 
-        // UserPreferences에서 roomId와 groupNo를 가져옴
         val roomId = userPreferences.roomId
         val groupNo = userPreferences.groupNo
 
@@ -124,24 +144,22 @@ class PhotoMissionFragment : DialogFragment() {
             return
         }
 
-        // API URL 구성: roomId와 missionId를 경로 변수로 사용
+        // API URL 구성
         val url = "https://i12d106.p.ssafy.io/api/missions/photo/$roomId/$missionId"
-
-        // 선택한 이미지 Uri를 임시 파일로 변환
         val file = uriToFile(selectedImageUri!!, requireContext())
         if (file == null) {
             Toast.makeText(requireContext(), "파일을 불러올 수 없습니다.", Toast.LENGTH_SHORT).show()
             progressBar.visibility = View.GONE
             btnUploadPhoto.isEnabled = true
             btnSelectPhoto.isEnabled = true
+            btnCapturePhoto.isEnabled = true
             return
         }
 
-        // 이미지의 MIME 타입을 가져옴 (없으면 기본 image/jpeg)
         val mimeType = requireContext().contentResolver.getType(selectedImageUri!!) ?: "image/jpeg"
-        val fileRequestBody = file.asRequestBody(mimeType.toMediaTypeOrNull())
-
-        // Multipart/form-data 구성 (roomId, missionId, groupNo, photo)
+        // 명시적으로 타입 지정하여 컴파일러 오류 해결
+        val mediaType = mimeType.toMediaTypeOrNull() ?: "image/jpeg".toMediaTypeOrNull()
+        val fileRequestBody: RequestBody = file.asRequestBody(mediaType)
         val multipartBody = MultipartBody.Builder().setType(MultipartBody.FORM)
             .addFormDataPart("roomId", roomId.toString())
             .addFormDataPart("missionId", missionId.toString())
@@ -162,6 +180,7 @@ class PhotoMissionFragment : DialogFragment() {
                     progressBar.visibility = View.GONE
                     btnUploadPhoto.isEnabled = true
                     btnSelectPhoto.isEnabled = true
+                    btnCapturePhoto.isEnabled = true
                     Toast.makeText(requireContext(), "사진 업로드에 실패했습니다.", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -171,12 +190,11 @@ class PhotoMissionFragment : DialogFragment() {
                     progressBar.visibility = View.GONE
                     btnUploadPhoto.isEnabled = true
                     btnSelectPhoto.isEnabled = true
+                    btnCapturePhoto.isEnabled = true
                 }
                 if (!response.isSuccessful) {
                     requireActivity().runOnUiThread {
-                        Toast.makeText(requireContext(), "roomID missionId: ${roomId} ${missionId} ", Toast.LENGTH_SHORT).show()
                         Toast.makeText(requireContext(), "서버 오류: ${response.code}", Toast.LENGTH_SHORT).show()
-                        Toast.makeText(requireContext(), "서버 오류: ${url}", Toast.LENGTH_SHORT).show()
                     }
                     return
                 }
@@ -184,7 +202,6 @@ class PhotoMissionFragment : DialogFragment() {
                     try {
                         val gson = Gson()
                         val photoResponse = gson.fromJson(responseBody, PhotoMissionResponse::class.java)
-                        // 응답에서 pictureUrl만 사용 (사진이 없으면 다른 이미지로 처리하도록 다른 코드에서 구현)
                         requireActivity().runOnUiThread {
                             val resultFragment = PhotoMissionResultFragment.newInstance(photoResponse.pictureUrl)
                             resultFragment.show(parentFragmentManager, "PhotoMissionResult")
@@ -201,7 +218,7 @@ class PhotoMissionFragment : DialogFragment() {
         })
     }
 
-    // Uri → File 변환 (임시 파일로 저장)
+    // Uri → File 변환 (임시 파일 생성)
     private fun uriToFile(uri: Uri, context: Context): File? {
         return try {
             val inputStream = context.contentResolver.openInputStream(uri) ?: return null
@@ -241,7 +258,7 @@ class PhotoMissionFragment : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        // 다이얼로그의 너비를 화면 너비의 85%로 설정
+        // 다이얼로그 너비를 화면 너비의 85%로 설정
         dialog?.window?.setLayout(
             (resources.displayMetrics.widthPixels * 0.85).toInt(),
             ViewGroup.LayoutParams.WRAP_CONTENT
@@ -249,7 +266,7 @@ class PhotoMissionFragment : DialogFragment() {
     }
 }
 
-// API 응답 JSON을 매핑할 데이터 클래스
+// PhotoMissionResponse 데이터 클래스 (API 응답에 맞게 수정)
 data class PhotoMissionResponse(
     val pictureId: Int,
     val roomId: Int,
