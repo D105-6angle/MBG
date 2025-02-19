@@ -20,7 +20,7 @@ public class TodayCardScheduler {
     // 매일 지정된 시간에 오늘의 카드 업데이트
     // "초 분 시 일 월 요일"
     // 매일 00시 00분 00초에 오늘의 카드 업데이트
-    @Scheduled(cron ="0 0 0 * * *")
+    @Scheduled(cron ="0 * * * * *")
     public void updateTodayCards() {
         // 1. 랜덤 조합 선택
         List<Map<String, Object>> combinations = todayCardMapper.selectRandomCombinations();
