@@ -1,6 +1,6 @@
 <resources>
     <!-- 스플래시 페이지 -->
-    <string name="app_name">TMBG</string>
+    <string name="app_name">T문방구</string>
     <string name="app_logo_name">T문방구</string>
 
     <!-- 회원 가입, 로그인 페이지  -->
