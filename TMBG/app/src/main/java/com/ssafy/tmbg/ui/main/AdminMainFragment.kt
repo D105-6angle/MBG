@@ -118,17 +118,17 @@ class AdminMainFragment : Fragment() {
                 }
             }
 
-            btnMission.setOnClickListener {
-                viewLifecycleOwner.lifecycleScope.launch {
-                    sharedViewModel.roomId.collect { roomId ->
-                        if (roomId != -1) {
-                            findNavController().navigate(R.id.action_adminMain_to_mission)
-                        } else {
-                            Toast.makeText(context, "방을 먼저 생성해주세요", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
-            }
+//            btnMission.setOnClickListener {
+//                viewLifecycleOwner.lifecycleScope.launch {
+//                    sharedViewModel.roomId.collect { roomId ->
+//                        if (roomId != -1) {
+//                            findNavController().navigate(R.id.action_adminMain_to_mission)
+//                        } else {
+//                            Toast.makeText(context, "방을 먼저 생성해주세요", Toast.LENGTH_SHORT).show()
+//                        }
+//                    }
+//                }
+//            }
 
             btnSchedule.setOnClickListener {
                 viewLifecycleOwner.lifecycleScope.launch {
