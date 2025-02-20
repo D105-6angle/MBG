@@ -1,0 +1,47 @@
+<resources>
+    <string name="app_name">문방구</string>
+    <string name="kakao_login_btn">카카오 로그인</string>
+    <string name="naver_login_btn">네이버 로그인</string>
+    <string name="google_login_btn">구글 로그인</string>
+    <string name="app_logo_name">문방구</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="input_nickname">닉네임 입력</string>
+    <string name="splash_text">start</string>
+    <string name="hint_text">김봉년</string>
+    <string name="submit_sign_up_btn">문방구와 함께하기</string>
+    <string name="book_title">도감</string>
+    <string name="card_section">일화</string>
+    <string name="cultural_property_section">문화재</string>
+    <string name="card_image">카드 이미지</string>
+    <string name="task_main">일정 관리</string>
+    <string name="my_team">나의 팀</string>
+    <string name="today_task">오늘의 일정</string>
+    <string name="profile_name">귀여운 꾸미</string>
+    <string name="problem_history">풀이기록</string>
+    <string name="my_email">qud5252@naver.com</string>
+    <string name="my_name">김병년</string>
+    <string name="my_nick">김븅년</string>
+    <string name="logout">로그아웃</string>
+    <string name="register_out">회원탈퇴</string>
+    <string name="confirm_withdraw">정말 탈퇴하나요?</string>
+    <string name="withdraw_msg">진짜로..?ㅠㅠ</string>
+    <string name="confirm">확인</string>
+    <string name="setting">세팅</string>
+    <string name="change">변경하기</string>
+    <!--메인 페이지 닉네임 일시적으로 하드코딩-->
+    <string name="user_nickname">꾸미</string>
+
+    <string name="notification_title">알림</string>
+    <!--초대창-->
+    <string name="invite_code">초대 코드</string>
+    <string name="invite_hint">초대코드를 입력하세요</string>
+    <string name="submit_invite_code">입력</string>
+    <!--방 리스트-->
+    <string name="selet_room">방 입장</string>
+    <!-- 이스터에그 텍스트 -->
+    <string name="easter_egg_txt">구글 로그인은 나중에..🤪</string>
+    <!-- Google Map   -->
+    <string name="api_key">AIzaSyCnaS2BwLjhQ5mWZU0U8z4ppydasbHF_Sk</string>
+    <!-- -->
+    <string name="hint_chat_bot">문화재에 대해 물어봐!!</string>
+</resources>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center_horizontal"
+    android:background="@android:color/white">
+
+    <!-- 결과 제목 -->
+    <TextView
+        android:id="@+id/resultTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="업로드 성공!"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"
+        android:textColor="@android:color/black" />
+
+    <!-- 업로드한 사진 표시 -->
+    <ImageView
+        android:id="@+id/imageViewResult"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/ic_sync" />
+
+    <!-- 닫기 버튼 -->
+    <Button
+        android:id="@+id/btnCloseResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="닫기" />
+</LinearLayout>

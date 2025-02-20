@@ -1,0 +1,23 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.MBG" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="bottomAppBarStyle">@style/CustomBottomAppBarStyle</item>
+
+        <!-- 상단바 색상 설정 -->
+        <item name="android:statusBarColor">@color/background</item>
+        <!-- 상단바 아이콘을 어두운 색상으로 (배경이 밝은 경우) -->
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <style name="Theme.MBG" parent="Base.Theme.MBG" />
+
+    <!-- Material2 스타일의 BottomAppBar -->
+    <style name="CustomBottomAppBarStyle" parent="Widget.MaterialComponents.BottomAppBar">
+
+        <!-- FAB 모서리 둥글기를 위한 스타일 -->
+        <item name="cornerSize">50%</item>
+    </style>
+
+</resources>

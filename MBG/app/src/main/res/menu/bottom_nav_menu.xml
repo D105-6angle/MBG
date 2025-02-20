@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/homeFragment"
+        android:icon="@drawable/ic_home"
+        android:title="Home"
+        />
+
+    <item
+        android:id="@+id/taskFragment"
+        android:icon="@drawable/ic_task"
+        android:title="task"
+
+        />
+
+    <!-- FAB 위치를 위한 더미 메뉴 아이템 -->
+    <item
+        android:id="@+id/mapFragment"
+        android:title=""
+        android:enabled="false"
+        android:checkable="false"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/bookFragment"
+        android:icon="@drawable/ic_book"
+        android:title="book" />
+
+    <item
+        android:id="@+id/pageFragment"
+        android:icon="@drawable/ic_page"
+        android:title="page" />
+</menu>

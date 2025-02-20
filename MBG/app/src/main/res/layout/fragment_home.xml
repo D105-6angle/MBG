@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main_background">
+
+    <!-- 상단 가로 가이드라인 -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="90dp" />
+
+    <!-- 중앙 세로 가이드라인 -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/centerGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <ImageButton
+        android:id="@+id/notification_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="33dp"
+        android:layout_marginStart="16dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_notification_2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/locationText"
+        android:layout_marginTop="33dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textSize="22sp"
+        android:drawableEnd="@drawable/ic_dropdown"
+        android:drawablePadding="4dp"
+        android:textColor="@color/text_black"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/teamNumberText"
+        app:layout_constraintStart_toStartOf="@id/centerGuideline"
+        app:layout_constraintEnd_toEndOf="@id/centerGuideline"
+        tools:text="인동향교" />
+
+    <TextView
+        android:id="@+id/teamNumberText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textSize="22sp"
+        android:background="@drawable/group_info"
+        android:gravity="center"
+        android:textColor="@color/text_black"
+        android:textStyle="bold"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:minWidth="100dp"
+        android:minHeight="40dp"
+        app:layout_constraintStart_toStartOf="@id/centerGuideline"
+        app:layout_constraintEnd_toEndOf="@id/centerGuideline"
+        app:layout_constraintTop_toTopOf="@id/topGuideline"
+        app:layout_constraintBottom_toBottomOf="@id/topGuideline" />
+
+    <ImageButton
+        android:id="@+id/question_icon"
+        android:layout_width="66dp"
+        android:layout_height="66dp"
+        android:layout_marginStart="16dp"
+        android:background="@null"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="@id/guideline3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/chatbot" />
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- 팀 아이콘 (그룹에 속하지 않았을 때) -->
+        <ImageButton
+            android:id="@+id/teamIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_enter"
+            android:background="@android:color/transparent"
+            android:visibility="gone" />
+
+        <!-- 나가기 아이콘 (그룹에 속했을 때) -->
+        <ImageButton
+            android:id="@+id/exitIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_exit"
+            android:background="@android:color/transparent"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
+    <!-- 그림자 -->
+
+    <ImageView
+        android:id="@+id/characterGif"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/character_gif_origin"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.734" />
+
+    <View
+        android:id="@+id/shadow"
+        android:layout_width="120dp"
+        android:layout_height="10dp"
+        android:layout_marginTop="168dp"
+        android:background="@drawable/shadow_drawable"
+        app:layout_constraintEnd_toEndOf="@id/characterGif"
+        app:layout_constraintStart_toStartOf="@id/characterGif"
+        app:layout_constraintTop_toTopOf="@id/characterGif" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="120dp" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

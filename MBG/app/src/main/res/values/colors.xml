@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary_color">#2196F3</color>
+    <color name="primary_dark">#1976D2</color>
+    <color name="primary_light">#BBDEFB</color>
+
+    <color name="light_gray">#F1F1F1</color>
+    <color name="medium_gray">#9E9E9E</color>
+    <color name="dark_gray">#616161</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+
+    <!-- 채팅 관련 색상 -->
+    <color name="chat_background">#FAFAFA</color>
+    <color name="message_time">#757575</color>
+    <color name="input_text">#212121</color>
+    <color name="hint_text">#BDBDBD</color>
+
+    <!--  퀴즈  -->
+    <color name="correct_color">#4CAF50</color>          <!-- 정답 - 밝은 초록색 -->
+    <color name="correct_color_dark">#388E3C</color>     <!-- 정답 (어두운 버전) -->
+    <color name="wrong_color">#F44336</color>            <!-- 오답 - 밝은 빨간색 -->
+    <color name="wrong_color_dark">#D32F2F</color>       <!-- 오답 (어두운 버전) -->
+    <color name="quiz_background_start_color">#FFFFFF</color>
+    <color name="quiz_background_center_color">#F8EAD9</color>
+    <color name="quiz_background_end_color">#FFFCF5</color>
+    <color name="quiz_text_color">#1565C0</color>
+    <color name="quiz_text_primary">#424242</color>      <!-- 주요 텍스트 색상 -->
+    <color name="quiz_text_secondary">#757575</color>    <!-- 부가 텍스트 색상 -->
+    <color name="quiz_character_background">#F5F9FF</color>
+    <color name="quiz_guide_text_color">#455A64</color>
+    <color name="quiz_start_button_background">#BCE7E8</color>
+
+    <!--  공통으로 쓸것  -->
+    <color name="background">#FFFCF5</color>
+    <color name="text_black">#000000</color>
+    <color name="text_white">#FFFFFF</color>
+    <color name="input_background">#F8EAD9</color>
+    <!--  바텀 바  -->
+    <color name="bottom_bar_background">#689661</color>
+    <color name="bottom_bar_icon_select_color">#FFF8E7</color>
+    <color name="bottom_bar_icon_unselect_color">#325C43</color>
+    <color name="bottom_bar_fab_background_selected">#F0B27A</color>
+    <color name="bottom_bar_fab_background_unselected">#57553F</color>
+    <color name="bottom_bar_fab_icon_color">#FFF8E7</color>
+
+    <!--  알림  -->
+    <color name="notification_background">#F8EAD9</color>
+
+    <!--  스플래시  -->
+    <color name="button_splash_background">#957F6E</color>
+
+    <!--  회원가입 창  -->
+    <color name="signup_background">#F8EAD9</color>
+    <color name="button_confirm">#EDC795</color>
+    <color name="modal_cardview_background">#FFF3E0</color> <!--회원
+    탈퇴 모달-->
+    <color name="modal_button_background">#F0B27A</color> <!--회원
+    탈퇴 모달-->
+
+    <!--  설정창  -->
+    <color name="setting_field_background">#F8EAD9</color>
+    <color name="setting_text">#333333</color>
+    <color name="setting_sign_out_text">#FF0000</color>
+
+    <!--  로그인  -->
+    <color name="button_background">#E6C9A8</color>
+    <color name="tvTitle_text_color">#424242</color>
+    <color name="tvMessage_text_color">#757575</color>
+
+
+    <!--  book fragment  -->
+    <color name="button_selected">#F5D8AE</color>
+    <color name="button_unselected">#80807D</color>
+
+    <!--  chatbot fragment  -->
+    <color name="chatbot_background">#4D000000</color>
+
+    <!--  history detail  -->
+    <color name="history_detail_cardview_background">#FFF3E0</color>
+    <color name="history_detail_cardview_date_text">#666666</color>
+    <color name="history_detail_cardview_description_text">#333333</color>
+
+    <!--  home fragment  -->
+    <color name="shadow_drawable">#B3000000</color>
+    <color name="home_fragment_nickname_box_background">#EDC795</color>
+
+    <!--  invite code fragment  -->
+    <color name="invite_hint_text">#666666</color>
+    <color name="invite_submit_button_background">#D4DD95</color>
+    <color name="room_container">#F8EAD9</color>
+    <!--  my page fragment  -->
+    <color name="satisfaction_button_background">#F0B27A</color>
+    <color name="problem_history_item_background">#F8EAD9</color>
+
+    <!-- schedule -->
+    <color name="schedule_item_background">#F8EAD9</color>
+
+    <color name="group_info">#AFDBDA</color>
+</resources>
