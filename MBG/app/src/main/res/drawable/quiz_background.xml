@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:angle="135"
+        android:type="linear"
+        android:startColor="@color/quiz_background_start_color"
+        android:centerColor="@color/quiz_background_center_color"
+        android:endColor="@color/quiz_background_end_color" />
+
+    <item>
+        <bitmap
+            android:src="@drawable/pattern_dots"
+            android:tileMode="repeat"
+            android:alpha="0.05" />
+    </item>
+</shape>

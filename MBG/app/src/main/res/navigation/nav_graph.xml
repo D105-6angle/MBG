@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <action
+        android:id="@+id/action_global_chatBotFragment"
+        app:destination="@id/chatBotFragment"
+        app:enterAnim="@anim/slide_up_dialog"
+        app:exitAnim="@anim/fade_out" />
+
+    <!-- 홈 탭 -->
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.ssafy.mbg.ui.home.HomeFragment"
+        android:label="Home">
+
+        <action
+            android:id="@+id/action_homeFragment_to_roomListFragment"
+            app:destination="@id/roomListFragment" />
+    </fragment>
+
+    <!-- 테스크 탭 -->
+    <fragment
+        android:id="@+id/taskFragment"
+        android:name="com.ssafy.mbg.ui.task.TaskFragment"
+        android:label="Task" />
+
+    <!-- 맵 탭 -->
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.ssafy.mbg.ui.map.MapFragment"
+        android:label="Map" />
+
+    <!-- 북 탭 -->
+    <fragment
+        android:id="@+id/bookFragment"
+        android:name="com.ssafy.mbg.ui.book.BookFragment"
+        android:label="BookFragment" />
+
+    <!-- 페이지 탭 -->
+
+    <!--            app:exitAnim="@anim/slide_out_left"-->
+    <fragment
+        android:id="@+id/pageFragment"
+        android:name="com.ssafy.mbg.ui.page.PageFragment"
+        android:label="Page">
+        <action
+            android:id="@+id/action_pageFragment_to_historyDetailFragment"
+            app:destination="@id/historyDetailFragment"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_pageFragment_to_satisfactionFragment"
+            app:destination="@id/satisfactionFragment"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <!-- FAQ 아이콘 -->
+    <fragment
+        android:id="@+id/chatBotFragment"
+        android:name="com.ssafy.mbg.ui.chatbot.ChatBotFragment"
+        android:label="ChatBotFragment">
+        <action
+            android:id="@+id/action_chatBotFragment_pop"
+            app:destination="@id/homeFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/slide_down_dialog"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_down_dialog" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/satisfactionFragment"
+        android:name="com.ssafy.mbg.ui.page.SatisfactionFragment"
+        android:label="SatisfactionFragment">
+        <action
+            android:id="@+id/action_satisfactionFragment_to_pageFragment"
+            app:destination="@id/pageFragment"
+            app:popUpTo="@id/pageFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
+
+
+    <!-- 문제 풀이 기록 상세 보기 -->
+    <fragment
+        android:id="@+id/historyDetailFragment"
+        android:name="com.ssafy.mbg.ui.page.HistoryDetailFragment"
+        android:label="HistoryDetailFragment">
+        <argument
+            android:name="cardId"
+            app:argType="long" />
+        <!-- 뒤로가기 action 추가 (PageFragment로 복귀) -->
+        <action
+            android:id="@+id/action_historyDetailFragment_to_pageFragment"
+            app:destination="@id/pageFragment"
+            app:popUpTo="@id/pageFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <!-- RoomList Fragment 추가 -->
+    <fragment
+        android:id="@+id/roomListFragment"
+        android:name="com.ssafy.mbg.ui.home.RoomListFragment"
+        android:label="RoomListFragment">
+
+        <action
+            android:id="@+id/action_roomListFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+</navigation>

@@ -1,0 +1,27 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.TMBG" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.TMBG" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Custom attributes -->
+        <item name="teamMemberButtonStyle">@style/TeamMemberButton</item>
+        <item name="teamPlaceCardStyle">@style/TeamPlaceCard</item>
+    </style>
+
+    <!-- 팀 멤버 버튼 스타일 -->
+    <style name="TeamMemberButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:layout_margin">4dp</item>
+    </style>
+
+    <!-- 팀 장소 카드 스타일 -->
+    <style name="TeamPlaceCard" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">?attr/colorSurface</item>
+        <item name="cardCornerRadius">8dp</item>
+        <item name="android:layout_margin">4dp</item>
+    </style>
+</resources>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- main color -->
+    <color name="main_background">#F6DFC3</color>
+
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <!-- splash color-->
+    <color name="splash_main">#FFFCF5</color>
+
+
+    <!-- sign up color  -->
+    <color name="sign_up_main">#FFD0BA</color>
+    <color name="sign_up_hint">#999999</color>
+
+    <!-- Schedule Dialog Colors -->
+    <color name="schedule_container">#FFFFFF</color>
+    <color name="schedule_input_background">#F5F5F5</color>
+    <color name="schedule_text_primary">#212121</color>
+    <color name="schedule_text_secondary">#757575</color>
+    <color name="schedule_accent">#FF9800</color>
+    <color name="schedule_divider">#EEEEEE</color>
+    <color name="schedule_color">#FFE0B2</color>
+    <color name="schedule_main">#FFF3E0</color>
+    <!-- Team Colors -->
+    <color name="team_background">#F6DFC3</color>  <!-- 현재 사용 중인 배경색 -->
+    <color name="team_button_background">#F3D4B0</color>  <!-- 현재 사용 중인 버튼 배경색 -->
+    <color name="team_text_primary">#000000</color>  <!-- 현재 사용 중인 기본 텍스트 색상 -->
+    <color name="team_text_secondary">#666666</color>  <!-- 현재 사용 중인 보조 텍스트 색상 -->
+    <color name="team_leader_text">@android:color/holo_red_light</color>  <!-- 현재 사용 중인 팀장 텍스트 색상 -->
+    <color name="red">#FF0000</color>
+    <color name="gray">#808080</color>
+    <color name="team_member">#333333</color>
+    <color name="progress_bar_color">#83fc95</color>
+
+    <color name="primary">#1565C0</color>              <!-- 앱의 주요 색상 -->
+    <color name="primary_dark">#0D47A1</color>         <!-- 상태바 등에 사용될 어두운 버전 -->
+    <color name="accent">#2196F3</color>               <!-- 강조 색상 -->
+
+    <!-- 퀴즈 결과 다이얼로그 색상 -->
+    <color name="correct_color">#4CAF50</color>        <!-- 정답 색상 -->
+    <color name="correct_color_dark">#388E3C</color>   <!-- 정답 (어두운 버전) -->
+    <color name="wrong_color">#F44336</color>          <!-- 오답 색상 -->
+    <color name="wrong_color_dark">#D32F2F</color>     <!-- 오답 (어두운 버전) -->
+    <color name="quiz_text_primary">#424242</color>    <!-- 주요 텍스트 색상 -->
+    <color name="quiz_text_secondary">#757575</color>  <!-- 부가 텍스트 색상 -->
+
+    <color name="main_color">#EFF7F8</color> <!-- 메인 페이지 배경 색 -->
+
+    <!-- 회원 탈퇴 다이얼로그 -->
+    <color name="confirm_withdraw">#666666</color>
+
+    <!-- 보고서 -->
+    <color name="report_main">#FFF6F0</color>
+    <color name="divider_line">#E0E0E0</color>
+    <color name="report_question">#333333</color>
+
+</resources>

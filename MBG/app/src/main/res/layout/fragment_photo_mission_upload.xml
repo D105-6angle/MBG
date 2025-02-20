@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center_horizontal"
+    android:background="@android:color/white">
+
+    <!-- 미션 제목 -->
+    <TextView
+        android:id="@+id/photoMissionTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="인증샷 미션"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"
+        android:textColor="@android:color/black" />
+
+    <!-- 선택한 사진 미리보기 -->
+    <ImageView
+        android:id="@+id/imageViewUpload"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/ic_uploadfile" />
+
+    <!-- 사진 선택 버튼 -->
+    <Button
+        android:id="@+id/btnSelectPhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="갤러리에서 선택"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- 사진 촬영 버튼 -->
+    <Button
+        android:id="@+id/btnCapturePhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="카메라 촬영"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- 사진 업로드 버튼 -->
+    <Button
+        android:id="@+id/btnUploadPhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="사진 업로드"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- 진행 상황 표시용 ProgressBar -->
+    <ProgressBar
+        android:id="@+id/uploadProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+</LinearLayout>

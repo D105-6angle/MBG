@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="teamLeaderTextColor" format="color"/>
+    <attr name="teamMemberButtonStyle" format="reference"/>
+    <attr name="teamPlaceCardStyle" format="reference"/>
+</resources> 
