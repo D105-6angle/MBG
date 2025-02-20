@@ -118,7 +118,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     // 모드 토글: Picker Mode vs. Auto Mode (기본은 Picker Mode)
     // AutoMode 바꿔야 하는 부분 true -> false
-    private var isPickerModeEnabled = true
+    private var isPickerModeEnabled = false
 
     // Picker Mode의 고정 초기 위치 (경복궁)
 //    private val INITIAL_PICKER_LATLNG = LatLng(37.579050513803224, 126.97762422651554)
@@ -162,10 +162,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         val toggleMode: ToggleButton = view.findViewById(R.id.toggle_mode)
         // AutoMode 바꿔야 하는 부분 true -> false
-        toggleMode.isChecked = true
+        toggleMode.isChecked = false
         val arrowContainer: GridLayout = view.findViewById(R.id.arrow_container)
         // AutoMode 바꿔야 하는 부분 VISIBLE -> GONE
-        arrowContainer.visibility = View.VISIBLE
+        arrowContainer.visibility = View.GONE
 
 //        toggleMode.setOnCheckedChangeListener { _, isChecked ->
 //            isPickerModeEnabled = isChecked
@@ -632,10 +632,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 setTypeface(null, android.graphics.Typeface.BOLD)
                 textSize = 16f
                 when (picker.codeId) {
-                    "M001" -> setTextColor(Color.BLUE)
+                    "M001" -> setTextColor(Color.parseColor("#4E3CCC"))
 //                    "M002" -> setTextColor(Color.YELLOW)
-                    "M002" -> setTextColor(Color.parseColor("#CEC93C"))
-                    "M003" -> setTextColor(Color.MAGENTA)
+                    "M002" -> setTextColor(Color.parseColor("#E9E94D"))
+                    "M003" -> setTextColor(Color.parseColor("#C0A020F0"))
                     else   -> setTextColor(Color.BLACK)
                 }
             }
@@ -809,9 +809,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 Pair(Color.GRAY, Color.argb(34, 128, 128, 128))
             } else {
                 when (mission.codeId) {
-                    "M001" -> Pair(Color.CYAN, Color.argb(34, 0, 0, 255))
-                    "M002" -> Pair(Color.CYAN, Color.argb(34, 255, 255, 0))
-                    "M003" -> Pair(Color.CYAN, Color.argb(34, 255, 0, 255))
+                    "M001" -> Pair(Color.parseColor("#5CF2ED"), Color.argb(160, 30, 0, 255))
+//                    "M002" -> Pair(Color.CYAN, Color.argb(128, 255, 255, 0))
+                    "M002" -> Pair(Color.parseColor("#5CF2ED"), Color.argb(128, 255, 255, 0))
+                    "M003" -> Pair(Color.parseColor("#5CF2ED"), Color.argb(192, 160, 32, 240))
                     else -> Pair(Color.RED, Color.argb(34, 255, 0, 0))
                 }
             }
