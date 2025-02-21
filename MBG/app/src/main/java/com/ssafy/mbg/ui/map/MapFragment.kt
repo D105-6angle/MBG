@@ -240,6 +240,69 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+//    override fun onMapReady(map: GoogleMap) {
+//        googleMap = map
+//        try {
+//            val success = googleMap.setMapStyle(
+//                MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.map_style)
+//            )
+//            if (!success) {
+//                // 스타일 적용 실패 시 로그 남김
+//            }
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
+//        googleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
+//
+//        setupMap()
+//        fetchMissionPickers()
+//
+//        googleMap.setOnMapClickListener { latLng ->
+//            if (isPickMode) {
+//                isPickMode = false
+//                val newPickerName = "추가 피커 $additionalPickerCount"
+//                additionalPickerCount++
+//                additionalPickerList.add(Picker(newPickerName, latLng))
+//                val marker = googleMap.addMarker(
+//                    MarkerOptions()
+//                        .position(latLng)
+//                        .title(newPickerName)
+//                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+//                )
+//                marker?.let { additionalPickerMarkers.add(it) }
+//                val circle = googleMap.addCircle(
+//                    CircleOptions()
+//                        .center(latLng)
+//                        .radius(additionalPickerRadiusInMeters)
+//                        .strokeWidth(2f)
+//                        .strokeColor(Color.YELLOW)
+//                        .fillColor(0x22FFFF00)
+//                )
+//                additionalPickerCircles.add(circle)
+//                Toast.makeText(requireContext(), "피커가 추가되었습니다.", Toast.LENGTH_SHORT).show()
+//                updateDistanceDisplay()
+//            }
+//        }
+//        googleMap.setOnMarkerClickListener { false }
+//
+//        if (userMarker == null) {
+//            googleMap.moveCamera(
+//                CameraUpdateFactory.newLatLngZoom(INITIAL_PICKER_LATLNG, 18f)
+//            )
+//            val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.target_marker)
+//            val markerOptions = MarkerOptions().position(INITIAL_PICKER_LATLNG).title("My Location")
+//            if (drawable != null) {
+//                drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+//                val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+//                val canvas = Canvas(bitmap)
+//                drawable.draw(canvas)
+//                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+//            }
+//            userMarker = googleMap.addMarker(markerOptions)
+//        }
+//    }
+
+    // onMapReady() 메서드 수정
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
         try {
@@ -257,50 +320,30 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         setupMap()
         fetchMissionPickers()
 
-        googleMap.setOnMapClickListener { latLng ->
-            if (isPickMode) {
-                isPickMode = false
-                val newPickerName = "추가 피커 $additionalPickerCount"
-                additionalPickerCount++
-                additionalPickerList.add(Picker(newPickerName, latLng))
-                val marker = googleMap.addMarker(
-                    MarkerOptions()
-                        .position(latLng)
-                        .title(newPickerName)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
-                )
-                marker?.let { additionalPickerMarkers.add(it) }
-                val circle = googleMap.addCircle(
-                    CircleOptions()
-                        .center(latLng)
-                        .radius(additionalPickerRadiusInMeters)
-                        .strokeWidth(2f)
-                        .strokeColor(Color.YELLOW)
-                        .fillColor(0x22FFFF00)
-                )
-                additionalPickerCircles.add(circle)
-                Toast.makeText(requireContext(), "피커가 추가되었습니다.", Toast.LENGTH_SHORT).show()
-                updateDistanceDisplay()
-            }
-        }
-        googleMap.setOnMarkerClickListener { false }
+        // 현재 위치를 가져와서 지도를 그 위치로 이동시키고 확대/틸트 설정
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                location?.let {
+                    val userLatLng = LatLng(it.latitude, it.longitude)
+                    updateUserLocation(userLatLng)
 
-        if (userMarker == null) {
-            googleMap.moveCamera(
-                CameraUpdateFactory.newLatLngZoom(INITIAL_PICKER_LATLNG, 18f)
-            )
-            val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.target_marker)
-            val markerOptions = MarkerOptions().position(INITIAL_PICKER_LATLNG).title("My Location")
-            if (drawable != null) {
-                drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
-                val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
-                val canvas = Canvas(bitmap)
-                drawable.draw(canvas)
-                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                    // CameraPosition 설정 (확대 수준, 틸트, 방향)
+                    val cameraPosition = CameraPosition.Builder()
+                        .target(userLatLng)     // 중심 위치
+                        .zoom(18f)              // 확대 수준 (18f가 매우 확대된 수준)
+                        .tilt(45f)              // 틸트(기울기) 설정 (45도)
+                        .build()
+
+                    // 카메라 이동
+                    googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+                }
             }
-            userMarker = googleMap.addMarker(markerOptions)
+        } else {
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
         }
     }
+
+
 
     private fun setupMap() {
         if (ContextCompat.checkSelfPermission(
